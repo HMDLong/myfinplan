@@ -5,6 +5,8 @@ import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/repositories/account/account_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final accountRepoProvider = Provider((ref) => AccountRepositoryImpl());
+
 class AccountRepositoryImpl extends AccountRepository {
   final sharedRef = SharedPreferences.getInstance();
 
@@ -31,7 +33,11 @@ class AccountRepositoryImpl extends AccountRepository {
   }
 
   @override
-  Future<void> delete(String id) async {}
+  Future<void> delete(String id) async {
+    final ref = await sharedRef;
+    final accs = await _getAllAccounts(ref);
+    await save(accs..removeWhere((e) => e.id == id), ref);
+  }
 
   @override
   Future<List<Account>> get allAccounts async {
@@ -43,5 +49,3 @@ class AccountRepositoryImpl extends AccountRepository {
     await sharedRef.setStringList("accounts", accounts.map((acc) => json.encode(acc.toJson())).toList());
   }
 }
-
-final accountRepoProvider = Provider((ref) => AccountRepositoryImpl());

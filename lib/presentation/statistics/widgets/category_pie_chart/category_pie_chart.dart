@@ -1,10 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/utils/times.dart';
-import 'package:provider/provider.dart';
+import 'package:myfinplan/shared_widgets/menu/menu.dart';
+import 'package:myfinplan/presentation/statistics/widgets/category_pie_chart/cate_piechart_state.dart';
+import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/format.dart';
+import 'package:myfinplan/utils/time/times.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class CategoryPieChart extends ConsumerStatefulWidget {
@@ -19,142 +24,182 @@ class CategoryPieChart extends ConsumerStatefulWidget {
 }
 
 class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
-  bool displayParentCategory = true;
-  ChartData? selectedData;
-  TransactionType type = TransactionType.expense;
-
   @override
   Widget build(BuildContext context) {
-    final int spentAmount = 1000000;
-    final int totalAmount = 1000;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Thành phần thu chi",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text(
-              "Thu chi của tôi cho những gì?",
-              style: TextStyle(fontSize: 12, color: Colors.black54),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(width: 0.3),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        type = TransactionType.expense;
-                      });
-                    },
-                    child: Container(
-                      height: 30,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: type == TransactionType.expense ? CupertinoColors.activeBlue : Colors.white),
-                      child: Center(
-                        child: Text(
-                          "Chi phí",
-                          style: TextStyle(color: type == TransactionType.expense ? Colors.white : Colors.black),
-                        ),
-                      ),
-                    ),
-                  )),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          type = TransactionType.income;
-                        });
-                      },
-                      child: Container(
-                        height: 30,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: type == TransactionType.income ? CupertinoColors.activeBlue : Colors.white),
-                        child: Center(
-                          child: Text(
-                            "Thu nhập",
-                            style: TextStyle(color: type == TransactionType.income ? Colors.white : Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
+    final filterState = ref.watch(chartFilterStateProvider);
+    return ref.watch(categoryChartDataProvider).when(
+      data: (chartState) {
+        return Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      selectedData?.x ?? "",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "${NumberFormat.decimalPattern().format(spentAmount)} VND (${(spentAmount / totalAmount * 100).toStringAsFixed(2)} %)",
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                const Text(
+                  "Thành phần thu chi",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text(
+                  "Thu chi của tôi cho những gì?",
+                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                ),
+                const SizedBox(height: 10),
+                CustomMenu(
+                  items: const [
+                    DropdownMenuEntry(value: TransactionType.expense, label: "Chi phí"),
+                    DropdownMenuEntry(value: TransactionType.income, label: "Thu nhập"),
                   ],
-                )),
+                  onChanged: (newValue) {
+                    ref.read(chartFilterStateProvider.notifier).state = filterState.copyWith(
+                      type: newValue,
+                      categoryId: null,
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                _buildRowLabel(chartState, filterState),
+                _buildChart(chartState, filterState),
               ],
             ),
-            SizedBox(
-              height: 300,
-              width: double.infinity,
-              child: SfCircularChart(
-                legend: const Legend(
-                    isVisible: true,
-                    isResponsive: true,
-                    textStyle: TextStyle(fontSize: 10),
-                    position: LegendPosition.bottom,
-                    itemPadding: 10,
-                    shouldAlwaysShowScrollbar: true,
-                    overflowMode: LegendItemOverflowMode.wrap),
-                series: <CircularSeries>[
-                  DoughnutSeries<ChartData, String>(
-                    onPointTap: (pointInteractionDetails) {},
-                    dataSource: [],
-                    xValueMapper: (ChartData data, _) => data.x,
-                    yValueMapper: (ChartData data, _) => data.y,
-                    explode: true,
-                    dataLabelSettings: const DataLabelSettings(
-                      showZeroValue: false,
-                      showCumulativeValues: true,
-                      isVisible: false,
-                    ),
-                    legendIconType: LegendIconType.circle,
-                    dataLabelMapper: (datum, index) => datum.x,
-                  )
-                ],
+          ),
+        );
+      },
+      error: (error, _) {
+        return const Card(
+          child: SizedBox(
+            height: 300,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(widgetErrorMessage),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () {
+        return const Card(
+          child: SizedBox(
+            height: 300,
+            width: double.infinity,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  _buildRowLabel(CategoryChartDataModel chartState, CategoryChartFilterState state) {
+    if (chartState.data.isEmpty) {
+      return const SizedBox(height: 1);
+    }
+    int spentAmount = chartState.data.fold(0, (prev, e) {
+      return prev + e.y.toInt();
+    });
+    final label = categoryGroups[state.categoryId]?.name ?? "Tất cả";
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-            )
+              Text(
+                amountToDecimal(spentAmount), // (${(spentAmount / totalAmount * 100).toStringAsFixed(2)} %)",
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Visibility(
+              visible: state.categoryId != null,
+              child: IconButton(
+                onPressed: () {
+                  if (state.categoryId != null) {
+                    ref.read(chartFilterStateProvider.notifier).state = state.copyWith(categoryId: null);
+                  }
+                },
+                icon: const Icon(CupertinoIcons.arrow_uturn_left),
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  _buildChart(CategoryChartDataModel chartState, CategoryChartFilterState filterState) {
+    if (chartState.data.isEmpty) {
+      return const SizedBox(
+        height: 200,
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(noItemsMessage),
           ],
         ),
+      );
+    }
+    return SizedBox(
+      height: 300,
+      width: double.infinity,
+      child: SfCircularChart(
+        legend: const Legend(
+            isVisible: true,
+            isResponsive: true,
+            textStyle: TextStyle(fontSize: 10),
+            position: LegendPosition.bottom,
+            itemPadding: 10,
+            shouldAlwaysShowScrollbar: true,
+            overflowMode: LegendItemOverflowMode.wrap),
+        series: <CircularSeries>[
+          DoughnutSeries<CategoryChartData, String>(
+            onPointTap: (pointInteractionDetails) {
+              if (filterState.categoryId != null) {
+                // If there is a parent id selected, do nothing
+                return;
+              }
+              final i = pointInteractionDetails.pointIndex;
+              if (i == null) {
+                // Null-safe purpose
+                log("CategoryPieChart: i = $i");
+                return;
+              }
+              final detail = chartState.data[i];
+              ref.read(chartFilterStateProvider.notifier).state = filterState.copyWith(
+                categoryId: detail.categoryId,
+              );
+            },
+            dataSource: chartState.data,
+            xValueMapper: (CategoryChartData data, _) => data.x,
+            yValueMapper: (CategoryChartData data, _) => data.y,
+            explode: true,
+            dataLabelSettings: const DataLabelSettings(
+              showZeroValue: false,
+              showCumulativeValues: true,
+              isVisible: false,
+            ),
+            legendIconType: LegendIconType.circle,
+            dataLabelMapper: (datum, index) => datum.x,
+          )
+        ],
       ),
     );
   }
-}
-
-class ChartData {
-  ChartData(this.x, this.y, this.categoryId);
-  final String x;
-  final num y;
-  final String categoryId;
 }

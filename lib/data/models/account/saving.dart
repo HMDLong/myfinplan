@@ -17,7 +17,7 @@ class Saving extends Account {
   Saving.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     interest = json["interest"] as double;
     amount = json["amount"] as int;
-    period = json["period"] as int;
+    period = json["period"];
     if (json.containsKey("goal")) {
       goal = Goal.fromJson(json["goal"] as Map<String, dynamic>);
     }

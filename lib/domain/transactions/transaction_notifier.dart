@@ -14,7 +14,7 @@ class TransactionNotifier extends ChangeNotifier {
 
   TransactionNotifier(this.repo);
 
-  void addTransaction(Transaction newTransaction) async {
+  Future<void> addTransaction(Transaction newTransaction) async {
     await repo.add(newTransaction);
     notifyListeners();
   }

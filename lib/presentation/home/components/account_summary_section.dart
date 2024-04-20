@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/account/account.dart';
+import 'package:myfinplan/domain/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/utils/format.dart';
+import 'package:myfinplan/utils/styles.dart';
 
 class AccountSummarySection extends ConsumerStatefulWidget {
   const AccountSummarySection({
@@ -13,43 +16,80 @@ class AccountSummarySection extends ConsumerStatefulWidget {
   ConsumerState<AccountSummarySection> createState() => _AccountSummarySectionState();
 }
 
+final balanceSummaryProvider = FutureProvider((ref) async {
+  final accounts = await ref.watch(accountsProvider).getAllAccount();
+  final res = accounts.fold(<AccountType, int>{}, (prev, acc) {
+    prev[acc.accountType] = (prev[acc.accountType] ?? 0) + acc.usableBalance;
+    return prev;
+  });
+  return res;
+});
+
 class _AccountSummarySectionState extends ConsumerState<AccountSummarySection> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: GridView.count(
-        crossAxisCount: 2,
-        childAspectRatio: 2.5,
-        physics: const NeverScrollableScrollPhysics(),
-        primary: false,
-        shrinkWrap: true,
-        children: const [
-          AccountTile(
-            amount: 10000000,
-            label: 'Tiền mặt',
-            icon: Icon(Boxicons.bx_money),
-            color: CupertinoColors.activeGreen,
+    return ref.watch(balanceSummaryProvider).when(
+      data: (data) {
+        return SizedBox(
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: 2.5,
+            physics: const NeverScrollableScrollPhysics(),
+            primary: false,
+            shrinkWrap: true,
+            children: [
+              AccountTile(
+                amount: data[AccountType.cash] ?? 0,
+                label: 'Tiền mặt',
+                icon: const Icon(Boxicons.bx_money),
+                color: CupertinoColors.activeGreen,
+              ),
+              AccountTile(
+                amount: data[AccountType.debit] ?? 0,
+                label: 'Ví',
+                icon: const Icon(Boxicons.bx_money),
+                color: CupertinoColors.activeBlue,
+              ),
+              AccountTile(
+                amount: data[AccountType.credit] ?? 0,
+                label: 'Tín dụng',
+                icon: const Icon(Boxicons.bx_money),
+                color: CupertinoColors.activeOrange,
+              ),
+              AccountTile(
+                amount: data[AccountType.saving] ?? 0,
+                label: 'Tiết kiệm',
+                icon: const Icon(Boxicons.bx_money),
+                color: CupertinoColors.systemPurple,
+              ),
+            ],
           ),
-          AccountTile(
-            amount: 10000000,
-            label: 'Tiền mặt',
-            icon: Icon(Boxicons.bx_money),
-            color: CupertinoColors.activeBlue,
+        );
+      },
+      error: (error, _) {
+        return SizedBox(
+          height: 200,
+          width: double.infinity,
+          child: Column(
+            children: [
+              IconButton(onPressed: () {}, icon: const Icon(Icons.refresh_rounded)),
+              const Text("Đã có lỗi xảy ra"),
+            ],
           ),
-          AccountTile(
-            amount: 10000000,
-            label: 'Tiền mặt',
-            icon: Icon(Boxicons.bx_money),
-            color: CupertinoColors.activeOrange,
+        );
+      },
+      loading: () {
+        return ShaderMask(
+          blendMode: BlendMode.srcATop,
+          shaderCallback: (bounds) {
+            return shimmerGradient.createShader(bounds);
+          },
+          child: const SizedBox(
+            height: 200,
+            width: double.infinity,
           ),
-          AccountTile(
-            amount: 10000000,
-            label: 'Tiền mặt',
-            icon: Icon(Boxicons.bx_money),
-            color: CupertinoColors.systemPurple,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -80,6 +120,7 @@ class AccountTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
+              backgroundColor: Colors.transparent,
               child: icon,
             ),
             Expanded(
@@ -92,11 +133,15 @@ class AccountTile extends StatelessWidget {
                     label,
                     style: const TextStyle(
                       color: Colors.white,
+                      fontSize: 12,
                     ),
                   ),
                   Text(
                     amountToDecimal(amount),
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'package:myfinplan/data/models/account/cash.dart';
 import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/debit.dart';
+import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
 
 enum AccountType {
@@ -58,7 +59,7 @@ abstract class Account {
       case AccountType.credit:
         return Credit.fromJson(json);
       case AccountType.debt:
-        return Debit.fromJson(json);
+        return Debt.fromJson(json);
       case AccountType.saving:
         return Saving.fromJson(json);
     }

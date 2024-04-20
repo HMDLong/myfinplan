@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:myfinplan/utils/times.dart';
+import 'package:myfinplan/utils/time/times.dart';
 
 class DataTab extends ConsumerStatefulWidget {
   const DataTab({super.key});

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +5,10 @@ import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/category_group.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/domain/categories/category_notifier.dart';
+import 'package:myfinplan/presentation/category/add_category_screen.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/styles.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class CategoryScreen extends ConsumerStatefulWidget {
   final void Function(Category)? onPicked;
@@ -21,24 +21,29 @@ class CategoryScreen extends ConsumerStatefulWidget {
 class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   Widget _buildListOfCategory(List<ParentCategory> parents, List<Category> children) {
     return ListView(
+      padding: const EdgeInsets.all(8),
       shrinkWrap: true,
       children: parents.map((parent) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(parent.name),
+            Text(
+              parent.name,
+              style: const TextStyle(fontSize: 18),
+            ),
             Wrap(
-              runSpacing: 4.0,
+              spacing: 4.0,
               children: children.where((category) => category.parentId == parent.id).map((category) {
                 return InputChip(
-                  elevation: 4,
+                  backgroundColor: CupertinoColors.activeBlue,
+                  labelStyle: const TextStyle(color: Colors.white),
                   label: Text(category.name),
                   onPressed: () {
                     if (widget.onPicked != null) {
                       widget.onPicked!(category);
+                      Navigator.pop(context);
                     }
-                    Navigator.pop(context);
                   },
                 );
               }).toList(),
@@ -56,20 +61,29 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
       length: 3,
       child: Scaffold(
         appBar: defaultStyledAppBar(
-          title: "",
-          onBackPressed: () => Navigator.pop(context),
-          bottom: const TabBar.secondary(
-            labelPadding: EdgeInsets.zero,
-            labelStyle: TextStyle(fontSize: 12),
-            labelColor: CupertinoColors.activeBlue,
-            unselectedLabelColor: CupertinoColors.inactiveGray,
-            tabs: [
-              Tab(child: Text("Chi phí")),
-              Tab(child: Text("Thu nhập")),
-              Tab(child: Text("Chuyển khoản")),
-            ],
-          ),
-        ),
+            title: "Danh mục",
+            onBackPressed: () => Navigator.pop(context),
+            bottom: const TabBar.secondary(
+              labelPadding: EdgeInsets.zero,
+              labelStyle: TextStyle(fontSize: 12),
+              labelColor: CupertinoColors.activeBlue,
+              unselectedLabelColor: CupertinoColors.inactiveGray,
+              tabs: [
+                Tab(child: Text("Chi phí")),
+                Tab(child: Text("Thu nhập")),
+                Tab(child: Text("Chuyển khoản")),
+              ],
+            ),
+            trailings: [
+              IconButton(
+                  onPressed: () {
+                    pushNewScreen(context, screen: const AddCategoryScreen());
+                  },
+                  icon: const Icon(
+                    Icons.new_label_rounded,
+                    color: Colors.black,
+                  )),
+            ]),
         body: FutureBuilder(
           future: ref.watch(categoryNotifierProvider).getCategories(),
           builder: ((context, snapshot) {

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/domain/transactions/transaction_notifier.dart';
-import 'package:myfinplan/presentation/shared_widgets/transaction_list/transaction_card.dart';
+import 'package:myfinplan/shared_widgets/transaction_list/transaction_card.dart';
 
 class LatestTransactionsSection extends ConsumerStatefulWidget {
   const LatestTransactionsSection({super.key});
@@ -13,11 +12,18 @@ class LatestTransactionsSection extends ConsumerStatefulWidget {
 
 final last10TransactionsProvider = FutureProvider(
   (ref) async {
-    final allTransactions = await ref.watch(transactionNotifierProvider).getAllTransaction();
-    if (allTransactions.length <= 10) {
-      return allTransactions;
+    var allTransactions = (await ref.watch(transactionNotifierProvider).getAllTransaction())
+        .where(
+          (transact) => transact.paid,
+        )
+        .toList()
+      ..sort((b, a) {
+        return a.timestamp.compareTo(b.timestamp);
+      });
+    if (allTransactions.length > 10) {
+      allTransactions = allTransactions.sublist(0, 10);
     }
-    return allTransactions.sublist(allTransactions.length - 10);
+    return allTransactions;
   },
 );
 

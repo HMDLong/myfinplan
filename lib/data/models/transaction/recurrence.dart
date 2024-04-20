@@ -9,10 +9,6 @@ enum Periodic {
 sealed class Recurrence {
   String get getPlanTransactId;
 
-  void greet() {
-    print("recurrence");
-  }
-
   Recurrence();
 
   factory Recurrence.fromPlanTransactId(String id) {

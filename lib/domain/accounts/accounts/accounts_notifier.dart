@@ -14,7 +14,7 @@ class AccountViewModel extends ChangeNotifier {
   AccountViewModel({required this.repo});
 
   Future<void> init() async {
-    await repo.add(Cash(id: '0', title: "Tiền mặt", amount: 0));
+    await repo.add(Cash(id: '0', title: "Tiền mặt", amount: 1000000000000)); // For testing only, normally amount should init to 0
   }
 
   Future<List<Account>> getAllAccount() async {
@@ -39,14 +39,16 @@ class AccountViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> transfer(String fromId, String? toId, int amount) async {
-    final from = await getAccountById(fromId);
-    if (from != null) {
-      if (from.amount! < amount) {
-        throw Exception("Not enough balance in ${from.title}");
+  Future<void> transfer(String? fromId, String? toId, int amount) async {
+    if (fromId != null) {
+      final from = await getAccountById(fromId);
+      // if (from.amount! < amount) {
+      //   throw Exception("Not enough balance in ${from.title}");
+      // }
+      if (from != null) {
+        from.amount = from.amount! - amount;
+        await repo.update(from);
       }
-      from.amount = from.amount! - amount;
-      await repo.update(from);
     }
     if (toId != null) {
       final to = await getAccountById(toId);

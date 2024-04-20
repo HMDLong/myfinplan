@@ -1,30 +1,31 @@
-import 'package:flutter/material.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/base_category.dart';
 import 'package:myfinplan/utils/random.dart';
 
-class ParentCategory {
-  String id;
-  String name;
-  IconData icon;
-
+class ParentCategory extends BaseCategory {
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final CustomIconData icon;
   ParentCategory({
     required this.id,
     required this.name,
     required this.icon,
   });
 
-  TransactionType get type => switch (id[0]) {
-        'e' => TransactionType.expense,
-        'i' => TransactionType.income,
-        't' => TransactionType.transact,
-        _ => throw Exception(),
-      };
+  /// check if [childId] is child of [parentId]
+  static bool parentHasChild(String parentId, String childId) => childId.startsWith(parentId);
+
+  // /// check if [id] is a child [Category]
+  // static bool isChild(String id) => id.split(".").length > 1;
+
+  /// create id for new child category
+  String getNewChildId() => "$id.${getRandomKey()}";
 
   /// check if [categoryId] is this group's children
   bool hasChild(String categoryId) => categoryId.startsWith(id);
 
-  static bool parentHasChild(String parentId, String childId) => childId.startsWith(parentId);
-
-  /// create id for new child category
-  String getNewChildId() => "$id.${getRandomKey()}";
+  /// get parentId from [childId]
+  static String parentIdFromChild(String childId) => childId.split(".").first;
 }

@@ -1,21 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/domain/accounts/accounts/account_usecases.dart';
 import 'package:myfinplan/presentation/home/components/account_summary_section.dart';
 import 'package:myfinplan/presentation/home/components/budget_carousel.dart';
 import 'package:myfinplan/presentation/home/components/latest_transaction_section.dart';
-import 'package:myfinplan/presentation/home/components/spending_chart.dart';
+import 'package:myfinplan/presentation/home/components/spending_chart/spending_chart.dart';
 import 'package:myfinplan/presentation/transactions/add_transaction_screen/add_transaction_screen.dart';
+import 'package:myfinplan/presentation/transactions/transactions_log/transact_log_screen.dart';
+import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,11 +32,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 'Tổng số dư',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              Text(
-                "", // amountToDecimal(100000000),
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return Text(
+                    amountToDecimal(
+                      ref.watch(totalBalanceProvider).when(
+                            data: (data) => data,
+                            error: (error, _) => -1,
+                            loading: () => 0,
+                          ),
                     ),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  );
+                },
               ),
               const SectionTitle(title: "Tài khoản của bạn"),
               const AccountSummarySection(),
@@ -52,7 +65,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              const SectionTitle(title: 'Các khoản thu chi'),
+              SectionTitle(
+                title: 'Các khoản thu chi',
+                onLinkTap: () {
+                  pushNewScreen(context, screen: const RecordScreen());
+                },
+              ),
               const LatestTransactionsSection(),
             ],
           ),
@@ -70,10 +88,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 class SectionTitle extends StatelessWidget {
   final String title;
+  final void Function()? onLinkTap;
 
   const SectionTitle({
     super.key,
     required this.title,
+    this.onLinkTap,
   });
 
   @override
@@ -93,9 +113,7 @@ class SectionTitle extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {
-                  // pushNewScreen(context, screen: const RecordScreen());
-                },
+                onPressed: onLinkTap,
                 child: const Text(
                   "Chi tiết",
                   style: TextStyle(

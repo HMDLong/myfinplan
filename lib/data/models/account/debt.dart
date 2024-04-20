@@ -11,7 +11,7 @@ class Debt extends Account {
     required this.payment,
   });
 
-  Debt.fronJson(Map<String, dynamic> json) : super.fromJson(json) {
+  Debt.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     final paymentData = json["payment"] as Map<String, dynamic>;
     payment = Payment.fromJson(paymentData["type"] as String, paymentData);
   }

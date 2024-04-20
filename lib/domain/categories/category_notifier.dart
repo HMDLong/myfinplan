@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/repositories/category/category_repo.dart';
 import 'package:myfinplan/data/repositories/category/category_repo_impl.dart';
+import 'package:myfinplan/utils/constants/strings.dart';
 
 final categoryNotifierProvider = ChangeNotifierProvider((ref) {
   return CategoryNotifier(ref.watch(categoryRepoProvider));
@@ -27,6 +28,14 @@ class CategoryNotifier extends ChangeNotifier {
 
   void deleteCategory(String id) async {
     await repo.delete(id);
+    notifyListeners();
+  }
+
+  Future<void> addBudget(String categoryId, Budget newBudget) async {
+    final category = await getCategoryById(categoryId);
+    if (category == null) throw Exception(categoryNotFoundMessage);
+    category.budget = newBudget;
+    await category.save();
     notifyListeners();
   }
 }

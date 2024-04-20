@@ -1,17 +1,18 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/category/base_category.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/domain/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/domain/categories/category_notifier.dart';
+import 'package:myfinplan/domain/plan/distributor.dart';
 import 'package:myfinplan/presentation/accounts/accounts_screen.dart';
 import 'package:myfinplan/presentation/home/home_screen.dart';
 import 'package:myfinplan/presentation/personalize/personal_screen.dart';
 import 'package:myfinplan/presentation/plan/plan_screen.dart';
 import 'package:myfinplan/presentation/statistics/stats_screen.dart';
+import 'package:myfinplan/services/notification/notification_service.dart';
 import 'package:myfinplan/services/storage/hive/hive_storage.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
 import "package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart";
@@ -25,10 +26,10 @@ Future<void> main() async {
 
 Future<void> initFlutter() async {
   // Init Hive
-  await HiveStorageService().init();
+  await HiveStorageService().initialize();
 
   // Init AwesomeNotification
-  // NotificationService.initialize();
+  await NotificationService.initialize();
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -51,42 +52,20 @@ class _MyAppState extends ConsumerState<MyApp> {
         const PersonalizeScreen(),
       ];
 
+  _buildNavBarItem(String title, Icon icon) => PersistentBottomNavBarItem(
+        icon: icon,
+        title: title,
+        activeColorPrimary: CupertinoColors.activeBlue,
+        activeColorSecondary: CupertinoColors.white,
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      );
+
   List<PersistentBottomNavBarItem> _navBarsItems() => [
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.home),
-          title: "Tổng quan",
-          activeColorPrimary: CupertinoColors.activeBlue,
-          activeColorSecondary: CupertinoColors.white,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.chart_bar_square),
-          title: "Thống kê",
-          activeColorPrimary: CupertinoColors.activeBlue,
-          activeColorSecondary: CupertinoColors.white,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(Boxicons.bx_wallet),
-          title: "Tài khoản",
-          activeColorPrimary: CupertinoColors.activeBlue,
-          activeColorSecondary: CupertinoColors.white,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.graph_circle),
-          title: "Kế hoạch",
-          activeColorPrimary: CupertinoColors.activeBlue,
-          activeColorSecondary: CupertinoColors.white,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.bars),
-          title: "Cá nhân",
-          activeColorPrimary: CupertinoColors.activeBlue,
-          activeColorSecondary: CupertinoColors.white,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
+        _buildNavBarItem("Tổng quan", const Icon(CupertinoIcons.home)),
+        _buildNavBarItem("Thống kê", const Icon(CupertinoIcons.chart_bar_square)),
+        _buildNavBarItem("Tài khoản", const Icon(Boxicons.bx_wallet)),
+        _buildNavBarItem("Kế hoạch", const Icon(CupertinoIcons.graph_circle)),
+        _buildNavBarItem("Cá nhân", const Icon(CupertinoIcons.bars)),
       ];
 
   void setupAppOnFirstLaunch() async {
@@ -98,21 +77,22 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     // is first lauch, setups:
     // 1. save pre defined categories
-    dev.log("Start init");
+    dev.log("Start init...");
     for (var cateData in predefinedCategories) {
       final cate = Category(id: cateData[0], name: cateData[1], icon: CustomIconData.fromMaterialIconData(cateData[2]));
       ref.read(categoryNotifierProvider.notifier).addCategory(cate);
     }
     // 2. init accounts with 1 cash account
     await ref.read(accountsProvider.notifier).init();
+    await ref.read(planDistNotifierProvider.notifier).init();
     dev.log("Done init");
     await sharedRef.setBool("is_first_launch", false);
   }
 
   @override
   void initState() {
-    // NotificationService.initListeners();
     super.initState();
+    NotificationService.initListeners();
     setupAppOnFirstLaunch();
   }
 

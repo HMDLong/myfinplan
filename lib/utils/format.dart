@@ -17,5 +17,9 @@ String toVnMonthYear(DateTime time) {
 }
 
 String amountToDecimal(int amount, {String? currency = "VND"}) {
-  return "${NumberFormat.decimalPattern().format(amount)} $currency";
+  return NumberFormat.decimalPattern().format(amount) + (currency == null ? "" : " $currency");
+}
+
+String amountToCompact(int amount, {String? currency = "VND"}) {
+  return NumberFormat.compact().format(amount) + (currency == null ? "" : " $currency");
 }

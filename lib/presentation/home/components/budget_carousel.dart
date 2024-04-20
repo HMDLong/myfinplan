@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/domain/categories/get_categories_with_budget.dart';
+import 'package:myfinplan/shared_widgets/cards/budget_card.dart';
 
 class BudgetsCarousel extends ConsumerStatefulWidget {
   const BudgetsCarousel({super.key});
@@ -14,7 +15,7 @@ class _BudgetsCarouselState extends ConsumerState<BudgetsCarousel> {
   @override
   Widget build(BuildContext context) {
     final items = ref.watch(getCategoriesWithBudget).when<List<Category>>(
-          data: (data) => data,
+          data: (data) => data.toList(),
           error: (error, _) => [],
           loading: () => [],
         );
@@ -39,15 +40,7 @@ class _BudgetsCarouselState extends ConsumerState<BudgetsCarousel> {
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                final item = items[index];
-                return item.budget == null ? null : const SizedBox();
-
-                // BudgetCard(
-                //     entry: BudgetEntry(
-                //     amount: transactionController.getSumOfCategoryInRange(item.id!, getRangeOfTheMonth()),
-                //     budget: item.budget!,
-                //     category: item,
-                //   ));
+                return BudgetCard(category: items[index]);
               },
               itemCount: items.length,
             ),

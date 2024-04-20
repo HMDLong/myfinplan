@@ -2,7 +2,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:myfinplan/services/storage/hive/custom_adapters.dart';
 
 class HiveStorageService {
-  Future<void> init() async {
+  Future<void> initialize() async {
     await Hive.initFlutter();
     for (final adapter in adapters) {
       adapter.register();

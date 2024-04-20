@@ -1,10 +1,10 @@
-import 'dart:developer';
-
 import 'package:hive_flutter/adapters.dart';
+import 'package:myfinplan/data/models/category/base_category.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/storage/hive/box_names.dart';
+import 'package:myfinplan/utils/time/times.dart';
 
 final adapters = <HiveAdapter>[
   HiveAdapter<Transaction>(
@@ -17,6 +17,8 @@ final adapters = <HiveAdapter>[
     boxName: categoryBoxName,
   ),
   HiveAdapter<Budget>(BudgetAdapter()),
+  HiveAdapter<TimeRange>(TimeRangeAdapter()),
+  HiveAdapter<TimeType>(TimeTypeAdapter()),
   HiveAdapter<CustomIconData>(CustomIconDataAdapter()),
 ];
 

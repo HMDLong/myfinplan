@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/utils/random.dart';
 
 part 'transaction.g.dart';
 
@@ -25,6 +26,10 @@ class Transaction extends HiveObject {
   @HiveField(8)
   String? planTransactTitle;
   @HiveField(9)
+  int? planAmount;
+  @HiveField(10)
+  DateTime? planTime;
+  @HiveField(11)
   bool paid;
 
   TransactionType get transactType => Category.getType(categoryId);
@@ -40,5 +45,30 @@ class Transaction extends HiveObject {
     this.description,
     this.planTransactId,
     this.planTransactTitle,
+    this.planAmount,
+    this.planTime,
   });
+
+  factory Transaction.planTransact({
+    required DateTime planTimestamp,
+    required String categoryId,
+    required int planAmount,
+    required String planId,
+    String? id,
+    String? transactAccId,
+    String? targetAccId,
+  }) {
+    return Transaction(
+      id: id ?? getRandomKey(),
+      timestamp: DateTime.now(),
+      amount: 0,
+      categoryId: categoryId,
+      planTransactId: planId,
+      planAmount: planAmount,
+      planTime: planTimestamp,
+      transactAccountId: transactAccId,
+      targetAccountId: targetAccId,
+      paid: false,
+    );
+  }
 }

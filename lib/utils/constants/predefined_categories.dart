@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:myfinplan/data/models/category/base_category.dart';
 import 'package:myfinplan/data/models/category/category_group.dart';
 
 final categoryGroups = <String, ParentCategory>{
-  "e1": ParentCategory(id: "e1", name: "Tiền nhà", icon: Icons.house),
-  "e2": ParentCategory(id: "e2", name: "Ăn uống", icon: Icons.currency_pound_sharp),
-  "e3": ParentCategory(id: "e3", name: "Di chuyển", icon: Icons.currency_pound_sharp),
-  "e4": ParentCategory(id: "e4", name: "Thiết yếu", icon: Icons.currency_pound_sharp),
-  "e5": ParentCategory(id: "e5", name: "Giáo dục", icon: Icons.currency_pound_sharp),
-  "e6": ParentCategory(id: "e6", name: "Giải trí", icon: Icons.currency_pound_sharp),
-  "e7": ParentCategory(id: "e7", name: "Cá nhân", icon: Icons.currency_pound_sharp),
-  "e8": ParentCategory(id: "e8", name: "Sức khỏe", icon: Icons.currency_pound_sharp),
-  "e9": ParentCategory(id: "e9", name: "Cho đi", icon: Icons.currency_pound_sharp),
-  "e10": ParentCategory(id: "e10", name: "Đăng ký", icon: Icons.currency_pound_sharp),
-  "i1": ParentCategory(id: "i1", name: "Thu nhập", icon: Icons.currency_pound_sharp),
-  "t1": ParentCategory(id: "t1", name: "Chuyển khoản", icon: Icons.currency_pound_sharp),
+  "e1": ParentCategory(id: "e1", name: "Tiền nhà", icon: CustomIconData.fromMaterialIconData(Icons.house)),
+  "e2": ParentCategory(id: "e2", name: "Ăn uống", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e3": ParentCategory(id: "e3", name: "Di chuyển", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e4": ParentCategory(id: "e4", name: "Thiết yếu", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e5": ParentCategory(id: "e5", name: "Giáo dục", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e6": ParentCategory(id: "e6", name: "Giải trí", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e7": ParentCategory(id: "e7", name: "Cá nhân", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e8": ParentCategory(id: "e8", name: "Sức khỏe", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e9": ParentCategory(id: "e9", name: "Cho đi", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "e10": ParentCategory(id: "e10", name: "Đăng ký", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "i1": ParentCategory(id: "i1", name: "Thu nhập", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
+  "t1": ParentCategory(id: "t1", name: "Chuyển khoản", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
 };
 
 final predefinedCategories = <List<dynamic>>[
@@ -76,11 +77,11 @@ final predefinedCategories = <List<dynamic>>[
   ["e8.2", "Khám bệnh", Icons.currency_pound_sharp],
   ["e8.3", "Thuốc", Icons.currency_pound_sharp],
   ["e8.4", "Thục phẩm chức năng", Icons.currency_pound_sharp],
-  ["e8.5", "Khác", Icons.currency_pound_sharp],
+  ["e8.5", "Sức khỏe khác", Icons.currency_pound_sharp],
   //
   ["e9.1", "Quà", Icons.currency_pound_sharp],
   ["e9.2", "Quyên góp", Icons.currency_pound_sharp],
-  ["e9.3", "Khác", Icons.currency_pound_sharp],
+  ["e9.3", "Cho đi khác", Icons.currency_pound_sharp],
   //
   ["e10.1", "Báo", Icons.currency_pound_sharp],
   ["e10.2", "Tạp chí", Icons.currency_pound_sharp],
@@ -89,10 +90,10 @@ final predefinedCategories = <List<dynamic>>[
   ["i1.1", "Lương", Icons.currency_pound_sharp],
   ["i1.2", "Đầu tư", Icons.currency_pound_sharp],
   ["i1.3", "Cho thuê", Icons.currency_pound_sharp],
-  ["i1.4", "Khác", Icons.currency_pound_sharp],
+  ["i1.4", "Thu nhập khác", Icons.currency_pound_sharp],
   //
   ["t1.1", "Trả nợ tín dụng", Icons.currency_pound_sharp],
   ["t1.2", "Rút tiền mặt", Icons.currency_pound_sharp],
   ["t1.3", "Tiết kiệm", Icons.currency_pound_sharp],
-  ["t1.4", "Khác", Icons.currency_pound_sharp],
+  ["t1.4", "Chuyển khoản khác", Icons.currency_pound_sharp],
 ];

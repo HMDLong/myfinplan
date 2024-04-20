@@ -38,6 +38,7 @@ AppBar defaultStyledAppBar({
   void Function()? onBackPressed,
   required String title,
   PreferredSizeWidget? bottom,
+  List<Widget>? trailings,
 }) {
   return AppBar(
     leading: onBackPressed == null
@@ -56,6 +57,7 @@ AppBar defaultStyledAppBar({
       style: const TextStyle(fontSize: 20, color: Colors.black),
     ),
     bottom: bottom,
+    actions: trailings,
   );
 }
 
@@ -76,3 +78,19 @@ SnackBar customSnackBar(String title, String content, ContentType type) => Snack
       elevation: 0,
       backgroundColor: Colors.transparent,
     );
+
+const shimmerGradient = LinearGradient(
+  colors: [
+    Color(0xFFEBEBF4),
+    Color(0xFFF4F4F4),
+    Color(0xFFEBEBF4),
+  ],
+  stops: [
+    0.1,
+    0.3,
+    0.4,
+  ],
+  begin: Alignment(-1.0, -0.3),
+  end: Alignment(1.0, 0.3),
+  tileMode: TileMode.clamp,
+);

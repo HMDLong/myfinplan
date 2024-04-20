@@ -1,4 +1,5 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,18 +7,20 @@ import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
+import 'package:myfinplan/domain/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/domain/transactions/transaction_notifier.dart';
-import 'package:myfinplan/presentation/shared_widgets/pickers/accounts_picker/account_picker.dart';
-import 'package:myfinplan/presentation/shared_widgets/pickers/category_picker/category_picker.dart';
-import 'package:myfinplan/presentation/shared_widgets/pickers/timestamp_picker.dart';
+import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
+import 'package:myfinplan/shared_widgets/pickers/accounts_picker/account_picker.dart';
+import 'package:myfinplan/shared_widgets/pickers/category_picker/category_picker.dart';
+import 'package:myfinplan/shared_widgets/pickers/timestamp_picker.dart';
 import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/styles.dart';
 
 class AddRecordScreen extends ConsumerStatefulWidget {
-  // final Transaction? prefill;
+  final Transaction? prefill;
   const AddRecordScreen({
     super.key,
-    // this.prefill,
+    this.prefill,
   });
 
   @override
@@ -36,7 +39,7 @@ class _AddRecordScreenState extends ConsumerState<AddRecordScreen> {
   Account? fromAccount;
   Account? toAccount;
 
-  void _onSubmit() {
+  Future<void> _onSubmit() async {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       Transaction newTransaction = Transaction(
@@ -52,13 +55,13 @@ class _AddRecordScreenState extends ConsumerState<AddRecordScreen> {
         targetAccountId: toAccount?.id,
         categoryId: category!.id,
         description: description,
-        // planTransactId: scheduledTransact?.id,
       );
-      ref.read(transactionNotifierProvider.notifier).addTransaction(newTransaction);
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(CustomSnackbar.success("Bản ghi được thêm thành công"));
-      Navigator.of(context).pop();
+      await ref.read(transactionNotifierProvider.notifier).addTransaction(newTransaction);
+      await ref.read(accountsProvider).transfer(
+            newTransaction.transactAccountId!,
+            newTransaction.targetAccountId,
+            newTransaction.amount,
+          );
     }
   }
 
@@ -83,95 +86,73 @@ class _AddRecordScreenState extends ConsumerState<AddRecordScreen> {
         onBackPressed: () => Navigator.pop(context),
       ),
       body: SafeArea(
-        minimum: const EdgeInsets.all(15.0),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            const SizedBox(
-              height: 10.0,
-            ),
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: formFieldDecor(
-                        icon: const Icon(CupertinoIcons.money_dollar),
-                        label: const Text("Số tiền"),
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Hãy nhập số tiền";
-                        }
-                        int parsedAmount = int.parse(value);
-                        if (parsedAmount <= 0) {
-                          return "Số tiền cần lớn hơn 0";
-                        }
-                        amount = parsedAmount;
-                        return null;
-                      },
-                    ),
-                  ),
-                  TimestampPicker(onTimeChange: (time) {
+        minimum: const EdgeInsets.symmetric(
+          horizontal: 10.0,
+          vertical: 5.0,
+        ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                AmountFormField(
+                  onChanged: (value) {
+                    amount = value;
+                  },
+                ),
+                TimestampPicker(
+                  onTimeChange: (time) {
                     timestamp = time;
-                  }),
-                  CategoryPicker(
-                    transactionType: transactionType ?? TransactionType.expense,
-                    onCategoryChanged: (value) {
+                  },
+                ),
+                CategoryPicker(
+                  onCategoryChanged: (value) {
+                    setState(() {
                       category = value;
                       transactionType = value.type;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Hãy chọn";
-                      }
-                      return null;
-                    },
-                    icon: const Icon(CupertinoIcons.circle_grid_hex),
-                  ),
-                  AccountPicker(
-                    onAccountChanged: (Account value) {
-                      fromAccount = value;
-                    },
-                  ),
-                  (switch (transactionType) {
-                    TransactionType.transact => AccountPicker(
-                        onAccountChanged: (Account value) {
-                          toAccount = value;
-                        },
-                      ),
-                    _ => const SizedBox(
-                        height: 5.0,
-                      ),
-                  }),
-                  // EventPicker(
-                  //   onPicked: (PlanTransaction value) {
-                  //     scheduledTransact = value;
-                  //   },
-                  //   type: transactionType!,
-                  // ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      decoration: formFieldDecor(
-                        icon: const Icon(Icons.textsms_outlined),
-                        label: const Text("Mô tả"),
-                      ),
-                      onSaved: (newValue) {
-                        description = newValue;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Hãy chọn";
+                    }
+                    return null;
+                  },
+                  icon: const Icon(CupertinoIcons.circle_grid_hex),
+                ),
+                AccountPicker(
+                  onAccountChanged: (Account value) {
+                    fromAccount = value;
+                  },
+                ),
+                (switch (transactionType) {
+                  TransactionType.transact => AccountPicker(
+                      label: "Tài khoản đích",
+                      onAccountChanged: (Account value) {
+                        toAccount = value;
                       },
                     ),
+                  _ => const SizedBox(
+                      height: 5.0,
+                    ),
+                }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    decoration: formFieldDecor(
+                      icon: const Icon(Icons.textsms_outlined),
+                      label: const Text("Mô tả"),
+                    ),
+                    onSaved: (newValue) {
+                      description = newValue;
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       persistentFooterButtons: [
@@ -181,7 +162,16 @@ class _AddRecordScreenState extends ConsumerState<AddRecordScreen> {
               child: ElevatedButton(
                 child: const Text("Xác nhận"),
                 onPressed: () {
-                  _onSubmit();
+                  _onSubmit().then((value) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(CustomSnackbar.success("Bản ghi được thêm thành công"));
+                    Navigator.of(context).pop();
+                  }).onError((error, stackTrace) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(CustomSnackbar.failure("Có lỗi xảy ra: $error"));
+                  });
                 },
               ),
             ),

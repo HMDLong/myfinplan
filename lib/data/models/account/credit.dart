@@ -14,13 +14,7 @@ class Credit extends Account {
   });
 
   @override
-  int get usableBalance => limit!.abs() - amount!.abs();
-
-  Credit.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
-    limit = json['limit'];
-    final paymentData = json['payment'] as Map<String, dynamic>;
-    payment = Payment.fromJson(paymentData['type'] as String, paymentData);
-  }
+  int get usableBalance => amount!.abs();
 
   @override
   Map<String, dynamic> toJson() => {
@@ -45,4 +39,10 @@ class Credit extends Account {
 
   @override
   AccountType get accountType => AccountType.credit;
+
+  Credit.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+    limit = json['limit'];
+    final paymentData = json['payment'] as Map<String, dynamic>;
+    payment = Payment.fromJson(paymentData['type'] as String, paymentData);
+  }
 }

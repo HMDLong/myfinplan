@@ -1,18 +1,24 @@
-import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:myfinplan/utils/times.dart';
+import 'package:myfinplan/data/models/category/base_category.dart';
+import 'package:myfinplan/utils/time/times.dart';
 import 'transaction_type.dart';
 
 part 'category.g.dart';
 
 @HiveType(typeId: 2)
-class Category extends HiveObject {
+class Category extends BaseCategory with HiveObjectMixin {
   @HiveField(0)
+  @override
   String id;
+
   @HiveField(1)
+  @override
   String name;
+
   @HiveField(2)
+  @override
   CustomIconData icon;
+
   @HiveField(3)
   Budget? budget;
 
@@ -22,8 +28,6 @@ class Category extends HiveObject {
     required this.icon,
     this.budget,
   });
-
-  TransactionType get type => getType(id);
 
   String get parentId => id.split(".").first;
 
@@ -60,27 +64,4 @@ class Budget {
 
   // Budget.fromJson(Map<String, dynamic> json)
   // : amount = json['amount'], period = TimeRange.fronJson(json['period']), isRecurrance = json['is_recurrance'];
-}
-
-@HiveType(typeId: 5)
-class CustomIconData {
-  @HiveField(0)
-  int codePoint;
-  @HiveField(1)
-  String? fontFamily;
-  @HiveField(2)
-  String? fontPackage;
-
-  CustomIconData(this.codePoint, {this.fontFamily, this.fontPackage});
-
-  CustomIconData.fromMaterialIconData(IconData iconData)
-      : codePoint = iconData.codePoint,
-        fontFamily = iconData.fontFamily,
-        fontPackage = iconData.fontPackage;
-
-  IconData toMaterialIconData() => IconData(
-        codePoint,
-        fontFamily: fontFamily,
-        fontPackage: fontPackage,
-      );
 }
