@@ -221,13 +221,20 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      final newPlanTransact = Transaction(
-        id: getRandomKey(),
-        timestamp: _formData["date"],
-        amount: _formData["amount"],
+      // final newPlanTransact = Transaction(
+      //   id: getRandomKey(),
+      //   timestamp: _formData["date"],
+      //   amount: _formData["amount"],
+      //   categoryId: _formData["category"].id,
+      //   categoryName: _formData["category"].name,
+      //   planTransactId: (_formData["period"] as Periodic).toString(),
+      // );
+      final newPlanTransact = Transaction.planTransact(
+        planId: getRandomKey(),
+        planTimestamp: _formData["date"],
         categoryId: _formData["category"].id,
-        planTransactId: (_formData["period"] as Periodic).toString(),
-        paid: false,
+        categoryName: _formData["category"].name,
+        planAmount: _formData["amount"],
       );
       ref.read(transactionNotifierProvider).addTransaction(newPlanTransact);
       Navigator.of(context).pop();

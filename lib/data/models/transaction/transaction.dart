@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
 import 'package:myfinplan/utils/random.dart';
 
 part 'transaction.g.dart';
@@ -14,61 +15,66 @@ class Transaction extends HiveObject {
   @HiveField(2)
   String categoryId;
   @HiveField(3)
-  int amount;
+  String categoryName;
   @HiveField(4)
-  String? description;
+  int amount;
   @HiveField(5)
-  String? transactAccountId;
+  String? accId;
   @HiveField(6)
-  String? targetAccountId;
+  String? accName;
   @HiveField(7)
-  String? planTransactId;
+  String? toAccId;
   @HiveField(8)
-  String? planTransactTitle;
+  String? toAccName;
   @HiveField(9)
-  int? planAmount;
-  @HiveField(10)
-  DateTime? planTime;
+  TransactPlanDetail? planDetail;
   @HiveField(11)
-  bool paid;
+  String? description;
 
   TransactionType get transactType => Category.getType(categoryId);
+  bool get paid => amount != 0;
 
   Transaction({
     required this.id,
     required this.timestamp,
     required this.amount,
     required this.categoryId,
-    this.paid = true,
-    this.transactAccountId,
-    this.targetAccountId,
+    required this.categoryName,
+    this.accId,
+    this.accName,
+    this.toAccId,
+    this.toAccName,
     this.description,
-    this.planTransactId,
-    this.planTransactTitle,
-    this.planAmount,
-    this.planTime,
+    this.planDetail,
   });
 
   factory Transaction.planTransact({
     required DateTime planTimestamp,
     required String categoryId,
+    required String categoryName,
     required int planAmount,
     required String planId,
     String? id,
     String? transactAccId,
+    String? transactAccName,
     String? targetAccId,
+    String? targetAccName,
   }) {
     return Transaction(
       id: id ?? getRandomKey(),
       timestamp: DateTime.now(),
       amount: 0,
       categoryId: categoryId,
-      planTransactId: planId,
-      planAmount: planAmount,
-      planTime: planTimestamp,
-      transactAccountId: transactAccId,
-      targetAccountId: targetAccId,
-      paid: false,
+      categoryName: categoryName,
+      accId: transactAccId,
+      accName: transactAccName,
+      toAccId: targetAccId,
+      toAccName: targetAccName,
+      planDetail: TransactPlanDetail(
+        id: planId,
+        planAmount: planAmount,
+        planTime: planTimestamp,
+      ),
     );
   }
 }

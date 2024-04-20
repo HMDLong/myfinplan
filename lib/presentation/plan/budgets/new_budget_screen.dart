@@ -28,7 +28,7 @@ final currentAvailableBudget = FutureProvider((ref) async {
   final currentMonth = TimeRange.rangeByType(TimeType.month);
   final incomeTransacts = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income)).where((e) => currentMonth.contain(e.timestamp));
   final currentIncome = incomeTransacts.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount);
-  final expectedIncome = incomeTransacts.where((e) => e.planTransactId != null).fold(0, (prev, e) => prev + e.amount);
+  final expectedIncome = incomeTransacts.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount);
   final maxBudget = max(currentIncome, expectedIncome) * (currentDist.dist[ExpenseLevel.may] ?? 1);
   final currentTotalBudget = (await ref.watch(categoryNotifierProvider).getCategories()).where((e) => e.budget != null).fold(0, (prev, e) => prev + e.budget!.amount);
   final availableBudget = maxBudget - currentTotalBudget;

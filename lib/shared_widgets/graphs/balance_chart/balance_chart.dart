@@ -27,7 +27,7 @@ final getTransactionDataProvider = FutureProvider.family<List<Transaction>, Stri
   var transactions = await ref.watch(transactionNotifierProvider).getAllTransaction();
   if (accountId != null) {
     return transactions.where((transact) {
-      return accountId == transact.transactAccountId || accountId == transact.targetAccountId;
+      return accountId == transact.accId || accountId == transact.toAccId;
     }).toList();
   }
   return transactions;
@@ -96,6 +96,30 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
         .toList();
   }
 
+  LinearGradient _getGradient() {
+    final colors = switch (_filterSetting.content) {
+      DisplayContentType.balance => [
+          Colors.blue,
+          Colors.blue.shade300,
+          // Colors.blue.shade50,
+        ],
+      DisplayContentType.expense => [
+          Colors.red,
+          Colors.red.shade300,
+          // Colors.red.shade50,
+        ],
+      DisplayContentType.income => [
+          Colors.green,
+          Colors.green.shade300,
+          // Colors.green.shade50,
+        ],
+    };
+    return LinearGradient(
+      colors: colors,
+      transform: const GradientRotation(3.14 / 2),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final seriesToDisplay = ref.watch(getTransactionDataProvider(widget.account?.id)).when<List<BalanceChartData<DateTime, int>>>(
@@ -124,17 +148,22 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
               enablePanning: true,
               zoomMode: ZoomMode.x,
             ),
-            series: <SplineSeries<BalanceChartData<DateTime, int>, String>>[
-              SplineSeries<BalanceChartData<DateTime, int>, String>(
+            series: [
+              ColumnSeries<BalanceChartData<DateTime, int>, String>(
                 dataSource: seriesToDisplay,
                 xValueMapper: (BalanceChartData<DateTime, int> data, _) => DateFormat.MMMd().format(data.x),
                 yValueMapper: (BalanceChartData<DateTime, int> data, _) => data.y,
-                color: switch (_filterSetting.content) {
-                  DisplayContentType.expense => Colors.red.shade300,
-                  DisplayContentType.income => Colors.green,
-                  DisplayContentType.balance => Colors.blue,
-                },
-                // borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))
+                // color: switch (_filterSetting.content) {
+                //   DisplayContentType.expense => Colors.red.shade300,
+                //   DisplayContentType.income => Colors.green,
+                //   DisplayContentType.balance => Colors.blue,
+                // },
+                gradient: _getGradient(),
+                width: 0.5,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(4),
+                  topRight: Radius.circular(4),
+                ),
               ),
             ],
           ),

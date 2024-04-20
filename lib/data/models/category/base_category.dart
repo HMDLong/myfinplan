@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 
+part 'base_category.g.dart';
+
 @HiveType(typeId: 5)
 class CustomIconData {
   @HiveField(0)
@@ -29,12 +31,6 @@ abstract class BaseCategory {
   String get id;
   String get name;
   CustomIconData get icon;
-
-  // BaseCategory({
-  //   required this.id,
-  //   required this.name,
-  //   required this.icon,
-  // });
 
   TransactionType get type => switch (id[0]) {
         'e' => TransactionType.expense,

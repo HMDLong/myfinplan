@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:equatable/equatable.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -20,13 +21,13 @@ enum TimeType {
 }
 
 @HiveType(typeId: 8)
-class TimeRange {
+class TimeRange extends Equatable {
   @HiveField(0)
-  TimeType timeType;
+  final TimeType timeType;
   @HiveField(1)
-  late DateTime start;
+  late final DateTime start;
   @HiveField(2)
-  late DateTime end;
+  late final DateTime end;
 
   TimeRange({
     required DateTime start,
@@ -133,6 +134,10 @@ class TimeRange {
     res.add(DateTime(start.year, start.month, min(monthday, daysInMonth)));
     return res;
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [start, end, timeType];
 }
 
 extension TimeRangeExt on DateTime {

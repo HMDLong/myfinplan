@@ -42,8 +42,26 @@ class _TimerangePickerState extends ConsumerState<TimerangePicker> {
   }
 
   void _setNewType(TimeType type) {
-    _currentTime = TimeRange.rangeByType(type);
-    widget.onTimeChanged(_currentTime);
+    if (type == TimeType.custom) {
+      showDateRangePicker(
+        context: context,
+        firstDate: DateTime(DateTime.now().year - 1),
+        lastDate: DateTime(DateTime.now().year + 1),
+      ).then((value) {
+        if (value == null) {
+          return;
+        }
+        _currentTime = TimeRange(
+          start: value.start,
+          end: value.end,
+          timeType: TimeType.custom,
+        );
+        widget.onTimeChanged(_currentTime);
+      });
+    } else {
+      _currentTime = TimeRange.rangeByType(type);
+      widget.onTimeChanged(_currentTime);
+    }
   }
 
   void _nextRange() {

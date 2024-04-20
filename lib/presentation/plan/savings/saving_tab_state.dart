@@ -33,7 +33,7 @@ final savingTabStateProvider = FutureProvider((ref) async {
   for (var saving in savings) {
     res.savings.add(saving);
     res.savedThisRange.add(
-      savingTransact.where((e) => e.targetAccountId == saving.id).fold(0, (prev, e) {
+      savingTransact.where((e) => e.toAccId == saving.id).fold(0, (prev, e) {
         return prev + e.amount.abs();
       }),
     );

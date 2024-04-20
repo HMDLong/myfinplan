@@ -97,10 +97,12 @@ class _SpendingChartState extends State<SpendingChart> {
                       width: double.infinity,
                       height: 200,
                       child: SfCartesianChart(
+                        tooltipBehavior: TooltipBehavior(enable: true),
                         primaryXAxis: CategoryAxis(),
                         primaryYAxis: NumericAxis(numberFormat: NumberFormat.compact()),
                         series: [
                           ColumnSeries<ColumnData, String>(
+                            enableTooltip: true,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(10),
                               topRight: Radius.circular(10),
@@ -109,6 +111,7 @@ class _SpendingChartState extends State<SpendingChart> {
                             dataSource: data,
                             xValueMapper: (data, _) => data.x,
                             yValueMapper: (data, _) => data.y,
+                            dataLabelMapper: (data, _) => NumberFormat.decimalPattern().format(data.y),
                           ),
                         ],
                       ),

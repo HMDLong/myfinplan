@@ -48,6 +48,7 @@ dependencies:
   awesome_notifications: ^0.8.2
   flutter_riverpod: ^2.4.9
   shared_preferences: ^2.2.2
+  equatable: ^2.0.5
   # UI
   intl: ^0.18.1
   persistent_bottom_nav_bar_v2: ^4.2.8

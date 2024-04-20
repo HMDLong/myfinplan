@@ -116,6 +116,8 @@ class _BudgetTabState extends ConsumerState<BudgetTab> {
                       }
                       final detail = data[index];
                       return ExpansionTile(
+                        backgroundColor: Colors.white,
+                        collapsedBackgroundColor: Colors.white,
                         initiallyExpanded: true,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),

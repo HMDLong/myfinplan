@@ -4,12 +4,10 @@ import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/domain/categories/category_notifier.dart';
 import 'package:myfinplan/domain/transactions/transaction_notifier.dart';
-import 'package:myfinplan/presentation/plan/plan_transaction/add_plan_transact_screen.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
 import 'package:myfinplan/shared_widgets/menu/menu.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/format.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class PlanTransactionTab extends ConsumerStatefulWidget {
   const PlanTransactionTab({super.key});
@@ -37,25 +35,27 @@ class PlanTransactDetail {
   });
 }
 
-final getPlanTransactDetail = FutureProvider.family<List<PlanTransactDetail>, TransactionType>((ref, type) async {
-  final categories = (await ref.watch(categoryNotifierProvider).getCategories()).where((e) => e.type == type);
-  final transactions = await ref.watch(transactionNotifierProvider).getTransactionByType(type);
-  final res = <PlanTransactDetail>[];
-  for (var category in categories) {
-    final cateTransacts = transactions.where((e) => e.categoryId == category.id).toList();
-    final actualAmount = cateTransacts.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount).abs();
-    final planAmount = cateTransacts.where((e) => e.planTransactId != null).fold(0, (prev, e) => prev + e.amount).abs();
-    final data = PlanTransactDetail(plan: planAmount, actual: actualAmount, category: category);
-    // check if there are data of category, if not put it at the end so that
-    // category with data will appear at the top of the list
-    if (planAmount == 0 && actualAmount == 0) {
-      res.add(data);
-    } else {
-      res.insert(0, data);
+final getPlanTransactDetail = FutureProvider.family<List<PlanTransactDetail>, TransactionType>(
+  (ref, type) async {
+    final categories = (await ref.watch(categoryNotifierProvider).getCategories()).where((e) => e.type == type);
+    final transactions = await ref.watch(transactionNotifierProvider).getTransactionByType(type);
+    final res = <PlanTransactDetail>[];
+    for (var category in categories) {
+      final cateTransacts = transactions.where((e) => e.categoryId == category.id).toList();
+      final actualAmount = cateTransacts.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount).abs();
+      final planAmount = cateTransacts.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount).abs();
+      final data = PlanTransactDetail(plan: planAmount, actual: actualAmount, category: category);
+      // check if there are data of category, if not put it at the end so that
+      // category with data will appear at the top of the list
+      if (planAmount == 0 && actualAmount == 0) {
+        res.add(data);
+      } else {
+        res.insert(0, data);
+      }
     }
-  }
-  return res;
-});
+    return res;
+  },
+);
 
 class _PlanTransactionTabState extends ConsumerState<PlanTransactionTab> {
   late TransactionType type;

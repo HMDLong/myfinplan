@@ -18,12 +18,21 @@ class ScheduleTab extends ConsumerStatefulWidget {
 }
 
 final scheduleDetailsProvider = FutureProvider((ref) async {
-  final planTransacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) => e.planTransactId != null).toList();
+  final planTransacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) => e.planDetail != null).toList();
   final res = <ScheduleItem>[];
   for (var planTransact in planTransacts) {
     final category = await ref.watch(categoryNotifierProvider).getCategoryById(planTransact.categoryId);
-    res.add(ScheduleItem(
-        transactId: planTransact.id, title: "${category?.name}", note: "", status: PlanTransactStatus.upcoming, amount: 100000, actual: planTransact.amount, timestamp: planTransact.timestamp));
+    res.add(
+      ScheduleItem(
+        transactId: planTransact.id,
+        title: "${category?.name}",
+        note: "",
+        status: PlanTransactStatus.upcoming,
+        amount: 100000,
+        actual: planTransact.amount,
+        timestamp: planTransact.timestamp,
+      ),
+    );
   }
   return res;
 });

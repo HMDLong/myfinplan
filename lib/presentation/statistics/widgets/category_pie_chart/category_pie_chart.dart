@@ -27,7 +27,7 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
   @override
   Widget build(BuildContext context) {
     final filterState = ref.watch(chartFilterStateProvider);
-    return ref.watch(categoryChartDataProvider).when(
+    return ref.watch(categoryChartDataProvider(widget.timeRange)).when(
       data: (chartState) {
         return Card(
           shape: RoundedRectangleBorder(

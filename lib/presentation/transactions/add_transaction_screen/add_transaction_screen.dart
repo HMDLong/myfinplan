@@ -51,15 +51,16 @@ class _AddRecordScreenState extends ConsumerState<AddRecordScreen> {
               TransactionType.income => 1,
               _ => 1,
             },
-        transactAccountId: fromAccount?.id,
-        targetAccountId: toAccount?.id,
+        accId: fromAccount?.id,
+        toAccId: toAccount?.id,
         categoryId: category!.id,
+        categoryName: category!.name,
         description: description,
       );
       await ref.read(transactionNotifierProvider.notifier).addTransaction(newTransaction);
       await ref.read(accountsProvider).transfer(
-            newTransaction.transactAccountId!,
-            newTransaction.targetAccountId,
+            newTransaction.accId!,
+            newTransaction.toAccId,
             newTransaction.amount,
           );
     }

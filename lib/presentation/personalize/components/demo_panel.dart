@@ -10,6 +10,7 @@ import 'package:myfinplan/data/models/account/payment.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/domain/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/domain/categories/category_notifier.dart';
@@ -119,70 +120,105 @@ class DemoPanel extends ConsumerWidget {
       // 3. Generate some plan transactions
       final planTransacts = [
         Transaction(
+          id: getRandomKey(),
+          timestamp: monthRange.dayOfMonthRange(26),
+          amount: Random().nextBool() ? 0 : 5000000,
+          categoryId: "e1.1",
+          categoryName: "Tiền thuê",
+          accId: randomDebit(),
+          planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planTransactId: getRandomKey(),
-            timestamp: monthRange.dayOfMonthRange(26),
-            amount: 5000000,
-            categoryId: "e1.1",
-            paid: Random().nextBool(),
-            transactAccountId: randomDebit()),
+            planAmount: 5000000,
+            planTime: monthRange.dayOfMonthRange(26),
+          ),
+        ),
         Transaction(
+          id: getRandomKey(),
+          timestamp: monthRange.dayOfMonthRange(27),
+          amount: Random().nextBool() ? 0 : 800000,
+          categoryId: "e4.1",
+          categoryName: "Điện",
+          accId: randomDebit(),
+          planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planTransactId: getRandomKey(),
-            timestamp: monthRange.dayOfMonthRange(27),
-            amount: 800000,
-            categoryId: "e4.1",
-            paid: Random().nextBool(),
-            transactAccountId: randomDebit()),
+            planAmount: 800000,
+            planTime: monthRange.dayOfMonthRange(27),
+          ),
+        ),
         Transaction(
+          id: getRandomKey(),
+          timestamp: monthRange.dayOfMonthRange(27),
+          amount: Random().nextBool() ? 0 : 800000,
+          categoryId: "e4.2",
+          categoryName: "Nước",
+          accId: randomSaving(),
+          planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planTransactId: getRandomKey(),
-            timestamp: monthRange.dayOfMonthRange(27),
-            amount: 300000,
-            categoryId: "e4.2",
-            paid: Random().nextBool(),
-            transactAccountId: randomSaving()),
+            planAmount: 800000,
+            planTime: monthRange.dayOfMonthRange(27),
+          ),
+        ),
         Transaction(
+          id: getRandomKey(),
+          timestamp: monthRange.dayOfMonthRange(25),
+          amount: Random().nextBool() ? 0 : 120000,
+          categoryId: "e4.7",
+          categoryName: "Internet",
+          accId: randomCredit(),
+          planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planTransactId: getRandomKey(),
-            timestamp: monthRange.dayOfMonthRange(25),
-            amount: 120000,
-            categoryId: "e4.7",
-            paid: Random().nextBool(),
-            transactAccountId: randomCredit()),
+            planAmount: 120000,
+            planTime: monthRange.dayOfMonthRange(27),
+          ),
+        ),
         Transaction(
+          id: getRandomKey(),
+          timestamp: monthRange.dayOfMonthRange(5),
+          amount: Random().nextBool() ? 0 : 4300000,
+          categoryId: "e5.1",
+          categoryName: "Tiền học chính",
+          accId: randomCredit(),
+          planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planTransactId: getRandomKey(),
-            timestamp: monthRange.dayOfMonthRange(5),
-            amount: 4300000,
-            categoryId: "e5.1",
-            paid: Random().nextBool(),
-            transactAccountId: randomCredit()),
+            planAmount: 4300000,
+            planTime: monthRange.dayOfMonthRange(27),
+          ),
+        ),
         Transaction(
+          id: getRandomKey(),
+          timestamp: monthRange.dayOfMonthRange(27),
+          amount: Random().nextBool() ? 0 : 7300000,
+          categoryId: "i1.1",
+          categoryName: "Lương",
+          toAccId: randomDebit(),
+          planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planTransactId: getRandomKey(),
-            timestamp: monthRange.dayOfMonthRange(27),
-            amount: 8000000,
-            categoryId: "i1.1",
-            paid: Random().nextBool(),
-            targetAccountId: randomDebit()),
+            planAmount: 7000000,
+            planTime: monthRange.dayOfMonthRange(27),
+          ),
+        ),
         Transaction(
+          id: getRandomKey(),
+          timestamp: monthRange.dayOfMonthRange(28),
+          amount: Random().nextBool() ? 0 : 500000,
+          categoryId: "t1.3",
+          categoryName: "Tiết kiệm",
+          toAccId: randomSaving(),
+          accId: randomDebit(),
+          planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planTransactId: getRandomKey(),
-            timestamp: monthRange.dayOfMonthRange(28),
-            amount: 500000,
-            categoryId: "t1.3",
-            paid: Random().nextBool(),
-            targetAccountId: randomSaving(),
-            transactAccountId: randomDebit()),
+            planAmount: 500000,
+            planTime: monthRange.dayOfMonthRange(27),
+          ),
+        ),
       ];
       final planTransactsCategory = planTransacts.map((e) => e.categoryId).toList();
       for (var transact in planTransacts) {
         await transactController.addTransaction(transact);
         if (transact.paid) {
           await accountNoti.transfer(
-            transact.transactAccountId,
-            transact.targetAccountId,
+            transact.accId,
+            transact.toAccId,
             transact.amount,
           );
         }
@@ -197,11 +233,12 @@ class DemoPanel extends ConsumerWidget {
             timestamp: date,
             amount: randomDate(2, 50) * 100000,
             categoryId: cate.id,
-            transactAccountId: Random().nextBool() ? randomDebit() : '1',
-            targetAccountId: cate.type == TransactionType.transact ? randomSaving() : null,
+            categoryName: cate.name,
+            accId: Random().nextBool() ? randomDebit() : '1',
+            toAccId: cate.type == TransactionType.transact ? randomSaving() : null,
           );
           await transactController.addTransaction(ts);
-          await accountNoti.transfer(ts.transactAccountId!, ts.targetAccountId, ts.amount);
+          await accountNoti.transfer(ts.accId!, ts.toAccId, ts.amount);
         }
       }
       monthRange = monthRange.previous();

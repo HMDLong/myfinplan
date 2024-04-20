@@ -4,6 +4,7 @@ import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/domain/categories/category_notifier.dart';
 import 'package:myfinplan/domain/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/utils/time/times.dart';
 
 final chartFilterStateProvider = StateProvider((ref) => CategoryChartFilterState());
 
@@ -27,14 +28,13 @@ class CategoryChartFilterState {
   }
 }
 
-final categoryChartDataProvider = FutureProvider<CategoryChartDataModel>((ref) async {
+final categoryChartDataProvider = FutureProvider.family<CategoryChartDataModel, TimeRange>((ref, timerange) async {
   final categoryProvider = ref.watch(categoryNotifierProvider);
   final filter = ref.watch(chartFilterStateProvider);
   final transactionProvider = ref.watch(transactionNotifierProvider);
-
   final displayChildren = filter.categoryId != null;
   final transacts = (await transactionProvider.getTransactionByType(filter.type)).where((e) {
-    return e.paid && (displayChildren ? ParentCategory.parentHasChild(filter.categoryId!, e.categoryId) : true);
+    return e.paid && timerange.contain(e.timestamp) && (displayChildren ? ParentCategory.parentHasChild(filter.categoryId!, e.categoryId) : true);
   });
   final res = CategoryChartDataModel();
   // if there are no data to process, return

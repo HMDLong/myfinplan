@@ -19,21 +19,22 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
     return Transaction(
       id: fields[0] as String,
       timestamp: fields[1] as DateTime,
-      amount: fields[3] as int,
+      amount: fields[4] as int,
       categoryId: fields[2] as String,
-      paid: fields[9] as bool,
-      transactAccountId: fields[5] as String?,
-      targetAccountId: fields[6] as String?,
-      description: fields[4] as String?,
-      planTransactId: fields[7] as String?,
-      planTransactTitle: fields[8] as String?,
+      categoryName: fields[3] as String,
+      accId: fields[5] as String?,
+      accName: fields[6] as String?,
+      toAccId: fields[7] as String?,
+      toAccName: fields[8] as String?,
+      description: fields[11] as String?,
+      planDetail: fields[9] as TransactPlanDetail?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Transaction obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,19 +42,21 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       ..writeByte(2)
       ..write(obj.categoryId)
       ..writeByte(3)
-      ..write(obj.amount)
+      ..write(obj.categoryName)
       ..writeByte(4)
-      ..write(obj.description)
+      ..write(obj.amount)
       ..writeByte(5)
-      ..write(obj.transactAccountId)
+      ..write(obj.accId)
       ..writeByte(6)
-      ..write(obj.targetAccountId)
+      ..write(obj.accName)
       ..writeByte(7)
-      ..write(obj.planTransactId)
+      ..write(obj.toAccId)
       ..writeByte(8)
-      ..write(obj.planTransactTitle)
+      ..write(obj.toAccName)
       ..writeByte(9)
-      ..write(obj.paid);
+      ..write(obj.planDetail)
+      ..writeByte(11)
+      ..write(obj.description);
   }
 
   @override

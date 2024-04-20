@@ -35,8 +35,8 @@ final transactionDetailProvider = FutureProvider.family<TransactDetail, Transact
   final accountProvider = ref.watch(accountsProvider);
   final categoryProvider = ref.watch(categoryNotifierProvider);
   return TransactDetail(
-    transactAccount: transact.transactAccountId == null ? null : await accountProvider.getAccountById(transact.transactAccountId!),
-    targetAccount: transact.targetAccountId == null ? null : await accountProvider.getAccountById(transact.targetAccountId!),
+    transactAccount: transact.accId == null ? null : await accountProvider.getAccountById(transact.accId!),
+    targetAccount: transact.toAccId == null ? null : await accountProvider.getAccountById(transact.toAccId!),
     category: await categoryProvider.getCategoryById(transact.categoryId),
   );
 });

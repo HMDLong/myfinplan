@@ -38,7 +38,7 @@ final getDebtsDetail = FutureProvider((ref) async {
   final info = DebtsInfoModel();
   for (var debt in debts) {
     final paidAmount = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.transact)).where((e) {
-      return e.targetAccountId == debt.id && e.paid && thisTime.contain(e.timestamp);
+      return e.toAccId == debt.id && e.paid && thisTime.contain(e.timestamp);
     }).fold(0, (prev, e) {
       return prev + e.amount;
     });

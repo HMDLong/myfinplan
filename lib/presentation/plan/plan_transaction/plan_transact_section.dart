@@ -16,23 +16,23 @@ class PlanTransactionSection extends ConsumerStatefulWidget {
 
 final totalPlanIncomeProvider = FutureProvider((ref) async {
   final transacts = await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income);
-  final planIncomes = transacts.where((element) => element.planTransactId != null).toList();
+  final planIncomes = transacts.where((e) => e.planDetail != null).toList();
   if (planIncomes.isEmpty) return 0;
-  final res = planIncomes.fold(0, (previousValue, element) => previousValue + element.amount);
+  final res = planIncomes.fold(0, (previousValue, element) => previousValue + element.planDetail!.planAmount);
   return res;
 });
 
 final totalPlanExpenseProvider = FutureProvider((ref) async {
   final transacts = await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.expense);
-  final expenses = transacts.where((element) => element.planTransactId != null).toList();
+  final expenses = transacts.where((e) => e.planDetail != null).toList();
   if (expenses.isEmpty) return 0;
-  final res = expenses.fold(0, (previousValue, element) => previousValue + element.amount);
+  final res = expenses.fold(0, (previousValue, element) => previousValue + element.planDetail!.planAmount);
   return res;
 });
 
 final totalActualIncomeProvider = FutureProvider((ref) async {
   final transacts = await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income);
-  final incomes = transacts.where((element) => element.planTransactId != null && element.paid).toList();
+  final incomes = transacts.where((element) => element.paid).toList();
   if (incomes.isEmpty) return 0;
   final res = incomes.fold(0, (previousValue, element) => previousValue + element.amount);
   return res;
@@ -40,7 +40,7 @@ final totalActualIncomeProvider = FutureProvider((ref) async {
 
 final totalActualExpenseProvider = FutureProvider((ref) async {
   final transacts = await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.expense);
-  final expenses = transacts.where((element) => element.planTransactId != null && element.paid).toList();
+  final expenses = transacts.where((element) => element.paid).toList();
   if (expenses.isEmpty) return 0;
   final res = expenses.fold(0, (previousValue, element) => previousValue + element.amount);
   return res;
@@ -77,7 +77,7 @@ class _PlanTransactionSectionState extends ConsumerState<PlanTransactionSection>
             pushNewScreen(context, screen: const PlanTransactScreen());
           },
         ),
-        Text("Khoản thu"),
+        const Text("Khoản thu"),
         LinearProgressGauge(
           value: totalActualIncome,
           max: totalPlanIncome,
@@ -86,7 +86,7 @@ class _PlanTransactionSectionState extends ConsumerState<PlanTransactionSection>
           trailingLabel: "Dự kiến",
           showOverflow: true,
         ),
-        Text("Khoản chi"),
+        const Text("Khoản chi"),
         LinearProgressGauge(
           showOverflow: true,
           value: totalActualExpense,

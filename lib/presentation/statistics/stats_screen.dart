@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/presentation/statistics/stat_timerange_provider.dart';
 import 'package:myfinplan/shared_widgets/graphs/balance_chart/balance_chart.dart';
 import 'package:myfinplan/shared_widgets/pickers/timerange_picker/timerange_picker.dart';
 import 'package:myfinplan/presentation/statistics/widgets/category_pie_chart/category_pie_chart.dart';
-import 'package:myfinplan/utils/time/times.dart';
 
-class StatisticsScreen extends StatefulWidget {
+class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
 
   @override
-  State<StatisticsScreen> createState() => _StatisticsScreenState();
+  ConsumerState<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
-class _StatisticsScreenState extends State<StatisticsScreen> {
-  late TimeRange currentTimeRange;
-
-  @override
-  void initState() {
-    currentTimeRange = TimeRange.rangeByType(TimeType.month);
-    super.initState();
-  }
-
+class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
+    final currentTimeRange = ref.watch(statTimeRangeProvider);
     return Scaffold(
       backgroundColor: Colors.red.shade50,
       appBar: AppBar(
@@ -42,7 +36,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             allowDay: false,
             onTimeChanged: (newTimeRange) {
               setState(() {
-                currentTimeRange = newTimeRange;
+                ref.read(statTimeRangeProvider.notifier).state = newTimeRange;
               });
             },
           ),
