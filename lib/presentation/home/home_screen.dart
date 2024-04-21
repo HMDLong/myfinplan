@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          pushNewScreen(context, screen: const AddRecordScreen());
+          pushNewScreen(context, screen: const AddOrEditTransactScreen());
         },
         child: const Icon(Icons.add),
       ),

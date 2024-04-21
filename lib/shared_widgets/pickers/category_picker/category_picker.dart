@@ -12,7 +12,7 @@ class CategoryPicker extends StatefulWidget {
   final bool allowGroup;
   final bool isFormField;
   final Icon? icon;
-  final Category? initialCategory;
+  final String? initialCategoryName;
 
   const CategoryPicker({
     super.key,
@@ -22,7 +22,7 @@ class CategoryPicker extends StatefulWidget {
     this.allowGroup = false,
     this.isFormField = true,
     this.icon,
-    this.initialCategory,
+    this.initialCategoryName,
   });
 
   @override
@@ -36,7 +36,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
 
   @override
   void initState() {
-    _categoryController.text = widget.isFormField ? "" : (widget.initialCategory?.name ?? "Tất cả");
+    _categoryController.text = widget.initialCategoryName ?? (widget.isFormField ? "" : "Tất cả");
     super.initState();
   }
 

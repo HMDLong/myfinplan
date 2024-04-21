@@ -18,7 +18,12 @@ class SavingTab extends StatefulWidget {
   State<SavingTab> createState() => _SavingTabState();
 }
 
-enum SavingContentTab { graph, transacts, stats, goal }
+enum SavingContentTab {
+  graph,
+  transacts,
+  // stats,
+  goal,
+}
 
 final getSavingAccountsDetail = FutureProvider((ref) async {
   final debits = (await ref.watch(accountsProvider).getAccountByType(AccountType.saving)).cast<Saving>();
@@ -29,7 +34,7 @@ class _SavingTabState extends State<SavingTab> {
   final menuItems = [
     const DropdownMenuEntry(value: SavingContentTab.graph, label: "Biến động số dư"),
     const DropdownMenuEntry(value: SavingContentTab.transacts, label: "Giao dịch liên quan"),
-    const DropdownMenuEntry(value: SavingContentTab.stats, label: "Số liệu"),
+    // const DropdownMenuEntry(value: SavingContentTab.stats, label: "Số liệu"),
     const DropdownMenuEntry(value: SavingContentTab.goal, label: "Mục tiêu"),
   ];
 
@@ -48,11 +53,11 @@ class _SavingTabState extends State<SavingTab> {
       SavingContentTab.transacts => TransactionList(
           account: account,
         ),
-      SavingContentTab.stats => const Column(
-          children: [
-            Text("transact"),
-          ],
-        ),
+      // SavingContentTab.stats => const Column(
+      //     children: [
+      //       Text("transact"),
+      //     ],
+      //   ),
       SavingContentTab.goal => account.goal == null
           ? const SizedBox.expand(
               child: Column(

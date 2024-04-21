@@ -21,7 +21,7 @@ class DebitTab extends StatefulWidget {
 enum DebitContentTab {
   graph,
   transacts,
-  stats,
+  // stats,
 }
 
 final getDebitAccountsDetail = FutureProvider((ref) async {
@@ -33,7 +33,7 @@ class _DebitTabState extends State<DebitTab> {
   final menuItems = [
     const DropdownMenuEntry(value: DebitContentTab.graph, label: "Biến động số dư"),
     const DropdownMenuEntry(value: DebitContentTab.transacts, label: "Giao dịch liên quan"),
-    const DropdownMenuEntry(value: DebitContentTab.stats, label: "Số liệu"),
+    // const DropdownMenuEntry(value: DebitContentTab.stats, label: "Số liệu"),
   ];
 
   DebitContentTab _currentContent = DebitContentTab.graph;
@@ -51,11 +51,11 @@ class _DebitTabState extends State<DebitTab> {
       DebitContentTab.transacts => TransactionList(
           account: account,
         ),
-      DebitContentTab.stats => const Column(
-          children: [
-            Text("transact"),
-          ],
-        ),
+      // DebitContentTab.stats => const Column(
+      //     children: [
+      //       Text("transact"),
+      //     ],
+      //   ),
     };
   }
 

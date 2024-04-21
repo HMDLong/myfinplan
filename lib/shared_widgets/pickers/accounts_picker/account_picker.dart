@@ -7,14 +7,26 @@ import 'package:myfinplan/utils/styles.dart';
 class AccountPicker extends StatefulWidget {
   final String? label;
   final void Function(Account value) onAccountChanged;
-  const AccountPicker({super.key, this.label, required this.onAccountChanged});
+  final String? initAccountName;
+  const AccountPicker({
+    super.key,
+    this.label,
+    required this.onAccountChanged,
+    this.initAccountName,
+  });
 
   @override
   State<AccountPicker> createState() => _AccountPickerState();
 }
 
 class _AccountPickerState extends State<AccountPicker> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    _controller = TextEditingController(text: widget.initAccountName);
+    super.initState();
+  }
 
   @override
   void dispose() {

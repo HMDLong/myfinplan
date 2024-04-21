@@ -51,7 +51,10 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
           width: double.infinity,
           child: GestureDetector(
             onTap: () {
-              pushNewScreen(context, screen: const TransactDetailScreen());
+              pushNewScreen(context,
+                  screen: TransactDetailScreen(
+                    transact: widget.transaction,
+                  ));
             },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,

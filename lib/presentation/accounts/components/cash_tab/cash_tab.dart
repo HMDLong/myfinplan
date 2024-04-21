@@ -21,7 +21,7 @@ class CashTab extends ConsumerStatefulWidget {
 enum CashContentTab {
   graph,
   transacts,
-  stats,
+  // stats,
 }
 
 final getCashAccountsDetail = FutureProvider((ref) async {
@@ -33,7 +33,7 @@ class _CashTabState extends ConsumerState<CashTab> {
   final menuItems = [
     const DropdownMenuEntry(value: CashContentTab.graph, label: "Biến động số dư"),
     const DropdownMenuEntry(value: CashContentTab.transacts, label: "Giao dịch liên quan"),
-    const DropdownMenuEntry(value: CashContentTab.stats, label: "Số liệu"),
+    // const DropdownMenuEntry(value: CashContentTab.stats, label: "Số liệu"),
   ];
 
   CashContentTab _currentContent = CashContentTab.graph;
@@ -51,11 +51,11 @@ class _CashTabState extends ConsumerState<CashTab> {
       CashContentTab.transacts => TransactionList(
           account: account,
         ),
-      CashContentTab.stats => const Column(
-          children: [
-            Text("transact"),
-          ],
-        ),
+      // CashContentTab.stats => const Column(
+      //     children: [
+      //       Text("transact"),
+      //     ],
+      //   ),
     };
   }
 

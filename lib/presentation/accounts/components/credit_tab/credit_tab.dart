@@ -21,7 +21,8 @@ class CreditTab extends StatefulWidget {
 enum CreditContentTab {
   graph,
   transacts,
-  stats,
+  debt,
+  // stats,
 }
 
 final getCreditAccountsDetail = FutureProvider((ref) async {
@@ -33,7 +34,8 @@ class _CreditTabState extends State<CreditTab> {
   final menuItems = [
     const DropdownMenuEntry(value: CreditContentTab.graph, label: "Biến động số dư"),
     const DropdownMenuEntry(value: CreditContentTab.transacts, label: "Giao dịch liên quan"),
-    const DropdownMenuEntry(value: CreditContentTab.stats, label: "Số liệu"),
+    // const DropdownMenuEntry(value: CreditContentTab.stats, label: "Số liệu"),
+    const DropdownMenuEntry(value: CreditContentTab.debt, label: "Số liệu"),
   ];
 
   CreditContentTab _currentContent = CreditContentTab.graph;
@@ -51,10 +53,13 @@ class _CreditTabState extends State<CreditTab> {
       CreditContentTab.transacts => TransactionList(
           account: account,
         ),
-      CreditContentTab.stats => const Column(
-          children: [
-            Text("transact"),
-          ],
+      // CreditContentTab.stats => const Column(
+      //     children: [
+      //       Text("transact"),
+      //     ],
+      //   ),
+      CreditContentTab.debt => const Column(
+          children: [],
         ),
     };
   }

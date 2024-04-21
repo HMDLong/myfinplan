@@ -47,8 +47,9 @@ class _TransactionListState extends ConsumerState<TransactionList> {
         })
         .toList()
         .fold(<DateTime, List<Transaction>>{}, (prev, transact) {
-          prev.putIfAbsent(transact.timestamp, () => []);
-          prev[transact.timestamp]?.add(transact);
+          final dateOnlyTimestamp = transact.timestamp.toDateOnly();
+          prev.putIfAbsent(dateOnlyTimestamp, () => []);
+          prev[dateOnlyTimestamp]?.add(transact);
           return prev;
         });
   }

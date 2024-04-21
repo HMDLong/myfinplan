@@ -5,14 +5,20 @@ import 'package:myfinplan/utils/styles.dart';
 class TimestampPicker extends StatefulWidget {
   final String? label;
   final void Function(DateTime value) onTimeChange;
-  const TimestampPicker({super.key, this.label, required this.onTimeChange});
+  final DateTime? initValue;
+  const TimestampPicker({
+    super.key,
+    this.label,
+    required this.onTimeChange,
+    this.initValue,
+  });
 
   @override
   State<TimestampPicker> createState() => _TimestampPickerState();
 }
 
 class _TimestampPickerState extends State<TimestampPicker> {
-  DateTime currentTime = DateTime.now();
+  late DateTime currentTime;
 
   String _formatDate(DateTime date) => "${date.day} Th${date.month}, ${date.year}";
   String _formatTime(DateTime date) => DateFormat.Hm().format(date);
@@ -38,7 +44,7 @@ class _TimestampPickerState extends State<TimestampPicker> {
       context: context,
       initialDate: currentTime,
       firstDate: DateTime(currentTime.year - 1),
-      lastDate: DateTime(currentTime.year),
+      lastDate: DateTime(currentTime.year + 1),
     );
     if (pickedDate != null) {
       setState(() {
@@ -55,6 +61,7 @@ class _TimestampPickerState extends State<TimestampPicker> {
 
   @override
   void initState() {
+    currentTime = widget.initValue ?? DateTime.now();
     _timeController = TextEditingController(text: _formatTime(currentTime));
     _dateController = TextEditingController(text: _formatDate(currentTime));
     super.initState();
@@ -82,7 +89,10 @@ class _TimestampPickerState extends State<TimestampPicker> {
                   child: TextFormField(
                     controller: _dateController,
                     readOnly: true,
-                    decoration: formFieldDecor(icon: const Icon(Icons.calendar_month), label: const Text("Ngày thực hiện")),
+                    decoration: formFieldDecor(
+                      icon: const Icon(Icons.calendar_month),
+                      label: const Text("Ngày"),
+                    ),
                     onTap: _selectDate,
                     onSaved: (_) {
                       widget.onTimeChange(currentTime);
@@ -95,7 +105,10 @@ class _TimestampPickerState extends State<TimestampPicker> {
                   flex: 2,
                   child: TextFormField(
                     controller: _timeController,
-                    decoration: formFieldDecor(icon: const Icon(Icons.timer_sharp), label: const Text("Giờ")),
+                    decoration: formFieldDecor(
+                      icon: const Icon(Icons.timer_sharp),
+                      label: const Text("Giờ"),
+                    ),
                     readOnly: true,
                     onTap: _selectTime,
                   )),

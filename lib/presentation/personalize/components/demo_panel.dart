@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/cash.dart';
 import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/debit.dart';
@@ -47,12 +48,16 @@ class DemoPanel extends ConsumerWidget {
     randomDebit() => debitIds[Random().nextInt(3)];
     randomCredit() => debitIds[Random().nextInt(2)];
     randomSaving() => debitIds[Random().nextInt(3)];
-    const startBalance = 10000000000000;
-    final accounts = [
+    const startBalance = 1000000000;
+    final cashs = [
       Cash(id: '1', amount: startBalance, title: 'Tiền mặt 2'),
+    ];
+    final debits = [
       Debit(id: debitIds[0], amount: startBalance, title: 'momo'),
       Debit(id: debitIds[1], amount: startBalance, title: 'mb 201'),
       Debit(id: debitIds[2], amount: startBalance, title: 'vietinbank 0892'),
+    ];
+    final credits = [
       Credit(
         id: creditIds[0],
         title: "mb credit 223",
@@ -73,6 +78,8 @@ class DemoPanel extends ConsumerWidget {
           lateInterest: 5.0,
         ),
       ),
+    ];
+    final savings = [
       Saving(
         id: savingIds[0],
         title: "vp saving 768",
@@ -97,6 +104,12 @@ class DemoPanel extends ConsumerWidget {
           targetAmount: 25000000,
         ),
       ),
+    ];
+    final List<Account> accounts = [
+      ...cashs,
+      ...debits,
+      ...credits,
+      ...savings,
     ];
     final accountNoti = ref.read(accountsProvider.notifier);
     for (var account in accounts) {
@@ -228,14 +241,18 @@ class DemoPanel extends ConsumerWidget {
         final transactCount = randomDate(1, 5);
         for (var i = 0; i < transactCount; i++) {
           final cate = categories[randomDate(0, categories.length)];
+          final acc = Random().nextBool() ? debits[Random().nextInt(debits.length)] : cashs[0];
+          final toAcc = cate.type == TransactionType.transact ? savings[Random().nextInt(savings.length)] : null;
           final ts = Transaction(
             id: getRandomKey(),
             timestamp: date,
             amount: randomDate(2, 50) * 100000,
             categoryId: cate.id,
             categoryName: cate.name,
-            accId: Random().nextBool() ? randomDebit() : '1',
-            toAccId: cate.type == TransactionType.transact ? randomSaving() : null,
+            accId: acc.id,
+            accName: acc.title,
+            toAccId: toAcc?.id,
+            toAccName: toAcc?.title,
           );
           await transactController.addTransaction(ts);
           await accountNoti.transfer(ts.accId!, ts.toAccId, ts.amount);
