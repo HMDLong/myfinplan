@@ -1,0 +1,1 @@
+const DEFAULT_PLAN_AHEAD_SPAN = 6;

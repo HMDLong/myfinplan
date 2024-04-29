@@ -4,7 +4,7 @@ import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/category/category_group.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
-import 'package:myfinplan/domain/transactions/transaction_notifier.dart';
+import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_card.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/styles.dart';

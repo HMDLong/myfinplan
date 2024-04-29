@@ -19,19 +19,22 @@ class TransactPlanDetailAdapter extends TypeAdapter<TransactPlanDetail> {
     return TransactPlanDetail(
       planAmount: fields[1] as int,
       planTime: fields[2] as DateTime,
+      cancelled: fields[3] as bool,
     )..planId = fields[0] as String;
   }
 
   @override
   void write(BinaryWriter writer, TransactPlanDetail obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.planId)
       ..writeByte(1)
       ..write(obj.planAmount)
       ..writeByte(2)
-      ..write(obj.planTime);
+      ..write(obj.planTime)
+      ..writeByte(3)
+      ..write(obj.cancelled);
   }
 
   @override

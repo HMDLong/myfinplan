@@ -6,6 +6,7 @@ import 'package:myfinplan/utils/styles.dart';
 
 class AmountFormField extends StatefulWidget {
   final String? Function(String? value)? validator;
+  final String label;
   final int? initValue;
   final void Function(int? value)? onChanged;
   const AmountFormField({
@@ -13,6 +14,7 @@ class AmountFormField extends StatefulWidget {
     this.validator,
     this.initValue,
     this.onChanged,
+    required this.label,
   });
 
   @override
@@ -33,25 +35,22 @@ class _AmountFormFieldState extends State<AmountFormField> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        inputFormatters: [
-          FieldInputFormatter(),
-        ],
-        decoration: formFieldDecor(
-          icon: const Icon(CupertinoIcons.money_dollar),
-          label: const Text("Số tiền"),
-        ),
-        initialValue: widget.initValue?.toString(),
-        keyboardType: TextInputType.number,
-        validator: widget.validator ?? defaultValidator,
-        onChanged: (value) {
-          if (widget.onChanged != null) {
-            widget.onChanged!(int.tryParse(value.split(',').join()));
-          }
-        },
+    return TextFormField(
+      inputFormatters: [
+        FieldInputFormatter(),
+      ],
+      decoration: formFieldDecor(
+        icon: const Icon(CupertinoIcons.money_dollar),
+        label: Text(widget.label),
       ),
+      initialValue: widget.initValue?.toString(),
+      keyboardType: TextInputType.number,
+      validator: widget.validator ?? defaultValidator,
+      onChanged: (value) {
+        if (widget.onChanged != null) {
+          widget.onChanged!(int.tryParse(value.split(',').join()));
+        }
+      },
     );
   }
 }

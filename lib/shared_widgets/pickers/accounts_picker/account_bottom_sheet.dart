@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/domain/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:provider/provider.dart';
 
 class AccountBottomSheet extends ConsumerStatefulWidget {

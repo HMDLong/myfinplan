@@ -1,9 +1,11 @@
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
+import 'package:myfinplan/data/models/transaction/transaction.dart';
+import 'package:myfinplan/utils/random.dart';
 
 class Credit extends Account {
-  int? limit;
-  Payment? payment;
+  late int limit;
+  late Payment payment;
 
   Credit({
     super.id,
@@ -23,19 +25,20 @@ class Credit extends Account {
         "amount": amount,
         "title": title,
         "limit": limit,
-        "payment": payment!.toJson(),
+        "payment": payment.toJson(),
       };
 
-  // PlanTransaction makePlanTransaction() {
-  //   return PlanTransaction(
-  //     id: getRandomKey(),
-  //     title: title!,
-  //     amount: amount!,
-  //     categoryId: "c12.1",
-  //     targetAccount: id!,
-  //     transactType: TransactionType.transact,
-  //   );
-  // }
+  Transaction get planTransactInfo {
+    return Transaction.planTransact(
+      planTimestamp: payment.payDate,
+      categoryId: "t1.1",
+      categoryName: "Trả nợ tín dụng",
+      targetAccId: id,
+      targetAccName: title,
+      planAmount: 0,
+      planId: getRandomKey(),
+    );
+  }
 
   @override
   AccountType get accountType => AccountType.credit;

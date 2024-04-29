@@ -51,6 +51,21 @@ class TimeRange extends Equatable {
     return getNDaysBefore(DateTime.now(), n);
   }
 
+  /// create a custom type [TimeRange] that span [n] instance of [TimeType]
+  /// E.g: A range of "next 6 months" => [type]=[TimeType.month] and [n]=6
+  factory TimeRange.nextNofTimeType(TimeType type, int n, {bool includeCurrent = true}) {
+    assert(n > 0);
+    var begin = TimeRange.rangeByType(type);
+    if (!includeCurrent) {
+      begin = begin.next();
+    }
+    var last = begin;
+    for (var i = 1; i <= n; i++) {
+      last = last.next();
+    }
+    return TimeRange(start: begin.start, end: last.end, timeType: TimeType.custom);
+  }
+
   int get duration => end.difference(start).inDays;
 
   @override
@@ -135,9 +150,22 @@ class TimeRange extends Equatable {
     return res;
   }
 
+  /// Currently only usable for type=[TimeType.month, TimeType.week]
+  List<DateTime> getOccurences(TimeType type, DateTime example) {
+    if (type == TimeType.week) {
+      return getRangeDates().where((e) => e.weekday == example.weekday).toList();
+    }
+    if (type == TimeType.month) {
+      return getRangeDates().where((e) => e.day == example.day).toList();
+    }
+    throw UnimplementedError("Currently only usable for type=[TimeType.month, TimeType.week]");
+  }
+
   @override
-  // TODO: implement props
   List<Object?> get props => [start, end, timeType];
+
+  @override
+  bool? get stringify => true;
 }
 
 extension TimeRangeExt on DateTime {

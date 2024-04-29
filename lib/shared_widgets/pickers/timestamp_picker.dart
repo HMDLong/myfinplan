@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:myfinplan/utils/styles.dart';
 
 class TimestampPicker extends StatefulWidget {
+  final bool enabled;
   final String? label;
   final void Function(DateTime value) onTimeChange;
   final DateTime? initValue;
@@ -11,6 +12,7 @@ class TimestampPicker extends StatefulWidget {
     this.label,
     required this.onTimeChange,
     this.initValue,
+    this.enabled = true,
   });
 
   @override
@@ -76,46 +78,38 @@ class _TimestampPickerState extends State<TimestampPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    controller: _dateController,
-                    readOnly: true,
-                    decoration: formFieldDecor(
-                      icon: const Icon(Icons.calendar_month),
-                      label: const Text("Ngày"),
-                    ),
-                    onTap: _selectDate,
-                    onSaved: (_) {
-                      widget.onTimeChange(currentTime);
-                    },
-                  )),
-              const SizedBox(
-                width: 6,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+            flex: 3,
+            child: TextFormField(
+              controller: _dateController,
+              readOnly: true,
+              enabled: widget.enabled,
+              decoration: formFieldDecor(
+                icon: const Icon(Icons.calendar_month),
+                label: const Text("Ngày"),
               ),
-              Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    controller: _timeController,
-                    decoration: formFieldDecor(
-                      icon: const Icon(Icons.timer_sharp),
-                      label: const Text("Giờ"),
-                    ),
-                    readOnly: true,
-                    onTap: _selectTime,
-                  )),
-            ],
-          ),
-        ],
-      ),
+              onTap: _selectDate,
+              onSaved: (_) {
+                widget.onTimeChange(currentTime);
+              },
+            )),
+        // const SizedBox(width: 6),
+        Expanded(
+            flex: 2,
+            child: TextFormField(
+              enabled: widget.enabled,
+              controller: _timeController,
+              decoration: formFieldDecor(
+                icon: const Icon(Icons.timer_sharp),
+                label: const Text("Giờ"),
+              ),
+              readOnly: true,
+              onTap: _selectTime,
+            )),
+      ],
     );
   }
 }

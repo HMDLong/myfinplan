@@ -1,6 +1,9 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:myfinplan/data/models/schedule_notification.dart';
 import 'dart:developer' as dev;
+
+import 'package:myfinplan/data/models/transaction/recurrence.dart';
 
 List<NotificationChannel> channels = [
   NotificationChannel(
@@ -49,39 +52,28 @@ class NotificationService extends ChangeNotifier {
   @pragma("vm:entry-point")
   static Future<void> onDismissActionReceivedMethod(ReceivedAction receivedAction) async {}
 
-  void registerOneTimeNoti() {
+  void scheduleNotification(ScheduledNotification noti, {bool demo = true}) {
     AwesomeNotifications().createNotification(
+      schedule: demo
+          ? null
+          : switch (noti.type) {
+              Periodic.daily => NotificationAndroidCrontab.daily(referenceDateTime: noti.referenceDate),
+              Periodic.weekly => NotificationAndroidCrontab.weekly(referenceDateTime: noti.referenceDate),
+              Periodic.monthly => NotificationAndroidCrontab.monthly(referenceDateTime: noti.referenceDate),
+              Periodic.yearly => NotificationAndroidCrontab.yearly(referenceDateTime: noti.referenceDate),
+              Periodic.onetime => NotificationAndroidCrontab.fromDate(date: noti.referenceDate),
+              Periodic.custom => null
+            },
       content: NotificationContent(
-        id: 0,
-        channelKey: "1",
-        title: "Hello world",
-        body: "This is a noti",
+        id: noti.notiId,
+        channelKey: channels[0].channelKey!,
+        notificationLayout: NotificationLayout.BigText,
+        title: noti.title,
+        body: noti.content,
+        payload: noti.payload,
       ),
     );
   }
-
-  // void scheduleNotification(ScheduledNotification noti, {bool demo = true}) {
-  //   AwesomeNotifications().createNotification(
-  //     schedule: demo
-  //         ? null
-  //         : switch (noti.type) {
-  //             Periodic.daily => NotificationAndroidCrontab.daily(referenceDateTime: noti.referenceDateTime),
-  //             Periodic.weekly => NotificationAndroidCrontab.weekly(referenceDateTime: noti.referenceDateTime),
-  //             Periodic.monthly => NotificationAndroidCrontab.monthly(referenceDateTime: noti.referenceDateTime),
-  //             Periodic.yearly => NotificationAndroidCrontab.yearly(referenceDateTime: noti.referenceDateTime),
-  //             Periodic.onetime => NotificationAndroidCrontab.fromDate(date: noti.referenceDateTime),
-  //             null => null
-  //           },
-  //     content: NotificationContent(
-  //       id: noti.id,
-  //       channelKey: channels[0].channelKey!,
-  //       notificationLayout: NotificationLayout.BigText,
-  //       title: noti.title,
-  //       body: noti.content,
-  //       payload: noti.payload,
-  //     ),
-  //   );
-  // }
 
   void cancelNotification(int notiId) {
     AwesomeNotifications().cancelSchedule(notiId);

@@ -19,7 +19,6 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
     return Transaction(
       id: fields[0] as String,
       timestamp: fields[1] as DateTime,
-      amount: fields[4] as int,
       categoryId: fields[2] as String,
       categoryName: fields[3] as String,
       accId: fields[5] as String?,
@@ -28,7 +27,7 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       toAccName: fields[8] as String?,
       description: fields[11] as String?,
       planDetail: fields[9] as TransactPlanDetail?,
-    );
+    ).._amount = fields[4] as int;
   }
 
   @override
@@ -44,7 +43,7 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       ..writeByte(3)
       ..write(obj.categoryName)
       ..writeByte(4)
-      ..write(obj.amount)
+      ..write(obj._amount)
       ..writeByte(5)
       ..write(obj.accId)
       ..writeByte(6)

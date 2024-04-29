@@ -6,6 +6,10 @@ const noItemsMessage = "Không có dữ liệu";
 const categoryNotFoundMessage = "Không có category thỏa mãn";
 // Budget
 const budgetAddSuccessMessage = "Thêm ngân sách thành công";
+const addSuccessMessage = "Thêm thành công";
+// Plan
+const planDistTooltipMessage = """Phân phối thu nhập là cách phân chia thu nhập của bạn thành các nhóm chi phí dựa theo mục đích sử dụng. 
+Cầu tuyết khoản nợ, giới hạn ngân sách sẽ được tính theo phân phối này""";
 
 // --------------- Label --------------------
 

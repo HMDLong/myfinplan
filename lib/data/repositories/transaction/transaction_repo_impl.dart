@@ -16,6 +16,11 @@ class TransactionRepositoryImpl extends TransactionRepository {
   }
 
   @override
+  Future<void> addAll(List<Transaction> newItems) {
+    return transactionBox.putAll(newItems.asMap().map((key, value) => MapEntry(value.id, value)));
+  }
+
+  @override
   Future<void> delete(id) {
     return transactionBox.delete(id);
   }

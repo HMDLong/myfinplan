@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/presentation/category/category_screen.dart';
+import 'package:myfinplan/screens/category/category_screen.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
@@ -48,29 +48,26 @@ class _CategoryPickerState extends State<CategoryPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        controller: _categoryController,
-        readOnly: true,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        decoration: formFieldDecor(
-          icon: widget.icon,
-          label: Text(widget.label ?? "Loại"),
-        ),
-        onTap: () {
-          pushNewScreen(
-            context,
-            screen: CategoryScreen(
-              onPicked: (category) {
-                widget.onCategoryChanged(category);
-                _categoryController.text = category.name;
-              },
-            ),
-          );
-        },
-        validator: widget.validator,
+    return TextFormField(
+      controller: _categoryController,
+      readOnly: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      decoration: formFieldDecor(
+        icon: widget.icon,
+        label: Text(widget.label ?? "Loại"),
       ),
+      onTap: () {
+        pushNewScreen(
+          context,
+          screen: CategoryScreen(
+            onPicked: (category) {
+              widget.onCategoryChanged(category);
+              _categoryController.text = category.name;
+            },
+          ),
+        );
+      },
+      validator: widget.validator,
     );
   }
 }

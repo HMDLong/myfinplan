@@ -38,6 +38,7 @@ dependencies:
   syncfusion_flutter_calendar: ^22.2.12
   syncfusion_flutter_datepicker: ^22.2.12
   syncfusion_flutter_charts: ^22.2.12
+  syncfusion_flutter_gauges: ^22.2.12
   # Hive
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -52,12 +53,10 @@ dependencies:
   # UI
   intl: ^0.18.1
   persistent_bottom_nav_bar_v2: ^4.2.8
-  flutter_staggered_grid_view: ^0.7.0
   flutter_slidable: ^3.0.1
   carousel_slider: ^4.2.1
-  gauge_indicator: ^0.4.3
   geekyants_flutter_gauges: ^1.0.3
-  easy_stepper: ^0.8.3
+  expandable: ^5.0.1
   awesome_snackbar_content:
 
 dev_dependencies:

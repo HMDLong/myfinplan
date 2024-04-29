@@ -11,10 +11,25 @@ class TransactPlanDetail with HiveObjectMixin {
   int planAmount;
   @HiveField(2)
   DateTime planTime;
+  @HiveField(3)
+  bool cancelled;
 
   TransactPlanDetail({
     String? id,
     required this.planAmount,
     required this.planTime,
+    this.cancelled = false,
   }) : planId = id ?? getRandomKey();
+
+  TransactPlanDetail copyWith({
+    DateTime? planTime,
+    bool? cancelled,
+  }) {
+    return TransactPlanDetail(
+      id: planId,
+      planAmount: planAmount,
+      planTime: planTime ?? this.planTime,
+      cancelled: cancelled ?? this.cancelled,
+    );
+  }
 }

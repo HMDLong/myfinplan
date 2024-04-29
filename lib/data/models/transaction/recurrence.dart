@@ -1,4 +1,5 @@
 enum Periodic {
+  onetime,
   yearly,
   monthly,
   weekly,

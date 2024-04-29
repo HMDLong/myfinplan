@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/domain/categories/get_categories_with_budget.dart';
-import 'package:myfinplan/presentation/plan/budgets/budget_detail/budget_detail_screen.dart';
+import 'package:myfinplan/providers/categories/get_categories_with_budget.dart';
+import 'package:myfinplan/screens/plan/budgets/budget_detail/budget_detail_screen.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/time/times.dart';
@@ -64,7 +64,7 @@ final class _BudgetCardState extends State<BudgetCard> {
                     : const SizedBox(height: 0.1),
                 Consumer(
                   builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                    return ref.watch(getTotalSpentByCategory(widget.category.id)).when(
+                    return ref.watch(getTotalSpentByCategory(CategoryQueryDetail(widget.category.id, range: currentMonth))).when(
                           data: (data) {
                             return LinearProgressGauge(
                               value: data.abs(),

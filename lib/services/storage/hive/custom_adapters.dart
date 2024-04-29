@@ -8,7 +8,7 @@ import 'package:myfinplan/services/storage/hive/box_names.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 final adapters = <HiveAdapter>[
-  HiveAdapter(TransactPlanDetailAdapter()),
+  HiveAdapter<TransactPlanDetail>(TransactPlanDetailAdapter()),
   HiveAdapter<Transaction>(
     TransactionAdapter(),
     boxName: transactionBoxName,

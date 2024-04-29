@@ -6,9 +6,9 @@ import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
-import 'package:myfinplan/domain/accounts/accounts/accounts_notifier.dart';
-import 'package:myfinplan/domain/categories/category_notifier.dart';
-import 'package:myfinplan/presentation/transactions/transaction_detail_scren.dart';
+import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/providers/categories/category_notifier.dart';
+import 'package:myfinplan/screens/transactions/transaction_detail_scren.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class TransactionCard extends ConsumerStatefulWidget {

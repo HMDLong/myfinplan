@@ -17,7 +17,7 @@ class Transaction extends HiveObject {
   @HiveField(3)
   String categoryName;
   @HiveField(4)
-  int amount;
+  int _amount;
   @HiveField(5)
   String? accId;
   @HiveField(6)
@@ -31,13 +31,10 @@ class Transaction extends HiveObject {
   @HiveField(11)
   String? description;
 
-  TransactionType get transactType => Category.getType(categoryId);
-  bool get paid => amount != 0;
-
   Transaction({
     required this.id,
     required this.timestamp,
-    required this.amount,
+    int amount = 0,
     required this.categoryId,
     required this.categoryName,
     this.accId,
@@ -46,7 +43,13 @@ class Transaction extends HiveObject {
     this.toAccName,
     this.description,
     this.planDetail,
-  });
+  }) : _amount = amount.abs();
+
+  int get amount => _amount * (transactType == TransactionType.expense ? -1 : 1);
+  set amount(int value) => _amount = value.abs();
+
+  TransactionType get transactType => Category.getType(categoryId);
+  bool get paid => amount != 0;
 
   factory Transaction.planTransact({
     required DateTime planTimestamp,
@@ -75,6 +78,23 @@ class Transaction extends HiveObject {
         planAmount: planAmount,
         planTime: planTimestamp,
       ),
+    );
+  }
+
+  Transaction copyWith({
+    DateTime? planTime,
+  }) {
+    return Transaction(
+      id: getRandomKey(),
+      timestamp: timestamp,
+      amount: amount,
+      categoryId: categoryId,
+      categoryName: categoryName,
+      accId: accId,
+      accName: accName,
+      toAccId: accId,
+      toAccName: toAccName,
+      planDetail: planDetail?.copyWith(planTime: planTime) ?? planDetail,
     );
   }
 }

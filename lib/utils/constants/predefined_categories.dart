@@ -92,7 +92,7 @@ final predefinedCategories = <List<dynamic>>[
   ["i1.3", "Cho thuê", Icons.currency_pound_sharp],
   ["i1.4", "Thu nhập khác", Icons.currency_pound_sharp],
   //
-  ["t1.1", "Trả nợ tín dụng", Icons.currency_pound_sharp],
+  ["t1.1", "Trả nợ", Icons.currency_pound_sharp],
   ["t1.2", "Rút tiền mặt", Icons.currency_pound_sharp],
   ["t1.3", "Tiết kiệm", Icons.currency_pound_sharp],
   ["t1.4", "Chuyển khoản khác", Icons.currency_pound_sharp],
