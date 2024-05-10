@@ -1,17 +1,18 @@
 import 'package:myfinplan/data/models/account/account.dart';
+import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
 
-class Debt extends Account {
+class Loan extends Account {
   late Payment payment;
 
-  Debt({
+  Loan({
     required super.id,
     super.amount,
     required super.title,
     required this.payment,
   });
 
-  Debt.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+  Loan.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     final paymentData = json["payment"] as Map<String, dynamic>;
     payment = Payment.fromJson(paymentData["type"] as String, paymentData);
   }
@@ -28,10 +29,26 @@ class Debt extends Account {
   }
 
   @override
-  String toString() {
-    return "Debt{$id/$title/$amount/$payment}";
+  AccountType get accountType => AccountType.loan;
+
+  int get balance => amount!.abs();
+  double get interest => payment.getInterest(balance);
+
+  double getMonthlyPayment() => payment.paymentInfo(balance.toDouble()).values.first.payment;
+
+  Map<DateTime, Map<String, AmortizingEntry>> getPaymentInfo() {
+    final paymentInfo = payment.paymentInfo(balance.toDouble());
+    return paymentInfo.map((key, value) {
+      return MapEntry(key, {id!: value});
+    });
+  }
+
+  Loan clone() {
+    return Loan(id: id, amount: amount, title: title, payment: payment);
   }
 
   @override
-  AccountType get accountType => AccountType.debt;
+  String toString() {
+    return "Loan{id:$id, amount: $amount}";
+  }
 }

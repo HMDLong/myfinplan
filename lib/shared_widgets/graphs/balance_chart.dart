@@ -1,7 +1,10 @@
+import 'dart:developer';
+import 'dart:math' as math;
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/providers/accounts/accounts/account_usecases.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
@@ -57,24 +60,27 @@ final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<D
       })
       .entries
       .toList()
-    ..sort((a, b) => a.key.compareTo(b.key));
+    ..sort((a, b) => b.key.compareTo(a.key));
   var chartData = <BalanceChartData<DateTime, int>>[];
   int traceBalance = balance;
   for (var dateData in groupByDateData) {
-    if (timeRange.end.isAfter(dateData.key)) {
-      chartData.add(BalanceChartData(x: dateData.key, y: traceBalance));
+    if (timeRange.start.isBefore(dateData.key)) {
+      chartData.insert(0, BalanceChartData(x: dateData.key, y: traceBalance));
     }
+    traceBalance -= dateData.value;
   }
+  chartData = chartData.takeWhile((value) => value.x.isBefore(timeRange.end)).toList();
   // merge points
-  if (chartData.length > 60) {
-    final tmp = <BalanceChartData<DateTime, int>>[];
-    for (var month = 1; month <= 12; month++) {
-      final daysInMonth = chartData.where((e) => e.x.month == month).toList();
-      final monthAvg = daysInMonth.fold(0, (prev, e) => prev + e.y) / daysInMonth.length;
-      tmp.add(BalanceChartData(x: daysInMonth.first.x, y: monthAvg.toInt()));
-    }
-    chartData = tmp;
-  }
+  // if (chartData.length > 60) {
+  //   final tmp = <BalanceChartData<DateTime, int>>[];
+  //   for (var month = 1; month <= 12; month++) {
+  //     final daysInMonth = chartData.where((e) => e.x.month == month).toList();
+  //     if (daysInMonth.isEmpty) continue;
+  //     final monthAvg = daysInMonth.fold(0, (prev, e) => prev + e.y) / daysInMonth.length;
+  //     tmp.add(BalanceChartData(x: daysInMonth.first.x, y: monthAvg.toInt()));
+  //   }
+  //   chartData = tmp;
+  // }
   return chartData;
 });
 
@@ -86,12 +92,11 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
       child: ref.watch(getTransactionDataProvider(widget.account?.id)).when(
             data: (data) {
               return SfCartesianChart(
-                primaryXAxis: DateTimeAxis(),
-                // CategoryAxis(
-                //   plotOffset: 10.0,
-                //   labelPlacement: LabelPlacement.onTicks,
-                //   labelAlignment: LabelAlignment.center,
-                // ),
+                primaryXAxis: CategoryAxis(
+                  plotOffset: 10.0,
+                  labelPlacement: LabelPlacement.onTicks,
+                  labelAlignment: LabelAlignment.center,
+                ),
                 primaryYAxis: NumericAxis(
                   plotOffset: 5.0,
                   majorGridLines: const MajorGridLines(),
@@ -104,22 +109,25 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
                   zoomMode: ZoomMode.x,
                 ),
                 series: [
-                  ColumnSeries<BalanceChartData<DateTime, int>, DateTime>(
+                  AreaSeries<BalanceChartData<DateTime, int>, String>(
                     dataSource: data,
                     xValueMapper: (BalanceChartData<DateTime, int> data, _) {
-                      return data.x;
-                      // DateFormat.MMMd().format(data.x);
+                      return DateFormat.MMMd().format(data.x);
+                      //data.x;
                     },
                     yValueMapper: (BalanceChartData<DateTime, int> data, _) => data.y,
+                    borderColor: CupertinoColors.activeBlue,
+                    borderWidth: 1,
                     gradient: LinearGradient(
-                      colors: [Colors.blue, Colors.blue.shade300],
-                      transform: const GradientRotation(3.14 / 2),
+                      colors: [Colors.blue.shade50, Colors.blue.shade200, Colors.blue],
+                      stops: const [0.0, 0.5, 1.0],
+                      transform: const GradientRotation(3 * math.pi / 2),
                     ),
-                    width: 0.5,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(4),
-                      topRight: Radius.circular(4),
-                    ),
+                    // width: 0.5,
+                    // borderRadius: const BorderRadius.only(
+                    //   topLeft: Radius.circular(4),
+                    //   topRight: Radius.circular(4),
+                    // ),
                   ),
                 ],
               );

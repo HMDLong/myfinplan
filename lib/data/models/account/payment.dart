@@ -1,66 +1,89 @@
+import 'dart:math';
+
+import 'package:myfinplan/data/models/account/amortizing_info.dart';
+import 'package:myfinplan/utils/time/times.dart';
+
 enum PaymentType {
   installment,
   infull,
 }
 
+final paymentTypeMap = <String, PaymentType>{
+  'installment': PaymentType.installment,
+  'infull': PaymentType.infull,
+};
+
 sealed class Payment {
   Payment();
 
-  factory Payment.fromJson(String type, Map<String, dynamic> json) => switch (type) {
-        'installment' => Installment.fromJson(json),
-        'infull' => Infull.fromJson(json),
+  factory Payment.fromJson(String type, Map<String, dynamic> json) => switch (paymentTypeMap[type]) {
+        PaymentType.installment => AmortizingFixedTermPayment.fromJson(json),
+        PaymentType.infull => Infull.fromJson(json),
         _ => throw Exception('Invalid payment type'),
       };
 
   Map<String, dynamic> toJson();
-  double getLatePayment(int amount);
   DateTime get payDate;
-  int get minimumPayment;
+  Map<DateTime, AmortizingEntry> paymentInfo(double balance, {double snowball = 0});
+  double getInterest(int balance);
 }
 
-class Installment extends Payment {
+class AmortizingFixedTermPayment extends Payment {
   static const String type = 'installment';
-  int? period;
-  double? originInterest;
-  int? minPayment;
-  DateTime? phaselyDuedate;
+  int term;
+  double interestRate;
+  DateTime? monthlyPayDate;
 
-  Installment({
-    this.period,
-    this.originInterest,
-    this.phaselyDuedate,
-    this.minPayment,
+  AmortizingFixedTermPayment({
+    required this.term,
+    required this.interestRate,
+    this.monthlyPayDate,
   });
 
   @override
   Map<String, dynamic> toJson() => {
         "type": type,
-        "period": period,
-        "interest": originInterest,
-        "min": minPayment ?? 0,
-        "duedate": phaselyDuedate!.toIso8601String(),
+        "period": term,
+        "interest": interestRate,
+        "duedate": monthlyPayDate!.toIso8601String(),
       };
 
-  Installment.fromJson(Map<String, dynamic> json) {
-    period = json["period"] as int;
-    minPayment = json["min"] as int;
-    originInterest = json["interest"] as double;
-    phaselyDuedate = DateTime.parse(json["duedate"] as String);
-  }
+  AmortizingFixedTermPayment.fromJson(Map<String, dynamic> json)
+      : term = json["period"] as int,
+        interestRate = json["interest"] as double,
+        monthlyPayDate = DateTime.parse(json["duedate"] as String);
 
   @override
-  DateTime get payDate => phaselyDuedate!;
+  DateTime get payDate => monthlyPayDate!;
 
   @override
-  double getLatePayment(int amount) => amount * originInterest!;
+  double getInterest(int balance) => balance * (interestRate / 12);
 
   @override
   String toString() {
-    return "Installment{$type, $period, phase, $originInterest, $phaselyDuedate}";
+    return "Installment{$type, $term, phase, $interestRate, $monthlyPayDate}";
   }
 
   @override
-  int get minimumPayment => minPayment!;
+  Map<DateTime, AmortizingEntry> paymentInfo(double balance, {double snowball = 0}) {
+    final apr = interestRate / 12;
+    final minimumPayment = balance / (pow(1 + apr, term) - 1) * (apr * pow(1 + apr, term));
+    final payment = minimumPayment + snowball;
+    final schedule = <DateTime, AmortizingEntry>{};
+    double remainBalance = balance;
+    var payTime = TimeRange.rangeByType(TimeType.month);
+    while (remainBalance > 0) {
+      schedule[payTime.end] = AmortizingEntry(
+        time: payTime.end,
+        payment: payment,
+        interest: remainBalance * apr,
+        remainingBalance: remainBalance - payment,
+      );
+      remainBalance = remainBalance * (1 + apr) - payment;
+      payTime = payTime.next();
+    }
+    return schedule;
+  }
 }
 
 class Infull extends Payment {
@@ -90,9 +113,6 @@ class Infull extends Payment {
   }
 
   @override
-  double getLatePayment(int amount) => amount * lateInterest!;
-
-  @override
   String toString() {
     return "Infull{$type, $duedate, $lateInterest}";
   }
@@ -101,5 +121,18 @@ class Infull extends Payment {
   DateTime get payDate => duedate!;
 
   @override
-  int get minimumPayment => minPayment!;
+  double getInterest(int balance) => 0;
+
+  @override
+  Map<DateTime, AmortizingEntry> paymentInfo(double balance, {double snowball = 0}) {
+    final tmp = DateTime.now().add(Duration(days: 425));
+    return {
+      tmp: AmortizingEntry(
+        time: tmp,
+        payment: 1000000,
+        interest: 60000,
+        remainingBalance: 1000000 - 60000,
+      ),
+    };
+  }
 }

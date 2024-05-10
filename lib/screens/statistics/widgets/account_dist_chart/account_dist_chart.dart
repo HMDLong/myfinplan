@@ -37,7 +37,7 @@ class AccountDistributionChart extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             SizedBox(
-              height: 250,
+              height: 200,
               width: double.infinity,
               child: ref.watch(balanceSummaryProvider).when(
                     data: (data) {
@@ -54,10 +54,10 @@ class AccountDistributionChart extends ConsumerWidget {
                           isVisible: true,
                           isResponsive: true,
                           position: LegendPosition.right,
+                          alignment: ChartAlignment.far,
                           legendItemBuilder: (legendText, series, point, seriesIndex) {
                             final point_ = point;
                             final chartPoint = point_ as ChartPoint;
-
                             // log(series[seriesIndex]);
                             return SizedBox(
                               height: 40,
@@ -78,7 +78,7 @@ class AccountDistributionChart extends ConsumerWidget {
                                         style: TextStyle(color: Colors.black, fontSize: 10),
                                       ),
                                       Text(
-                                        "${amountToCompact(point.y)} (${(point.y * 100 / total).round()}%)",
+                                        "${amountToCompact(point.y, currency: null)} (${(point.y * 100 / total).round()}%)",
                                         style: TextStyle(fontSize: 12),
                                       ),
                                     ],

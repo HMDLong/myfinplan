@@ -23,7 +23,7 @@ class MoneyInOutChart<T extends Account> extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MoneyInOutChart> createState() => _BalanceChartState<T>();
+  ConsumerState<MoneyInOutChart> createState() => _MoneyInOutChartState<T>();
 }
 
 final inOutChartContentTypeProvider = StateProvider((ref) => TransactionType.expense);
@@ -80,25 +80,13 @@ final getTransactionDataProvider = FutureProvider<List<InOutChartData<DateTime, 
   return chartData;
 });
 
-class _BalanceChartState<T extends Account> extends ConsumerState<MoneyInOutChart> {
-  LinearGradient _getGradient(TransactionType type) {
-    final colors = switch (type) {
-      TransactionType.expense => [
-          Colors.red,
-          Colors.red.shade300,
-          // Colors.red.shade50,
-        ],
-      TransactionType.income => [
-          Colors.green,
-          Colors.green.shade300,
-          // Colors.green.shade50,
-        ],
+class _MoneyInOutChartState<T extends Account> extends ConsumerState<MoneyInOutChart> {
+  Color _getColor(TransactionType type) {
+    return switch (type) {
+      TransactionType.expense => Colors.red,
+      TransactionType.income => Colors.green,
       _ => throw Exception("Not for transfer type"),
     };
-    return LinearGradient(
-      colors: colors,
-      transform: const GradientRotation(3.14 / 2),
-    );
   }
 
   @override
@@ -132,7 +120,7 @@ class _BalanceChartState<T extends Account> extends ConsumerState<MoneyInOutChar
                         dataSource: data,
                         xValueMapper: (InOutChartData<DateTime, int> data, _) => DateFormat.MMMd().format(data.x),
                         yValueMapper: (InOutChartData<DateTime, int> data, _) => data.y,
-                        gradient: _getGradient(content),
+                        color: _getColor(content),
                         width: 0.5,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(4),

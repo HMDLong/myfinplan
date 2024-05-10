@@ -8,7 +8,7 @@ import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/shared_widgets/menu/transact_type_menu.dart';
 import 'package:myfinplan/shared_widgets/pickers/category_picker/category_picker.dart';
-import 'package:myfinplan/shared_widgets/pickers/data_picker.dart';
+import 'package:myfinplan/shared_widgets/pickers/date_picker.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/styles.dart';

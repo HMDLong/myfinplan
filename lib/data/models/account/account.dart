@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:myfinplan/data/models/account/cash.dart';
 import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/debit.dart';
@@ -8,14 +9,14 @@ enum AccountType {
   cash,
   debit,
   credit,
-  debt,
+  loan,
   saving;
 
   static AccountType fromStringValue(String value) => switch (value) {
         'cash' => cash,
         'debit' => debit,
         'credit' => credit,
-        'debt' => debt,
+        'loan' => loan,
         'saving' => saving,
         _ => throw Exception("Invalid account type"),
       };
@@ -34,7 +35,7 @@ enum AccountType {
       };
 }
 
-abstract class Account {
+abstract class Account with EquatableMixin {
   String? id;
   int? amount;
   String? title;
@@ -58,8 +59,8 @@ abstract class Account {
         return Debit.fromJson(json);
       case AccountType.credit:
         return Credit.fromJson(json);
-      case AccountType.debt:
-        return Debt.fromJson(json);
+      case AccountType.loan:
+        return Loan.fromJson(json);
       case AccountType.saving:
         return Saving.fromJson(json);
     }
@@ -75,4 +76,10 @@ abstract class Account {
   AccountType get accountType;
 
   int get usableBalance => amount!;
+
+  @override
+  List<Object?> get props => [id];
+
+  @override
+  bool? get stringify => true;
 }

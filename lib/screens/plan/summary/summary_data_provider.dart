@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
-import 'package:myfinplan/data/models/account/saving.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/plan/plan_distribution.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
@@ -19,18 +18,18 @@ final summaryDataProvider = FutureProvider<List<int>>((ref) async {
   // incomes
   final incomes = transacts.where((e) => e.transactType == TransactionType.income);
   final planIncome = incomes.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount);
-  final realIncome = incomes.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount);
+  final realIncome = incomes.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount.abs());
   // expenses
   final expenses = transacts.where((e) => e.transactType == TransactionType.expense);
   final planExpenses = expenses.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount);
-  final realExpenses = expenses.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount);
+  final realExpenses = expenses.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount.abs());
   // savings
   // final savings = (await accsProvider.getAccountByType(AccountType.saving)).cast<Saving>();
   final planSaving = max(planIncome, realIncome) * dist.dist[ExpenseLevel.saving]!;
   final realSaving = transacts.where((e) => e.paid && e.categoryId == "t1.3").fold(0, (prev, e) => prev + e.amount);
   // loans
-  final debts = (await accsProvider.getAccountByType(AccountType.debt)).cast<Debt>();
-  final planDebtPay = debts.fold(0, (prev, e) => prev + e.payment.minimumPayment.abs());
-  final realDebtPaid = transacts.where((e) => e.paid && e.categoryId == "t1.2").fold(0, (prev, e) => prev + e.amount);
+  final debts = (await accsProvider.getAccountByType(AccountType.loan)).cast<Loan>();
+  final planDebtPay = debts.fold(0, (prev, e) => prev + e.getMonthlyPayment().toInt().abs()); // TODO
+  final realDebtPaid = transacts.where((e) => e.paid && e.categoryId == "t1.2").fold(0, (prev, e) => prev + e.amount.abs());
   return [planIncome, realIncome, planExpenses, realExpenses, planSaving.toInt(), realSaving, planDebtPay, realDebtPaid];
 });

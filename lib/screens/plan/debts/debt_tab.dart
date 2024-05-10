@@ -1,19 +1,12 @@
 import 'dart:developer';
-
-import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/data/models/account/debt.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
-import 'package:myfinplan/providers/plan/debt_strat.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
-import 'package:myfinplan/screens/plan/debts/components/loans_list.dart';
-import 'package:myfinplan/screens/plan/debts/widgets/strat_picker_bottom_sheet.dart';
-import 'package:myfinplan/screens/plan/plan_screen.dart';
-import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
+import 'package:myfinplan/screens/plan/debts/components/provider/providers.dart';
+import 'package:myfinplan/screens/plan/debts/components/strat_picker.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -25,180 +18,348 @@ class DebtManageTab extends ConsumerStatefulWidget {
   ConsumerState<DebtManageTab> createState() => _DebtManageTabState();
 }
 
-class DebtsInfoModel with EquatableMixin {
-  List<Debt> accounts;
-  List<int> paidAmounts;
-  int boostIdx;
-  int boostAmount;
+const double heightPerCell = 40;
+const double widgetPerCell = 80;
+const double paddinHeigth = 15;
+const double headerHeight = 24;
+const double loanHeaderWidth = 60;
 
-  DebtsInfoModel({
-    List<Debt>? debts,
-    List<int>? paids,
-    int? boostIndex,
-    int? boostAmount,
-  })  : accounts = debts ?? [],
-        paidAmounts = paids ?? [],
-        boostIdx = boostIndex ?? -1,
-        boostAmount = boostAmount ?? 0;
-
-  @override
-  List<Object?> get props => [accounts, paidAmounts, boostIdx, boostAmount];
-}
-
-final getDebtsDetail = FutureProvider((ref) async {
-  final debts = (await ref.watch(accountsProvider).getAccountByType(AccountType.debt)).cast<Debt>();
-  final thisTime = ref.watch(planTimeRangeProvider);
-  final info = DebtsInfoModel();
-  for (var debt in debts) {
-    final paidAmount = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.transact)).where((e) {
-      return e.toAccId == debt.id && e.paid && thisTime.contain(e.timestamp);
-    }).fold(0, (prev, e) {
-      return prev + e.amount;
-    });
-    info.accounts.add(debt);
-    info.paidAmounts.add(paidAmount);
-  }
-  return info;
-});
+const dataStyle = TextStyle(
+  fontSize: 12,
+);
 
 class _DebtManageTabState extends ConsumerState<DebtManageTab> {
+  Widget _emptyLoanView() {
+    return const SizedBox.expand(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(noItemsMessage),
+        ],
+      ),
+    );
+  }
+
+  Widget _cell(
+    String text, {
+    Color color = Colors.white,
+    double height = heightPerCell,
+    double width = widgetPerCell,
+    bool isSelected = false,
+    bool rightAlign = true,
+    void Function()? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        constraints: BoxConstraints.expand(
+          height: height,
+          width: width,
+        ),
+        decoration: BoxDecoration(
+          color: color,
+          border: isSelected
+              ? Border.all(
+                  width: 1.0,
+                  color: CupertinoColors.activeBlue,
+                )
+              : null,
+        ),
+        margin: const EdgeInsets.all(2.0),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Align(
+            alignment: rightAlign ? Alignment.centerRight : Alignment.centerLeft,
+            child: Text(
+              text,
+              style: dataStyle,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final info = ref.watch(getDebtsDetail).when(
-          data: (data) => data,
-          error: (error, _) {
-            log(error.toString());
-            return DebtsInfoModel();
-          },
-          loading: () => DebtsInfoModel(),
-        );
-    final totalDebt = info.accounts.fold(0, (prev, e) {
-      return prev + e.amount!;
-    });
-    final totalPaidThisRange = info.paidAmounts.fold(0, (prev, e) {
-      return prev + e.abs();
-    });
     return Scaffold(
-      body: info.accounts.isEmpty
-          ? const SizedBox.expand(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(noItemsMessage),
-                ],
-              ),
-            )
-          : ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(8.0),
-              children: [
-                const Text(
-                  "Tổng số nợ",
-                  style: TextStyle(fontSize: 12),
-                ),
-                Text(
-                  amountToDecimal(totalDebt),
-                  style: const TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Tình trạng nợ",
-                            style: TextStyle(fontSize: 12),
+      body: ref.watch(loansInfoProvider).when(
+            data: (info) {
+              if (info.loans.isEmpty) {
+                return _emptyLoanView();
+              }
+              final months = info.schedule.keys.toList()..sort((a, b) => a.compareTo(b));
+              return Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  final selectedContent = ref.watch(loanSelectedContentProvider);
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Tổng số dư"),
+                                  Text(amountToDecimal(info.totalBalance.toInt())),
+                                ],
+                              ),
+                            ),
+                            const Expanded(child: StrategyPickerBox()),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Lịch trình",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
                           ),
-                          InputChip(
-                            backgroundColor: Colors.red.shade100,
-                            label: const Text(
-                              "Nợ xấu",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            avatar: const Icon(
-                              Icons.thumb_down_alt_rounded,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Chiến lược quản lý",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          InputChip(
-                            label: Consumer(
-                              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                                final currentStrat = ref.watch(currentDebtStratProvider);
-                                return Text(currentStrat.title);
-                              },
-                            ),
-                            avatar: const Icon(
-                              Icons.swap_horiz_rounded,
-                              color: Colors.black,
-                            ),
-                            backgroundColor: Colors.white,
-                            side: const BorderSide(width: 0.5),
-                            onPressed: () {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const StrategyPickerBottomSheet();
-                                },
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(14),
-                                    topRight: Radius.circular(14),
-                                  ),
+                        ),
+                        const SizedBox(height: 15),
+                        SizedBox(
+                          height: heightPerCell * (info.loans.length + 1),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                children: [_cell("", height: headerHeight, width: loanHeaderWidth)] +
+                                    info.loans
+                                        .map(
+                                          (e) => _cell(
+                                            e.title!,
+                                            color: Colors.blue.shade200,
+                                            width: loanHeaderWidth,
+                                            isSelected: selectedContent.content == ContentType.loan && selectedContent.loanId == e.id,
+                                            onTap: () {
+                                              if (selectedContent.loanId == e.id) {
+                                                ref.read(loanSelectedContentProvider.notifier).state = SelectedContentState.init();
+                                              } else {
+                                                ref.read(loanSelectedContentProvider.notifier).state = selectedContent.copyWith(
+                                                  content: ContentType.loan,
+                                                  loanId: e.id,
+                                                  month: null,
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        )
+                                        .toList(),
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    final month = months[index];
+                                    return Container(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: widgetPerCell,
+                                      ),
+                                      child: ListView.builder(
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, i) {
+                                          if (i == 0) {
+                                            return _cell(
+                                              "${month.month}/${month.year}",
+                                              color: Colors.blue.shade200,
+                                              height: headerHeight,
+                                              isSelected: selectedContent.content == ContentType.month && selectedContent.month!.isAtSameMomentAs(month),
+                                              onTap: () {
+                                                if (selectedContent.month == month) {
+                                                  ref.read(loanSelectedContentProvider.notifier).state = SelectedContentState.init();
+                                                } else {
+                                                  ref.read(loanSelectedContentProvider.notifier).state = selectedContent.copyWith(
+                                                    content: ContentType.month,
+                                                    month: month,
+                                                    loanId: null,
+                                                  );
+                                                }
+                                              },
+                                            );
+                                          }
+                                          final entry = info.schedule[month]?[info.loans[i - 1].id];
+                                          return _cell(
+                                            "${entry?.totalPayment.round()}",
+                                            color: i.remainder(2) == 0 ? Colors.grey.shade300 : Colors.white,
+                                          );
+                                        },
+                                        itemCount: info.loans.length + 1,
+                                      ),
+                                    );
+                                  },
+                                  itemCount: months.length,
                                 ),
-                                clipBehavior: Clip.antiAlias,
-                              );
-                            },
-                          )
-                        ],
-                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Chi tiết lịch trình",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Expanded(
+                          child: switch (selectedContent.content) {
+                            ContentType.month => _buildMonthDetail(info, selectedContent),
+                            ContentType.loan => _buildLoanDetail(info, selectedContent),
+                          },
+                        ),
+                      ],
                     ),
-                  ],
+                  );
+                },
+              );
+            },
+            error: (error, _) {
+              log(error.toString());
+              return SizedBox.expand(
+                child: Text("$error"),
+              );
+            },
+            loading: () => const SizedBox.expand(
+              child: Center(
+                child: SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: CircularProgressIndicator(),
                 ),
-                const SizedBox(height: 10),
-                LinearProgressGauge(
-                  value: totalPaidThisRange,
-                  max: totalDebt.abs() ~/ 10,
-                  mode: GaugeMode.goodOverflow,
-                  showOverflow: true,
-                  leadingLabel: "Đã trả",
-                  trailingLabel: "Dự kiến",
-                ),
-                const SizedBox(height: 10),
-                const ListTile(
-                  minLeadingWidth: 12,
-                  dense: true,
-                  titleTextStyle: TextStyle(fontSize: 12, color: Colors.black),
-                  leadingAndTrailingTextStyle: TextStyle(fontSize: 12, color: Colors.black),
-                  leading: Text(""),
-                  title: Text("Tài khoản"),
-                  trailing: Text("Thực tế/ Dự kiến (tháng)"),
-                ),
-                LoansList(data: info),
-              ],
+              ),
             ),
+          ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "add_loan_fab",
         onPressed: () {
           pushNewScreen(
             context,
-            screen: const AddOrEditAccountScreen(initType: AccountType.debt),
+            screen: const AddOrEditAccountScreen(initType: AccountType.loan),
           );
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  _buildMonthDetail(LoanInfo info, SelectedContentState state) {
+    final scheduleData = info.schedule[state.month];
+    return SingleChildScrollView(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          headingRowHeight: 30,
+          horizontalMargin: 6,
+          dataRowMaxHeight: 30,
+          dataRowMinHeight: 20,
+          columnSpacing: 32,
+          columns: [
+            const DataColumn(label: Text("")),
+            ...info.loans.map(
+              (e) => DataColumn(
+                label: Text(e.title!),
+                numeric: true,
+              ),
+            ),
+          ],
+          rows: [
+            DataRow(
+              cells: [
+                const DataCell(Text("Gốc")),
+                ...info.loans.map((e) {
+                  final data = scheduleData?[e.id];
+                  return DataCell(Text("${data?.principal.round()}"));
+                }),
+              ],
+            ),
+            DataRow(
+              selected: true,
+              cells: [
+                const DataCell(Text("Lãi")),
+                ...info.loans.map((e) {
+                  final data = scheduleData?[e.id];
+                  return DataCell(Text("${data?.interest.round()}"));
+                }),
+              ],
+            ),
+            DataRow(
+              cells: [
+                const DataCell(Text("Cầu tuyết")),
+                ...info.loans.map((e) {
+                  final data = scheduleData?[e.id];
+                  return DataCell(Text("${data?.snowball.round()}"));
+                }),
+              ],
+            ),
+            DataRow(
+              selected: true,
+              cells: [
+                const DataCell(Text("Tổng trả")),
+                ...info.loans.map((e) {
+                  final data = scheduleData?[e.id];
+                  return DataCell(Text("${data?.totalPayment.round()}"));
+                }),
+              ],
+            ),
+            DataRow(
+              cells: [
+                const DataCell(Text("Đã trả")),
+                ...info.paysThisMonth.map((e) => DataCell(Text("${e.round()}"))),
+              ],
+            ),
+            DataRow(
+              selected: true,
+              cells: [
+                const DataCell(Text("Dư nợ")),
+                ...info.loans.map((e) {
+                  final data = scheduleData?[e.id];
+                  return DataCell(Text("${data?.remainingBalance.round()}"));
+                }),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildLoanDetail(LoanInfo info, SelectedContentState state) {
+    final data = info.schedule.map((key, value) {
+      return MapEntry(key, value[state.loanId]);
+    });
+    final months = data.keys.toList()..sort((a, b) => a.compareTo(b));
+    return SingleChildScrollView(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          headingRowHeight: 30,
+          horizontalMargin: 6,
+          dataRowMaxHeight: 30,
+          dataRowMinHeight: 20,
+          columnSpacing: 32,
+          columns: const [
+            DataColumn(label: Text("")),
+            DataColumn(label: Text("Gốc")),
+            DataColumn(label: Text("Lãi")),
+            DataColumn(label: Text("Cầu tuyết")),
+            DataColumn(label: Text("Tổng trả")),
+            DataColumn(label: Text("Dư nợ")),
+          ],
+          rows: months.map((e) {
+            final monthData = data[e];
+            return DataRow(cells: [
+              DataCell(Text("${e.month}/${e.year}")),
+              DataCell(Text("${monthData?.principal.round()}")),
+              DataCell(Text("${monthData?.interest.round()}")),
+              DataCell(Text("${monthData?.snowball.round()}")),
+              DataCell(Text("${monthData?.totalPayment.round()}")),
+              DataCell(Text("${monthData?.remainingBalance.round()}")),
+            ]);
+          }).toList(),
+        ),
       ),
     );
   }

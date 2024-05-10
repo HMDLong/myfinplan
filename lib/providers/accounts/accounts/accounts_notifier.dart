@@ -14,7 +14,8 @@ class AccountsNotifier extends ChangeNotifier {
   AccountsNotifier({required this.repo});
 
   Future<void> init() async {
-    await repo.add(Cash(id: '0', title: "Tiền mặt", amount: 1000000000000)); // For testing only, normally amount should init to 0
+    await repo.add(Cash(id: '0', title: "Tiền mặt", amount: 100000000)); // For testing only, normally amount should init to 0
+    notifyListeners();
   }
 
   Future<List<Account>> getAllAccount() async {
@@ -46,14 +47,14 @@ class AccountsNotifier extends ChangeNotifier {
       //   throw Exception("Not enough balance in ${from.title}");
       // }
       if (from != null) {
-        from.amount = from.amount! - amount;
+        from.amount = from.amount! + amount;
         await repo.update(from);
       }
     }
     if (toId != null) {
       final to = await getAccountById(toId);
       if (to != null) {
-        to.amount = to.amount! + amount;
+        to.amount = to.amount! - amount;
         await repo.update(to);
       }
     }

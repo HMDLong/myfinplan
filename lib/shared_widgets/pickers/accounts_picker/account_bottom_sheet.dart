@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
-import 'package:provider/provider.dart';
 
 class AccountBottomSheet extends ConsumerStatefulWidget {
-  const AccountBottomSheet({super.key});
+  final AccountType? onlyTypeOf;
+  const AccountBottomSheet({
+    super.key,
+    this.onlyTypeOf,
+  });
 
   @override
   ConsumerState<AccountBottomSheet> createState() => _AccountBottomSheetState();
@@ -44,9 +47,7 @@ class _AccountBottomSheetState extends ConsumerState<AccountBottomSheet> {
               ),
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Expanded(
             child: FutureBuilder(
                 future: ref.watch(accountsProvider).getAllAccount(),
@@ -62,6 +63,9 @@ class _AccountBottomSheetState extends ConsumerState<AccountBottomSheet> {
                         );
                       }
                       final accounts = snapshot.data ?? [];
+                      if (widget.onlyTypeOf != null) {
+                        accounts.retainWhere((e) => e.accountType == widget.onlyTypeOf);
+                      }
                       return ListView.builder(
                         itemCount: accounts.length,
                         itemBuilder: ((context, index) {

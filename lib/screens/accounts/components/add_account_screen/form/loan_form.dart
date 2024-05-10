@@ -40,7 +40,7 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
   void _onSubmit() async {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
-      final newDebt = Debt(
+      final newDebt = Loan(
         id: getRandomKey(),
         title: _formData["title"],
         amount: (_formData["amount"] ?? 0) * -1,
@@ -50,11 +50,10 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
               lateInterest: _formData["interest"],
               minPayment: (_formData["amount"] ?? 0) * -1,
             ),
-          PaymentType.installment => Installment(
-              minPayment: _formData["min_payment"],
-              period: _formData["period"],
-              originInterest: _formData["interest"],
-              phaselyDuedate: _formData["duedate"],
+          PaymentType.installment => AmortizingFixedTermPayment(
+              term: _formData["term"],
+              interestRate: _formData["interest"] / 100,
+              monthlyPayDate: _formData["duedate"],
             ),
         },
       );
@@ -101,15 +100,6 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 _formData["amount"] = value;
               },
             ),
-            // TextFormField(
-            //   autovalidateMode: AutovalidateMode.onUserInteraction,
-            //   decoration: formFieldDecor(
-            //     icon: const Icon(CupertinoIcons.money_dollar),
-            //     label: const Text("Số tiền nợ"),
-            //   ),
-            //   keyboardType: TextInputType.number,
-            //   validator: (value) => numericValidator(value, "amount"),
-            // ),
             const SizedBox(height: 15.0),
             Row(
               children: [
@@ -117,27 +107,29 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 const Text("Loại hình chi trả", style: TextStyle(fontSize: 14.0)),
                 const SizedBox(width: 10.0),
                 Radio<PaymentType>(
-                    value: PaymentType.installment,
-                    groupValue: _paymentType,
-                    onChanged: (paymentType) {
-                      if (paymentType != null) {
-                        setState(() {
-                          _paymentType = paymentType;
-                        });
-                      }
-                    }),
+                  value: PaymentType.installment,
+                  groupValue: _paymentType,
+                  onChanged: (paymentType) {
+                    if (paymentType != null) {
+                      setState(() {
+                        _paymentType = paymentType;
+                      });
+                    }
+                  },
+                ),
                 const Text("Trả góp", style: TextStyle(fontSize: 14.0)),
                 const SizedBox(width: 10.0),
                 Radio<PaymentType>(
-                    value: PaymentType.infull,
-                    groupValue: _paymentType,
-                    onChanged: (paymentType) {
-                      if (paymentType != null) {
-                        setState(() {
-                          _paymentType = paymentType;
-                        });
-                      }
-                    }),
+                  value: PaymentType.infull,
+                  groupValue: _paymentType,
+                  onChanged: (paymentType) {
+                    if (paymentType != null) {
+                      setState(() {
+                        _paymentType = paymentType;
+                      });
+                    }
+                  },
+                ),
                 const Text("Trả đủ", style: TextStyle(fontSize: 14.0)),
               ],
             ),
@@ -148,11 +140,10 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 }),
               PaymentType.installment => InstallmentForm(
                   formData: _formData,
-                  onDataChanged: (period, minPayment, duedate, interest) {
+                  onDataChanged: (term, duedate, interest) {
                     if (duedate != null) _formData["duedate"] = duedate;
                     if (interest != null) _formData["interest"] = interest;
-                    if (minPayment != null) _formData["min_payment"] = minPayment;
-                    if (period != null) _formData["period"] = period;
+                    if (term != null) _formData["term"] = term;
                   }),
             }),
             Row(

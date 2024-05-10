@@ -48,7 +48,7 @@ class DemoPanel extends ConsumerWidget {
     randomDebit() => debitIds[Random().nextInt(3)];
     randomCredit() => debitIds[Random().nextInt(2)];
     randomSaving() => debitIds[Random().nextInt(3)];
-    const startBalance = 1000000000;
+    const startBalance = 600000000;
     final cashs = [
       Cash(id: '1', amount: startBalance, title: 'Tiền mặt 2'),
     ];
@@ -200,13 +200,13 @@ class DemoPanel extends ConsumerWidget {
         Transaction(
           id: getRandomKey(),
           timestamp: monthRange.dayOfMonthRange(27),
-          amount: Random().nextBool() ? 0 : 7300000,
+          amount: 100000000,
           categoryId: "i1.1",
           categoryName: "Lương",
           toAccId: randomDebit(),
           planDetail: TransactPlanDetail(
             id: getRandomKey(),
-            planAmount: 7000000,
+            planAmount: 100000000,
             planTime: monthRange.dayOfMonthRange(27),
           ),
         ),
@@ -246,7 +246,7 @@ class DemoPanel extends ConsumerWidget {
           final ts = Transaction(
             id: getRandomKey(),
             timestamp: date,
-            amount: randomDate(2, 50) * 100000,
+            amount: randomDate(2, 10) * 100000,
             categoryId: cate.id,
             categoryName: cate.name,
             accId: acc.id,

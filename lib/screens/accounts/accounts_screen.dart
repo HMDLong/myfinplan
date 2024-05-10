@@ -7,6 +7,7 @@ import 'package:myfinplan/screens/accounts/components/add_account_screen/add_acc
 import 'package:myfinplan/screens/accounts/components/cash_tab/cash_tab.dart';
 import 'package:myfinplan/screens/accounts/components/credit_tab/credit_tab.dart';
 import 'package:myfinplan/screens/accounts/components/debit_tab/debit_tab.dart';
+import 'package:myfinplan/screens/accounts/components/loan_tab/loan_tab.dart';
 import 'package:myfinplan/screens/accounts/components/saving_tab/saving_tab.dart';
 import 'package:myfinplan/screens/home/components/account_summary_section.dart';
 import 'package:myfinplan/utils/format.dart';
@@ -25,6 +26,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
     const Tab(child: Text("Ghi nợ/ Ví")),
     const Tab(child: Text("Tín dụng")),
     const Tab(child: Text("Tiết kiệm")),
+    const Tab(child: Text("Vay nợ")),
   ];
 
   buildTabs() {
@@ -67,6 +69,15 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
                   ],
                 ),
               ),
+              Tab(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Vay nợ"),
+                    Text(amountToCompact(data[AccountType.loan] ?? 0)),
+                  ],
+                ),
+              ),
             ];
           },
           error: (error, _) {
@@ -81,7 +92,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -136,6 +147,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
           DebitTab(),
           CreditTab(),
           SavingTab(),
+          LoanTab(),
         ],
       ),
     );

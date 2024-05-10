@@ -2,11 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myfinplan/utils/styles.dart';
+import 'package:myfinplan/utils/time/times.dart';
 
 class CustomDatePicker extends StatefulWidget {
   final String? label;
   final void Function(DateTime) onDatePicked;
-  const CustomDatePicker({super.key, this.label, required this.onDatePicked});
+  final bool dayAfterOnly;
+  const CustomDatePicker({
+    super.key,
+    this.label,
+    required this.onDatePicked,
+    this.dayAfterOnly = false,
+  });
 
   @override
   State<CustomDatePicker> createState() => _CustomDatePickerState();
@@ -14,17 +21,30 @@ class CustomDatePicker extends StatefulWidget {
 
 class _CustomDatePickerState extends State<CustomDatePicker> {
   final _datePickerController = TextEditingController();
+  bool isPickedDateBeforeToday = false;
+
+  @override
+  void dispose() {
+    _datePickerController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: _datePickerController,
       readOnly: true,
-      decoration: formFieldDecor(icon: const Icon(CupertinoIcons.calendar), label: Text("Thời gian")),
+      decoration: formFieldDecor(
+        icon: const Icon(CupertinoIcons.calendar),
+        label: Text(widget.label ?? "Thời gian"),
+      ),
       onTap: _selectDate,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Hãy điền thông tin";
+          return "Hãy điền";
+        }
+        if (widget.dayAfterOnly && isPickedDateBeforeToday) {
+          return "Cần phải trong tương lai";
         }
         return null;
       },
@@ -43,6 +63,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     if (pickedDate != null) {
       setState(() {
         widget.onDatePicked(pickedDate);
+        isPickedDateBeforeToday = DateTime.now().toDateOnly().isBefore(pickedDate.toDateOnly());
         _datePickerController.text = DateFormat(DateFormat.DAY).format(pickedDate);
       });
     }

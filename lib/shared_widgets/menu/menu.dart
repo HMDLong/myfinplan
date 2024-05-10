@@ -5,11 +5,13 @@ class CustomMenu<T> extends StatefulWidget {
   final T? initValue;
   final List<DropdownMenuEntry<T>> items;
   final void Function(T newValue) onChanged;
+  final bool isScrollable;
   const CustomMenu({
     super.key,
     required this.items,
     this.initValue,
     required this.onChanged,
+    this.isScrollable = false,
   });
 
   @override
@@ -25,8 +27,47 @@ class _CustomMenuState<T> extends State<CustomMenu<T>> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  _buildScrollableMenu() {
+    return SizedBox(
+      height: 30,
+      width: double.infinity,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          final item = widget.items[index];
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                currentValue = item.value;
+                widget.onChanged(item.value);
+              });
+            },
+            child: Container(
+              // constraints: const BoxConstraints(minHeight: 20, maxHeight: 40),
+              decoration: BoxDecoration(
+                color: currentValue == item.value ? CupertinoColors.activeBlue : Colors.blue.shade100,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: Text(
+                    item.label,
+                    style: TextStyle(color: currentValue == item.value ? Colors.white : Colors.black),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+        separatorBuilder: (context, _) => const SizedBox(width: 6.0),
+        itemCount: widget.items.length,
+      ),
+    );
+  }
+
+  _buildUnscrollableMenu() {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -61,5 +102,10 @@ class _CustomMenuState<T> extends State<CustomMenu<T>> {
         }).toList(),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.isScrollable ? _buildScrollableMenu() : _buildUnscrollableMenu();
   }
 }

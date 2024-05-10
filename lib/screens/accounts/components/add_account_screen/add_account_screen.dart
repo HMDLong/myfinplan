@@ -54,7 +54,7 @@ class _AddOrEditAccountScreenState extends State<AddOrEditAccountScreen> {
                 DropdownMenuEntry(value: AccountType.debit, label: "Ví"),
                 DropdownMenuEntry(value: AccountType.credit, label: "Tín dụng"),
                 DropdownMenuEntry(value: AccountType.saving, label: "Tiết kiệm"),
-                DropdownMenuEntry(value: AccountType.debt, label: "Khoản nợ"),
+                DropdownMenuEntry(value: AccountType.loan, label: "Khoản nợ"),
               ],
               onChanged: (newValue) {
                 setState(() {
@@ -67,7 +67,7 @@ class _AddOrEditAccountScreenState extends State<AddOrEditAccountScreen> {
             AccountType.credit => const NewCreditForm(),
             AccountType.debit => const NewDebitForm(),
             AccountType.saving => const NewSavingForm(),
-            AccountType.debt => const NewLoanForm(),
+            AccountType.loan => const NewLoanForm(),
             _ => const SizedBox(),
           })
         ],

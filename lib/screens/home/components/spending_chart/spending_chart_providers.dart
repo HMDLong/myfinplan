@@ -14,9 +14,9 @@ final spendingChartDataProvider = FutureProvider<List<ColumnData>>(
       return e.paid && (timeRange.contain(e.timestamp) || prevRange.contain(e.timestamp));
     }).fold([0, 0], (prev, e) {
       if (prevRange.contain(e.timestamp)) {
-        prev[0] += e.amount;
+        prev[0] += e.amount.abs();
       } else {
-        prev[1] += e.amount;
+        prev[1] += e.amount.abs();
       }
       return prev;
     });

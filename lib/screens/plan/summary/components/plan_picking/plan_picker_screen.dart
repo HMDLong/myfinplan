@@ -35,7 +35,7 @@ class _PlanPickerScreenState extends ConsumerState<PlanPickerScreen> {
         },
       ),
       body: FutureBuilder(
-        future: ref.watch(planDistNotifierProvider).getCurrentDist(),
+        future: ref.read(planDistNotifierProvider).getCurrentDist(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();

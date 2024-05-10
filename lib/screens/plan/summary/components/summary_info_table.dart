@@ -19,7 +19,6 @@ class SummaryInfoTable extends StatelessWidget {
                   dataRowMaxHeight: 30,
                   dataRowMinHeight: 20,
                   horizontalMargin: 10,
-                  // headingTextStyle: const TextStyle(fontSize: 12, color: Colors.black),
                   dataTextStyle: const TextStyle(fontSize: 12, color: Colors.black),
                   columns: const [
                     DataColumn(label: Text("")),
@@ -54,7 +53,7 @@ class SummaryInfoTable extends StatelessWidget {
                     ),
                     DataRow(
                       cells: [
-                        const DataCell(Text("Khoản nợ")),
+                        const DataCell(Text("Trả nợ")),
                         DataCell(Text(amountToDecimal(data[6], currency: null))),
                         DataCell(Text(amountToDecimal(data[7], currency: null))),
                         DataCell(Text(amountToDecimal(data[7] - data[6], currency: null))),
@@ -75,36 +74,6 @@ class SummaryInfoTable extends StatelessWidget {
               loading: () => const CircularProgressIndicator(),
             );
       },
-    );
-
-    ;
-  }
-
-  _buildRow(String title, List<Widget> content, {List<Widget>? subtitle}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 3,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-                  Text(
-                    title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ] +
-                (subtitle ?? []),
-          ),
-        ),
-        Expanded(
-          flex: 7,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: content,
-          ),
-        ),
-      ],
     );
   }
 }
