@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/data/models/account/saving.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
 import 'package:myfinplan/screens/plan/savings/saving_tab_state.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
@@ -51,31 +49,43 @@ class _SavingTabState extends ConsumerState<SavingTab> {
             : Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      "Tổng tiết kiệm",
-                      style: TextStyle(fontSize: 12),
+                    const Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Tổng tiết kiệm",
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
-                    Text(
-                      amountToDecimal(totalSaving),
-                      style: const TextStyle(fontSize: 18),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        amountToDecimal(totalSaving),
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     LinearProgressGauge(
                       value: totalSavedThisRange,
                       max: 100000000,
                       mode: GaugeMode.goodOverflow,
+                      showOverflow: true,
                       leadingLabel: "Đã tiết kiệm",
                       trailingLabel: "Dự kiến",
                     ),
                     const SizedBox(height: 10),
-                    const ListTile(
-                      minLeadingWidth: 12,
-                      dense: true,
-                      leading: Text(""),
-                      title: Text("Tài khoản"),
-                      trailing: Text("Thực tế/ Dự kiến (tháng)"),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            WidgetSpan(child: Icon(Icons.wallet)),
+                            TextSpan(text: "Các khoản tháng này"),
+                          ],
+                        ),
+                      ),
                     ),
                     ListView.separated(
                       shrinkWrap: true,
@@ -94,23 +104,13 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                           title: Text(saving.title!),
                           subtitle: Text(amountToDecimal(saving.amount!)),
                           leading: Text("${index + 1}"),
-                          trailing: Text("${amountToCompact(saved, currency: null)}/${amountToCompact(saving.amount!, currency: null)}"),
+                          trailing: Text("+ ${amountToDecimal(saved, currency: null)}"),
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) => const SizedBox(
                         height: 6,
                       ),
                     ),
-                    // Column(
-                    //   children: savingData.savings
-                    //       .map(
-                    //         (e) => ListTile(
-                    //           title: Text("${e.title}"),
-                    //           subtitle: Text(amountToDecimal(e.amount!)),
-                    //         ),
-                    //       )
-                    //       .toList(),
-                    // )
                   ],
                 ),
               ),

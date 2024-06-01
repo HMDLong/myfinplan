@@ -95,12 +95,13 @@ class SnowballStrategy extends DebtStrategy {
   String get key => "snowball";
 
   @override
-  int setPriority(Loan a, Loan b) => b.interest.compareTo(a.interest);
+  int setPriority(Loan a, Loan b) => a.interest.compareTo(b.interest);
 }
 
 class AvalancheStrategy extends DebtStrategy {
   @override
   String get description => """Tập trung trả thêm vào khoản có số lãi phát sinh cao nhất
+  - Phương án tốt nhất giúp nhanh trả nợ
   - Giúp ngăn các khoản vay lãi cao phát sinh
   - Phù hợp nếu bạn có khoản nợ lãi cao hoặc khoản vay lớn có lãi""";
 

@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/cash.dart';
@@ -11,6 +10,7 @@ import 'package:myfinplan/data/models/account/payment.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/transaction/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
@@ -30,12 +30,14 @@ class DemoPanel extends ConsumerWidget {
         title: "",
         onBackPressed: () => Navigator.pop(context),
       ),
-      body: Column(children: [
-        ElevatedButton(
-          onPressed: () => _genData(ref),
-          child: Text("Generate mock data"),
-        ),
-      ]),
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () => _genData(ref),
+            child: Text("Generate mock data"),
+          ),
+        ],
+      ),
     );
   }
 
@@ -48,7 +50,7 @@ class DemoPanel extends ConsumerWidget {
     randomDebit() => debitIds[Random().nextInt(3)];
     randomCredit() => debitIds[Random().nextInt(2)];
     randomSaving() => debitIds[Random().nextInt(3)];
-    const startBalance = 600000000;
+    const startBalance = 10000000000;
     final cashs = [
       Cash(id: '1', amount: startBalance, title: 'Tiền mặt 2'),
     ];
@@ -140,7 +142,10 @@ class DemoPanel extends ConsumerWidget {
           categoryName: "Tiền thuê",
           accId: randomDebit(),
           planDetail: TransactPlanDetail(
-            id: getRandomKey(),
+            id: PeriodicRecurrence(
+              periodicType: TimeType.month,
+              example: DateTime(2024, 5, 26),
+            ).getPlanTransactId,
             planAmount: 5000000,
             planTime: monthRange.dayOfMonthRange(26),
           ),
@@ -153,9 +158,12 @@ class DemoPanel extends ConsumerWidget {
           categoryName: "Điện",
           accId: randomDebit(),
           planDetail: TransactPlanDetail(
-            id: getRandomKey(),
+            id: PeriodicRecurrence(
+              periodicType: TimeType.month,
+              example: DateTime(2024, 5, 28),
+            ).getPlanTransactId,
             planAmount: 800000,
-            planTime: monthRange.dayOfMonthRange(27),
+            planTime: monthRange.dayOfMonthRange(28),
           ),
         ),
         Transaction(
@@ -166,7 +174,10 @@ class DemoPanel extends ConsumerWidget {
           categoryName: "Nước",
           accId: randomSaving(),
           planDetail: TransactPlanDetail(
-            id: getRandomKey(),
+            id: PeriodicRecurrence(
+              periodicType: TimeType.month,
+              example: DateTime(2024, 5, 27),
+            ).getPlanTransactId,
             planAmount: 800000,
             planTime: monthRange.dayOfMonthRange(27),
           ),
@@ -179,9 +190,12 @@ class DemoPanel extends ConsumerWidget {
           categoryName: "Internet",
           accId: randomCredit(),
           planDetail: TransactPlanDetail(
-            id: getRandomKey(),
+            id: PeriodicRecurrence(
+              periodicType: TimeType.month,
+              example: DateTime(2024, 5, 26),
+            ).getPlanTransactId,
             planAmount: 120000,
-            planTime: monthRange.dayOfMonthRange(27),
+            planTime: monthRange.dayOfMonthRange(26),
           ),
         ),
         Transaction(
@@ -192,9 +206,12 @@ class DemoPanel extends ConsumerWidget {
           categoryName: "Tiền học chính",
           accId: randomCredit(),
           planDetail: TransactPlanDetail(
-            id: getRandomKey(),
+            id: PeriodicRecurrence(
+              periodicType: TimeType.month,
+              example: DateTime(2024, 5, 5),
+            ).getPlanTransactId,
             planAmount: 4300000,
-            planTime: monthRange.dayOfMonthRange(27),
+            planTime: monthRange.dayOfMonthRange(5),
           ),
         ),
         Transaction(
@@ -205,9 +222,12 @@ class DemoPanel extends ConsumerWidget {
           categoryName: "Lương",
           toAccId: randomDebit(),
           planDetail: TransactPlanDetail(
-            id: getRandomKey(),
+            id: PeriodicRecurrence(
+              periodicType: TimeType.month,
+              example: DateTime(2024, 5, 1),
+            ).getPlanTransactId,
             planAmount: 100000000,
-            planTime: monthRange.dayOfMonthRange(27),
+            planTime: monthRange.dayOfMonthRange(1),
           ),
         ),
         Transaction(
@@ -219,9 +239,12 @@ class DemoPanel extends ConsumerWidget {
           toAccId: randomSaving(),
           accId: randomDebit(),
           planDetail: TransactPlanDetail(
-            id: getRandomKey(),
+            id: PeriodicRecurrence(
+              periodicType: TimeType.month,
+              example: DateTime(2024, 5, 28),
+            ).getPlanTransactId,
             planAmount: 500000,
-            planTime: monthRange.dayOfMonthRange(27),
+            planTime: monthRange.dayOfMonthRange(28),
           ),
         ),
       ];

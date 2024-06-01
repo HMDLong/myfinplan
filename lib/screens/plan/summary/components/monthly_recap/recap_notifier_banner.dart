@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:myfinplan/screens/plan/summary/components/plan_update/plan_update_screen.dart';
+import 'package:myfinplan/screens/plan/summary/components/monthly_recap/monthly_recap_screen.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 

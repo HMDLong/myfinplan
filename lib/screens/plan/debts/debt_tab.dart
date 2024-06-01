@@ -7,6 +7,7 @@ import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
 import 'package:myfinplan/screens/plan/debts/components/provider/providers.dart';
 import 'package:myfinplan/screens/plan/debts/components/strat_picker.dart';
+import 'package:myfinplan/screens/plan/summary/components/monthly_recap/recap_screen_components/goals_section.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -112,9 +113,9 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          "Lịch trình",
-                          style: TextStyle(
+                        Text(
+                          "Lịch trình (${toVnMonthYear(months.first)} ~ ${toVnMonthYear(months.last)})",
+                          style: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -182,7 +183,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                                           }
                                           final entry = info.schedule[month]?[info.loans[i - 1].id];
                                           return _cell(
-                                            "${entry?.totalPayment.round()}",
+                                            amountToDecimal(entry!.totalPayment.round(), currency: null),
                                             color: i.remainder(2) == 0 ? Colors.grey.shade300 : Colors.white,
                                           );
                                         },
@@ -256,6 +257,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
           dataRowMaxHeight: 30,
           dataRowMinHeight: 20,
           columnSpacing: 32,
+          dataTextStyle: dataTextStyle,
           columns: [
             const DataColumn(label: Text("")),
             ...info.loans.map(
@@ -271,7 +273,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                 const DataCell(Text("Gốc")),
                 ...info.loans.map((e) {
                   final data = scheduleData?[e.id];
-                  return DataCell(Text("${data?.principal.round()}"));
+                  return DataCell(Text(amountToDecimal(data!.principal.round(), currency: null)));
                 }),
               ],
             ),
@@ -281,7 +283,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                 const DataCell(Text("Lãi")),
                 ...info.loans.map((e) {
                   final data = scheduleData?[e.id];
-                  return DataCell(Text("${data?.interest.round()}"));
+                  return DataCell(Text(amountToDecimal(data!.interest.round(), currency: null)));
                 }),
               ],
             ),
@@ -290,7 +292,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                 const DataCell(Text("Cầu tuyết")),
                 ...info.loans.map((e) {
                   final data = scheduleData?[e.id];
-                  return DataCell(Text("${data?.snowball.round()}"));
+                  return DataCell(Text(amountToDecimal(data!.snowball.round(), currency: null)));
                 }),
               ],
             ),
@@ -300,14 +302,25 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                 const DataCell(Text("Tổng trả")),
                 ...info.loans.map((e) {
                   final data = scheduleData?[e.id];
-                  return DataCell(Text("${data?.totalPayment.round()}"));
+                  return DataCell(
+                    Text(
+                      amountToDecimal(data!.totalPayment.round(), currency: null),
+                    ),
+                  );
                 }),
               ],
             ),
             DataRow(
               cells: [
                 const DataCell(Text("Đã trả")),
-                ...info.paysThisMonth.map((e) => DataCell(Text("${e.round()}"))),
+                ...info.paysThisMonth.map((e) => DataCell(
+                      Text(
+                        amountToDecimal(
+                          e.round(),
+                          currency: null,
+                        ),
+                      ),
+                    )),
               ],
             ),
             DataRow(
@@ -316,7 +329,14 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                 const DataCell(Text("Dư nợ")),
                 ...info.loans.map((e) {
                   final data = scheduleData?[e.id];
-                  return DataCell(Text("${data?.remainingBalance.round()}"));
+                  return DataCell(
+                    Text(
+                      amountToDecimal(
+                        data!.remainingBalance.round(),
+                        currency: null,
+                      ),
+                    ),
+                  );
                 }),
               ],
             ),
@@ -340,23 +360,59 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
           dataRowMaxHeight: 30,
           dataRowMinHeight: 20,
           columnSpacing: 32,
+          dataTextStyle: dataTextStyle,
           columns: const [
             DataColumn(label: Text("")),
-            DataColumn(label: Text("Gốc")),
-            DataColumn(label: Text("Lãi")),
-            DataColumn(label: Text("Cầu tuyết")),
-            DataColumn(label: Text("Tổng trả")),
-            DataColumn(label: Text("Dư nợ")),
+            DataColumn(label: Text("Gốc"), numeric: true),
+            DataColumn(label: Text("Lãi"), numeric: true),
+            DataColumn(label: Text("Cầu tuyết"), numeric: true),
+            DataColumn(label: Text("Tổng trả"), numeric: true),
+            DataColumn(label: Text("Dư nợ"), numeric: true),
           ],
           rows: months.map((e) {
             final monthData = data[e];
             return DataRow(cells: [
               DataCell(Text("${e.month}/${e.year}")),
-              DataCell(Text("${monthData?.principal.round()}")),
-              DataCell(Text("${monthData?.interest.round()}")),
-              DataCell(Text("${monthData?.snowball.round()}")),
-              DataCell(Text("${monthData?.totalPayment.round()}")),
-              DataCell(Text("${monthData?.remainingBalance.round()}")),
+              DataCell(
+                Text(
+                  amountToDecimal(
+                    monthData!.principal.round(),
+                    currency: null,
+                  ),
+                ),
+              ),
+              DataCell(
+                Text(
+                  amountToDecimal(
+                    monthData.interest.round(),
+                    currency: null,
+                  ),
+                ),
+              ),
+              DataCell(
+                Text(
+                  amountToDecimal(
+                    monthData.snowball.round(),
+                    currency: null,
+                  ),
+                ),
+              ),
+              DataCell(
+                Text(
+                  amountToDecimal(
+                    monthData.totalPayment.round(),
+                    currency: null,
+                  ),
+                ),
+              ),
+              DataCell(
+                Text(
+                  amountToDecimal(
+                    monthData.remainingBalance.round(),
+                    currency: null,
+                  ),
+                ),
+              ),
             ]);
           }).toList(),
         ),

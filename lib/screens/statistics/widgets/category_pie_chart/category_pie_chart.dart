@@ -165,7 +165,6 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
       child: SfCircularChart(
         legend: const Legend(
           isVisible: true,
-          isResponsive: true,
           textStyle: TextStyle(fontSize: 10),
           position: LegendPosition.bottom,
           itemPadding: 10,

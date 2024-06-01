@@ -1,5 +1,4 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:myfinplan/data/models/schedule_notification.dart';
 import 'dart:developer' as dev;
 
@@ -14,7 +13,7 @@ List<NotificationChannel> channels = [
   ),
 ];
 
-class NotificationService extends ChangeNotifier {
+class NotificationService {
   static Future<bool> initialize() {
     return AwesomeNotifications().initialize(null, channels);
   }

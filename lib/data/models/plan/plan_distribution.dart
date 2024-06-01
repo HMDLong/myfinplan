@@ -51,7 +51,10 @@ class Distribution721 extends PlanDistribution {
   DistType get type => DistType.d721;
 
   @override
-  String get description => "";
+  String get description => """Thu nhập của bạn sẽ được chia thành 3 phần:
+  - Chi phí bắt buộc: 70%
+  - Chi phí cá nhân: 20%
+  - Tiết kiệm: 10%""";
 
   @override
   String get title => "70-20-10";
@@ -69,7 +72,10 @@ class Distribution532 extends PlanDistribution {
   DistType get type => DistType.d532;
 
   @override
-  String get description => "50-30-20";
+  String get description => """Thu nhập của bạn sẽ được chia thành 3 phần:
+  - Chi phí bắt buộc: 50%
+  - Chi phí cá nhân: 30%
+  - Tiết kiệm: 20%""";
 
   @override
   String get title => "50-30-20";
@@ -87,7 +93,9 @@ class Distribution82 extends PlanDistribution {
   DistType get type => DistType.d82;
 
   @override
-  String get description => "80-20";
+  String get description => """Thu nhập của bạn sẽ được chia thành 3 phần:
+  - Chi phí bắt buộc + cá nhân: 80%
+  - Tiết kiệm: 10%""";
 
   @override
   String get title => "80-20";

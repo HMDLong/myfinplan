@@ -12,6 +12,7 @@ class LinearProgressGauge extends StatelessWidget {
   const LinearProgressGauge({
     super.key,
     required this.value,
+    this.addValue = 0,
     required this.max,
     this.min,
     this.leadingLabel,
@@ -22,9 +23,11 @@ class LinearProgressGauge extends StatelessWidget {
     this.showOverflow = false,
     this.mode = GaugeMode.standard,
     this.compactLabel = false,
+    this.pointers = const [],
   });
 
   final int value;
+  final int addValue;
   final int max;
   final int? min;
   final String? leadingLabel;
@@ -35,6 +38,7 @@ class LinearProgressGauge extends StatelessWidget {
   final bool showOverflow;
   final GaugeMode mode;
   final bool compactLabel;
+  final List<Pointer> pointers;
 
   Color Function(int value, int max) _getPallete(GaugeMode mode) {
     if (mode == GaugeMode.standard) {
@@ -142,6 +146,13 @@ class LinearProgressGauge extends StatelessWidget {
           ),
           end: max == 0 ? 0.5 : max.toDouble(),
           valueBar: [
+            if (addValue > 0)
+              ValueBar(
+                value: (value > max ? (max == 0 ? 0.5 : max.toDouble()) : value.toDouble()) + addValue,
+                valueBarThickness: 8,
+                borderRadius: 10,
+                color: Colors.green,
+              ),
             ValueBar(
               value: value > max ? (max == 0 ? 0.5 : max.toDouble()) : value.toDouble(),
               valueBarThickness: 8,

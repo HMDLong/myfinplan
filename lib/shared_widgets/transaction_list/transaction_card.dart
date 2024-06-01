@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/category/category.dart';
@@ -8,12 +9,16 @@ import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/categories/category_notifier.dart';
-import 'package:myfinplan/screens/transactions/transaction_detail_scren.dart';
+import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/screens/transactions/add_transaction_screen/add_transaction_screen.dart';
+import 'package:myfinplan/utils/styles.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class TransactionCard extends ConsumerStatefulWidget {
   final Transaction transaction;
   const TransactionCard({Key? key, required this.transaction}) : super(key: key);
+
+  get transactDetail => null;
 
   @override
   ConsumerState<TransactionCard> createState() => _TransactionCardState();
@@ -23,8 +28,10 @@ class TransactDetail {
   Account? transactAccount;
   Account? targetAccount;
   Category? category;
+  Transaction transact;
 
   TransactDetail({
+    required this.transact,
     required this.transactAccount,
     required this.category,
     this.targetAccount,
@@ -35,6 +42,7 @@ final transactionDetailProvider = FutureProvider.family<TransactDetail, Transact
   final accountProvider = ref.watch(accountsProvider);
   final categoryProvider = ref.watch(categoryNotifierProvider);
   return TransactDetail(
+    transact: transact,
     transactAccount: transact.accId == null ? null : await accountProvider.getAccountById(transact.accId!),
     targetAccount: transact.toAccId == null ? null : await accountProvider.getAccountById(transact.toAccId!),
     category: await categoryProvider.getCategoryById(transact.categoryId),
@@ -42,20 +50,107 @@ final transactionDetailProvider = FutureProvider.family<TransactDetail, Transact
 });
 
 class _TransactionCardState extends ConsumerState<TransactionCard> {
+  _onDelete(BuildContext context, TransactDetail detail) {
+    showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: const SizedBox(
+            height: 50,
+            child: Column(
+              children: [
+                Icon(Icons.warning_amber_rounded),
+                SizedBox(height: 10),
+                Text("Xác nhận xóa?"),
+                SizedBox(height: 10),
+              ],
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: const BorderSide(width: 0.2),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text("Hủy", style: TextStyle(color: Colors.red)),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text("Xác nhận", style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    ).then((confirmDelete) {
+      if (confirmDelete != null && confirmDelete) {
+        ref.read(transactionNotifierProvider.notifier).deleteTransaction(detail.transact.id).then(
+          (value) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(CustomSnackbar.success("Xóa thành công"));
+            Navigator.pop(context);
+          },
+        ).onError(
+          (error, stackTrace) {},
+        );
+      }
+    });
+  }
+
+  _onEdit(BuildContext context, TransactDetail detail) {
+    pushNewScreen(
+      context,
+      screen: AddOrEditTransactScreen(prefill: detail.transact),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ref.watch(transactionDetailProvider(widget.transaction)).when(
       data: (data) {
-        return SizedBox(
-          height: 70,
-          width: double.infinity,
-          child: GestureDetector(
-            onTap: () {
-              pushNewScreen(context,
-                  screen: TransactDetailScreen(
-                    transact: widget.transaction,
-                  ));
-            },
+        return Slidable(
+          endActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (context) => _onEdit(context, data),
+                icon: Icons.edit_document,
+                backgroundColor: Colors.blue,
+              ),
+              SlidableAction(
+                onPressed: (context) => _onDelete(context, data),
+                icon: Icons.delete_outline_outlined,
+                backgroundColor: Colors.red,
+              ),
+            ],
+          ),
+          child: SizedBox(
+            height: 70,
+            width: double.infinity,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -63,9 +158,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                   flex: 2,
                   child: Container(
                     margin: const EdgeInsets.all(5.0),
-                    constraints: const BoxConstraints(
-                      minHeight: 60.0,
-                    ),
+                    constraints: const BoxConstraints(minHeight: 60.0),
                     decoration: BoxDecoration(
                       color: Colors.red.shade400,
                       borderRadius: BorderRadius.circular(10.0),
@@ -83,31 +176,54 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text("${data.category?.name}"),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Text(
                         DateFormat(DateFormat.ABBR_MONTH_DAY).add_jm().format(widget.transaction.timestamp),
                         style: const TextStyle(fontSize: 10),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text("Từ: ", style: TextStyle(color: Colors.black45, fontSize: 10)),
-                          Text(
-                            data.transactAccount?.title ?? "Không xác định",
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                          ),
+                          if (data.transact.accId != null)
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: "Từ: ",
+                                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                                  ),
+                                  TextSpan(
+                                    text: data.transact.accName,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          if (data.transact.toAccId != null)
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: "  Đến: ",
+                                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                                  ),
+                                  TextSpan(
+                                    text: data.transact.toAccName,
+                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                     ],
                   ),
                 ),
                 Expanded(
-                  flex: 4,
+                  flex: 3,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -115,25 +231,24 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                       Text(
                         "${NumberFormat.decimalPattern().format(widget.transaction.amount)} VND",
                         style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: switch (widget.transaction.transactType) {
-                              TransactionType.expense => Colors.red,
-                              TransactionType.income => const Color.fromARGB(255, 105, 240, 139),
-                              TransactionType.transact => CupertinoColors.activeBlue,
-                            }),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: switch (widget.transaction.transactType) {
+                            TransactionType.expense => Colors.red,
+                            TransactionType.income => const Color.fromARGB(255, 105, 240, 139),
+                            TransactionType.transact => CupertinoColors.activeBlue,
+                          },
+                        ),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Text(
-                        "${widget.transaction.description}",
+                        widget.transaction.description ?? "",
                         style: const TextStyle(fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 10)
+                const SizedBox(width: 5),
               ],
             ),
           ),

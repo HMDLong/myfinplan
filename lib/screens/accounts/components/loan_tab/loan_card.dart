@@ -27,18 +27,15 @@ class _CashCardState extends State<LoanCard> {
       ),
       title: widget.account.title!,
       children: [
-        Positioned.directional(
-          textDirection: TextDirection.rtl,
+        AccountCardSection(
+          label: "Số dư",
+          value: amountToDecimal(widget.account.amount!),
           bottom: 10.0,
           start: 10.0,
-          child: Text(
-            amountToDecimal(widget.account.amount!),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
-          ),
-        ),
+          direction: TextDirection.rtl,
+          labelColor: Colors.green.shade50,
+          leftAligned: false,
+        )
       ],
     );
   }

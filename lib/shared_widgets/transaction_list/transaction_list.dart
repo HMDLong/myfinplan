@@ -84,9 +84,16 @@ class _TransactionListState extends ConsumerState<TransactionList> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(toFullVnDate(transactData.key)),
+                      Container(
+                        decoration: const BoxDecoration(
+                          border: Border.symmetric(
+                            horizontal: BorderSide(),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(toFullVnDate(transactData.key)),
+                        ),
                       ),
                       ListView.builder(
                         itemCount: transactData.value.length,
@@ -96,9 +103,7 @@ class _TransactionListState extends ConsumerState<TransactionList> {
                           return TransactionCard(transaction: transactData.value[i]);
                         },
                       ),
-                      const SizedBox(
-                        height: 10,
-                      )
+                      const SizedBox(height: 10)
                     ],
                   );
                 }),

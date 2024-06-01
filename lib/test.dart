@@ -1,9 +1,5 @@
 void main() {
-  final x = <A>[A(1), A(1), A(1)];
-  for (var a in x) {
-    a.x = 5;
-  }
-  print(x);
+  print("${int.parse("008")}");
 }
 
 class A {

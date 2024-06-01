@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myfinplan/screens/plan/summary/components/plan_picking/plan_strategy_picker.dart';
-import 'package:myfinplan/screens/plan/summary/components/plan_update/plan_valuate_notifier_banner.dart';
+import 'package:myfinplan/screens/plan/summary/components/monthly_recap/recap_notifier_banner.dart';
 import 'package:myfinplan/screens/plan/summary/components/summary_chart.dart';
 import 'package:myfinplan/screens/plan/summary/components/summary_info_table.dart';
 

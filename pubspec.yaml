@@ -58,6 +58,7 @@ dependencies:
   geekyants_flutter_gauges: ^1.0.3
   expandable: ^5.0.1
   awesome_snackbar_content:
+  collection: ^1.17.2
 
 dev_dependencies:
   flutter_test:

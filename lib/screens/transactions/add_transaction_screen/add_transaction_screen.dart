@@ -77,12 +77,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
         Transaction newTransaction = Transaction(
           id: recordId ?? getRandomKey(),
           timestamp: timestamp!,
-          amount: amount! *
-              switch (transactionType) {
-                TransactionType.expense => -1,
-                TransactionType.income => 1,
-                _ => 1,
-              },
+          amount: amount!,
           categoryId: categoryId!,
           categoryName: categoryName!,
           accId: fromAccountId,

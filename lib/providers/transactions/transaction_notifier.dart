@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/transaction/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/data/repositories/transaction/transaction_repo.dart';
 import 'package:myfinplan/data/repositories/transaction/transaction_repo_impl.dart';
@@ -60,10 +61,14 @@ class TransactionNotifier extends ChangeNotifier {
       recurrence,
       example.planDetail!.planTime,
     );
-    log(occurrencesInNext6Months.toString());
+    example.planDetail!.planId = PeriodicRecurrence(
+      periodicType: recurrence,
+      example: example.planDetail!.planTime,
+    ).getPlanTransactId;
     final planTransacts = occurrencesInNext6Months.map((e) => example.copyWith(planTime: e)).toList();
-
     await repo.addAll(planTransacts);
     notifyListeners();
   }
+
+  Future<void> updatePlanTransacts() async {}
 }

@@ -47,14 +47,14 @@ class AccountsNotifier extends ChangeNotifier {
       //   throw Exception("Not enough balance in ${from.title}");
       // }
       if (from != null) {
-        from.amount = from.amount! + amount;
+        from.amount = from.amount! - amount.abs();
         await repo.update(from);
       }
     }
     if (toId != null) {
       final to = await getAccountById(toId);
       if (to != null) {
-        to.amount = to.amount! - amount;
+        to.amount = to.amount! + amount.abs();
         await repo.update(to);
       }
     }
@@ -68,5 +68,9 @@ class AccountsNotifier extends ChangeNotifier {
   Future<void> updateAccount(Account account) async {
     await repo.update(account);
     notifyListeners();
+  }
+
+  Future<void> updateAccountsStatus() async {
+    // 1. Update loans status
   }
 }

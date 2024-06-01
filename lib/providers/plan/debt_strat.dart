@@ -9,7 +9,7 @@ final currentDebtStratProvider = StateNotifierProvider<DebtStratNotifier, DebtSt
 
 class DebtStratNotifier extends StateNotifier<DebtStrategy> {
   final DebtStratRepository _repo;
-  DebtStratNotifier(this._repo) : super(SnowballStrategy()) {
+  DebtStratNotifier(this._repo) : super(AvalancheStrategy()) {
     getStrat();
   }
 

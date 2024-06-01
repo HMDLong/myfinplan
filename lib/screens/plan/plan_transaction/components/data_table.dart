@@ -1,23 +1,31 @@
 import 'package:expandable/expandable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/plan/plan_transact_detail.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/components/data_table_filter.dart';
-import 'package:myfinplan/screens/plan/plan_transaction/plan_transact_tab.dart';
+import 'package:myfinplan/screens/plan/plan_transaction/plan_transact_detail_screen.dart';
+import 'package:myfinplan/screens/plan/plan_transaction/providers/plan_transact_detail_provider.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/format.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 const headerStyle = TextStyle(fontSize: 12);
 const dataStyle = TextStyle(fontSize: 12);
 
 class ExpandableDataTable extends ConsumerStatefulWidget {
   final List<PlanTransactDetail> data;
-  const ExpandableDataTable({super.key, required this.data});
+  final TransactionType type;
+  const ExpandableDataTable({super.key, required this.data, required this.type});
 
   @override
   ConsumerState<ExpandableDataTable> createState() => _ExpandableDataTableState();
 }
 
 class _ExpandableDataTableState extends ConsumerState<ExpandableDataTable> {
+  int menuOpenIdx = -1;
+
   final cols = [
     const DropdownMenuEntry(value: DataCol.label, label: ""),
     const DropdownMenuEntry(value: DataCol.plan, label: "Dự tính"),
@@ -25,9 +33,23 @@ class _ExpandableDataTableState extends ConsumerState<ExpandableDataTable> {
     const DropdownMenuEntry(value: DataCol.difference, label: "Chênh lệch"),
   ];
 
-  _buildRow(Widget col1, Widget col2, Widget col3, Widget col4) {
-    return SizedBox(
+  TextStyle _diffStyle(bool overflow, TransactionType type) {
+    return TextStyle(
+        fontSize: 12,
+        color: !overflow
+            ? Colors.black
+            : type == TransactionType.expense
+                ? Colors.red
+                : Colors.green);
+  }
+
+  _buildRow(Widget col1, Widget col2, Widget col3, Widget col4, {bool selected = false}) {
+    return Container(
       height: 40,
+      decoration: BoxDecoration(
+        color: selected ? Colors.blue.shade50 : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         children: [
           Expanded(child: Align(alignment: Alignment.centerLeft, child: col1)),
@@ -47,7 +69,7 @@ class _ExpandableDataTableState extends ConsumerState<ExpandableDataTable> {
             avatar: Icon(
               Icons.refresh,
               size: 14,
-              color: sortState.sorted ? Colors.black : Colors.transparent,
+              color: sortState.sorted ? Colors.black : Colors.white,
             ),
             label: Text(sortState.sorted ? "Đặt lại" : "", style: headerStyle),
             backgroundColor: sortState.sorted ? Colors.blue.shade50 : Colors.transparent,
@@ -87,24 +109,52 @@ class _ExpandableDataTableState extends ConsumerState<ExpandableDataTable> {
     return _buildRow(headerCols[0], headerCols[1], headerCols[2], headerCols[3]);
   }
 
-  Widget _buildItemRow(String label, int plan, int actual, {bool hasButton = false}) {
+  Widget _buildItemRow(
+    String label,
+    int plan,
+    int actual, {
+    bool hasButton = false,
+    bool isOpened = false,
+    PlanTransactDetail? detail,
+  }) {
     return _buildRow(
       hasButton
           ? ExpandableButton(
               child: Chip(
                 backgroundColor: Colors.blue.shade50,
                 labelPadding: const EdgeInsets.only(right: 4),
-                avatar: const Icon(Icons.arrow_drop_down, size: 14),
+                avatar: isOpened ? null : const Icon(Icons.arrow_drop_down, size: 14),
                 label: Text(label, style: dataStyle),
               ),
             )
           : Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: Text(label, style: dataStyle),
+              padding: const EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 0),
+              child: InputChip(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                padding: EdgeInsets.zero,
+                labelPadding: const EdgeInsets.only(left: 4),
+                backgroundColor: Colors.blue.shade50,
+                onPressed: () {
+                  if (detail != null) {
+                    ref.read(selectedCategoryForDetailProvider.notifier).state = detail.category;
+                    pushNewScreen(context, screen: PlanTransactDetailScreen(detail: detail));
+                  }
+                },
+                label: SizedBox.expand(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(label, style: dataStyle, softWrap: true),
+                  ),
+                ),
+              ),
             ),
       Text(amountToDecimal(plan, currency: null), style: dataStyle),
       Text(amountToDecimal(actual, currency: null), style: dataStyle),
-      Text(amountToDecimal(actual - plan, currency: null), style: dataStyle),
+      Text(
+        amountToDecimal((plan - actual) * (widget.type == TransactionType.income ? -1 : 1), currency: null),
+        style: _diffStyle(actual > plan, widget.type),
+      ),
+      selected: isOpened,
     );
   }
 
@@ -161,11 +211,20 @@ class _ExpandableDataTableState extends ConsumerState<ExpandableDataTable> {
             collapsed: _buildItemRow(parent.name, totals[1], totals[0], hasButton: true),
             expanded: Column(
               children: [
+                _buildItemRow(parent.name, totals[1], totals[0], hasButton: true, isOpened: true),
                 ...group.value.map((e) {
-                  return _buildItemRow(e.category.name, e.plan, e.actual);
+                  return _buildItemRow(e.category.name, e.plan, e.actual, detail: e);
                 }).toList(),
                 ExpandableButton(
-                  child: const Text("back"),
+                  child: Container(
+                    height: 20,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.activeBlue,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(Icons.arrow_drop_up, color: Colors.white, size: 16),
+                  ),
                 ),
               ],
             ),

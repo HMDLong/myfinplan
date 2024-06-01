@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/home/components/spending_chart/spending_chart.dart';
 import 'package:myfinplan/utils/time/times.dart';
@@ -11,7 +12,7 @@ final spendingChartDataProvider = FutureProvider<List<ColumnData>>(
     final timeRange = TimeRange.rangeByType(ref.watch(currentTimeTypeProvider));
     final prevRange = timeRange.previous();
     final res = transacts.where((e) {
-      return e.paid && (timeRange.contain(e.timestamp) || prevRange.contain(e.timestamp));
+      return e.paid && e.transactType == TransactionType.expense && (timeRange.contain(e.timestamp) || prevRange.contain(e.timestamp));
     }).fold([0, 0], (prev, e) {
       if (prevRange.contain(e.timestamp)) {
         prev[0] += e.amount.abs();

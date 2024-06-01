@@ -7,6 +7,7 @@ import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/categories/category_notifier.dart';
 import 'package:myfinplan/providers/plan/distributor.dart';
+import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/accounts/accounts_screen.dart';
 import 'package:myfinplan/screens/home/home_screen.dart';
 import 'package:myfinplan/screens/personalize/personal_screen.dart';
@@ -68,7 +69,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         _buildNavBarItem("Cá nhân", const Icon(CupertinoIcons.bars)),
       ];
 
-  void setupAppOnFirstLaunch() async {
+  Future<void> setupAppOnFirstLaunch() async {
     // check first launch
     final sharedRef = await SharedPreferences.getInstance();
     final isFirstLaunch = sharedRef.getBool("is_first_launch");
@@ -84,16 +85,27 @@ class _MyAppState extends ConsumerState<MyApp> {
     }
     // 2. init accounts with 1 cash account
     await ref.read(accountsProvider.notifier).init();
+    // 3. init distribution strategy
     await ref.read(planDistNotifierProvider.notifier).init();
     dev.log("Done init");
     await sharedRef.setBool("is_first_launch", false);
+  }
+
+  Future<void> updateMonthProgress() async {
+    // If at the end of month, update infos
+    // 1. Create new plan-transactions
+    await ref.read(transactionNotifierProvider.notifier).updatePlanTransacts();
+    // 2. Update loans infos
+    await ref.read(accountsProvider.notifier).updateAccountsStatus();
   }
 
   @override
   void initState() {
     super.initState();
     NotificationService.initListeners();
-    setupAppOnFirstLaunch();
+    setupAppOnFirstLaunch().then((_) async {
+      await updateMonthProgress();
+    });
   }
 
   @override

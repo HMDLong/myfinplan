@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/credit.dart';
@@ -22,6 +21,29 @@ class CreditCard extends ConsumerStatefulWidget {
 }
 
 class _CreditCardState extends ConsumerState<CreditCard> {
+  _info(String label, String value, {Color? labelColor, bool alignLeft = true}) {
+    return Column(
+      crossAxisAlignment: alignLeft ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: labelColor ?? Colors.white,
+            fontSize: 12,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AccountCard(
@@ -41,17 +63,30 @@ class _CreditCardState extends ConsumerState<CreditCard> {
         ref.read(accountsProvider.notifier).deleteAccount(widget.account.id!);
       },
       children: [
-        Positioned.directional(
-          textDirection: TextDirection.rtl,
+        AccountCardSection(
+          label: "Số dư tín dụng",
+          value: amountToDecimal(widget.account.amount!),
           bottom: 10.0,
           start: 10.0,
-          child: Text(
-            amountToDecimal(widget.account.amount!),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
-          ),
+          direction: TextDirection.rtl,
+          labelColor: Colors.pink.shade50,
+          leftAligned: false,
+        ),
+        AccountCardSection(
+          label: "Hạn mức tín dụng",
+          value: amountToDecimal(widget.account.limit),
+          bottom: 60.0,
+          start: 10.0,
+          labelColor: Colors.pink.shade50,
+        ),
+        AccountCardSection(
+          label: "Lãi suất",
+          value: "${18.99} %",
+          bottom: 60.0,
+          start: 10.0,
+          direction: TextDirection.rtl,
+          labelColor: Colors.pink.shade50,
+          leftAligned: false,
         ),
       ],
     );

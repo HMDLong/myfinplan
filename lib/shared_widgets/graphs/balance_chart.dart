@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,16 +30,14 @@ class BalanceChart<T extends Account> extends ConsumerStatefulWidget {
   ConsumerState<BalanceChart> createState() => _BalanceChartState<T>();
 }
 
-final balanceChartTimeRangeProvider = StateProvider((ref) => TimeRange.lastNDays(60));
-
-final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<DateTime, int>>, String?>((ref, accountId) async {
+final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<DateTime, int>>, BalanceChartInfo>((ref, info) async {
   var transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) {
-    final matchAccount = accountId == null ? true : (accountId == e.accId || accountId == e.toAccId);
+    final matchAccount = info.accountId == null ? true : (info.accountId == e.accId || info.accountId == e.toAccId);
     return matchAccount && e.paid;
   }).toList();
   int balance = 0;
-  if (accountId != null) {
-    balance = (await ref.watch(accountsProvider).getAccountById(accountId))!.usableBalance;
+  if (info.accountId != null) {
+    balance = (await ref.watch(accountsProvider).getAccountById(info.accountId!))!.usableBalance;
   } else {
     balance = ref.watch(totalBalanceProvider).when(
           data: (data) => data,
@@ -46,30 +45,29 @@ final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<D
           loading: () => 0,
         );
   }
-  final timeRange = ref.watch(balanceChartTimeRangeProvider);
   if (transacts.isEmpty) {
-    return timeRange.getRangeDates().map((e) {
+    return info.timeRange.getRangeDates().map((e) {
       return BalanceChartData(x: e, y: balance);
     }).toList();
   }
-  final groupByDateData = transacts
-      .fold(<DateTime, int>{}, (previousValue, transact) {
-        final dateOnly = transact.timestamp.toDateOnly();
-        previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) + transact.amount;
-        return previousValue;
-      })
-      .entries
-      .toList()
-    ..sort((a, b) => b.key.compareTo(a.key));
+  final groupByDateData = transacts.fold(<DateTime, int>{}, (previousValue, transact) {
+    final dateOnly = transact.timestamp.toDateOnly();
+    previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) + transact.amount * (transact.toAccId == info.accountId ? -1 : 1);
+    return previousValue;
+  });
   var chartData = <BalanceChartData<DateTime, int>>[];
-  int traceBalance = balance;
-  for (var dateData in groupByDateData) {
-    if (timeRange.start.isBefore(dateData.key)) {
-      chartData.insert(0, BalanceChartData(x: dateData.key, y: traceBalance));
-    }
-    traceBalance -= dateData.value;
+  int traceBalance = balance - groupByDateData.values.fold(0, (prev, e) => prev + e);
+  for (var date in info.timeRange.getRangeDates()) {
+    chartData.add(BalanceChartData(x: date, y: traceBalance));
+    traceBalance += groupByDateData[date] ?? 0;
   }
-  chartData = chartData.takeWhile((value) => value.x.isBefore(timeRange.end)).toList();
+  // for (var dateData in groupByDateData) {
+  //   if (info.timeRange.start.isBefore(dateData.key)) {
+  //     chartData.insert(0, BalanceChartData(x: dateData.key, y: traceBalance));
+  //   }
+  //   traceBalance -= dateData.value;
+  // }
+  // chartData = chartData.takeWhile((value) => value.x.isBefore(info.timeRange.end)).toList();
   // merge points
   // if (chartData.length > 60) {
   //   final tmp = <BalanceChartData<DateTime, int>>[];
@@ -89,7 +87,12 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
   Widget build(BuildContext context) {
     return SizedBox(
       height: widget.chartHeight,
-      child: ref.watch(getTransactionDataProvider(widget.account?.id)).when(
+      child: ref
+          .watch(getTransactionDataProvider(BalanceChartInfo(
+            timeRange: widget.timeRange,
+            accountId: widget.account?.id,
+          )))
+          .when(
             data: (data) {
               return SfCartesianChart(
                 primaryXAxis: CategoryAxis(
@@ -123,11 +126,6 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
                       stops: const [0.0, 0.5, 1.0],
                       transform: const GradientRotation(3 * math.pi / 2),
                     ),
-                    // width: 0.5,
-                    // borderRadius: const BorderRadius.only(
-                    //   topLeft: Radius.circular(4),
-                    //   topRight: Radius.circular(4),
-                    // ),
                   ),
                 ],
               );
@@ -141,12 +139,10 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
 
 class FilterSetting {
   DisplayContentType content;
-  // TimeRange timeRange;
   DisplayValueMode valueMode;
 
   FilterSetting({
     required this.content,
-    // required this.timeRange,
     this.valueMode = DisplayValueMode.accumulate,
   });
 
@@ -165,11 +161,7 @@ class FilterSetting {
 
 enum DisplayValueMode { separated, accumulate }
 
-enum DisplayContentType {
-  balance,
-  expense,
-  income,
-}
+enum DisplayContentType { balance, expense, income }
 
 class BalanceChartData<T, R> {
   T x;
@@ -179,4 +171,17 @@ class BalanceChartData<T, R> {
     required this.x,
     required this.y,
   });
+}
+
+class BalanceChartInfo with EquatableMixin {
+  String? accountId;
+  TimeRange timeRange;
+
+  BalanceChartInfo({this.accountId, required this.timeRange});
+
+  @override
+  List<Object?> get props => [accountId, timeRange];
+
+  @override
+  bool? get stringify => true;
 }

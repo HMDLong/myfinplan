@@ -47,7 +47,7 @@ class _CustomMenuState<T> extends State<CustomMenu<T>> {
               // constraints: const BoxConstraints(minHeight: 20, maxHeight: 40),
               decoration: BoxDecoration(
                 color: currentValue == item.value ? CupertinoColors.activeBlue : Colors.blue.shade100,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               child: Center(
                 child: Padding(

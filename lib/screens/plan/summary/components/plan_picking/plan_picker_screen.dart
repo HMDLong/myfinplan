@@ -30,9 +30,7 @@ class _PlanPickerScreenState extends ConsumerState<PlanPickerScreen> {
     return Scaffold(
       appBar: defaultStyledAppBar(
         title: "",
-        onBackPressed: () {
-          Navigator.pop(context);
-        },
+        onBackPressed: () => Navigator.pop(context),
       ),
       body: FutureBuilder(
         future: ref.read(planDistNotifierProvider).getCurrentDist(),
@@ -49,20 +47,21 @@ class _PlanPickerScreenState extends ConsumerState<PlanPickerScreen> {
                         });
                       },
                       child: SizedBox(
-                        height: 60,
+                        height: 120,
                         width: double.infinity,
                         child: Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                             side: BorderSide(
-                              color: currentPlan == e.type ? CupertinoColors.activeBlue : Colors.transparent,
+                              color: currentPlan == e.type ? CupertinoColors.activeBlue : Colors.grey.shade300,
                             ),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(e.title),
+                                Text(e.title, style: const TextStyle(fontWeight: FontWeight.w600)),
                                 Text(e.description),
                               ],
                             ),

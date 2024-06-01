@@ -38,4 +38,12 @@ class CategoryNotifier extends ChangeNotifier {
     await category.save();
     notifyListeners();
   }
+
+  Future<void> deleteBudget(String categoryId) async {
+    final category = await getCategoryById(categoryId);
+    if (category == null) throw Exception(categoryNotFoundMessage);
+    category.budget = null;
+    await category.save();
+    notifyListeners();
+  }
 }
