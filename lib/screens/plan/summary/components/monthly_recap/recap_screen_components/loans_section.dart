@@ -98,14 +98,16 @@ class _LoansSectionState extends ConsumerState<LoansSection> {
   Widget build(BuildContext context) {
     return ref.watch(loansInfoProvider).when(
       data: (data) {
+        final totalPaid = data.paysThisMonth.fold<double>(0, (prev, e) => prev + e);
+        final totalLoan = data.loans.fold(0, (prev, e) => prev + e.balance);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const RecapSectionTitle(title: "Khoản nợ"),
             const SizedBox(height: 15),
-            _infoRow("Dư nợ gốc", amountToDecimal(200000000), fill: true),
+            _infoRow("Dư nợ gốc", amountToDecimal(0), fill: true),
             _infoRow("Trả dự kiến", amountToDecimal(15540000)),
-            _infoRow("Thực trả kì này", amountToDecimal(0), fill: true),
+            _infoRow("Thực trả kì này", amountToDecimal(totalPaid.toInt()), fill: true),
             _infoRow("Dư nợ kì sau", amountToDecimal(200000000)),
             // _infoRow("Giảm nợ", "", fill: true),
             const Padding(

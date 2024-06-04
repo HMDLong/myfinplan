@@ -22,7 +22,7 @@ final loansInfoProvider = FutureProvider<LoanInfo>((ref) async {
   final planIncome = transacts.where((e) => e.transactType == TransactionType.income && e.planDetail != null && timeRange.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount);
   final actualIncome = transacts.where((e) => e.transactType == TransactionType.income && e.paid && timeRange.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount);
   // final dist = await ref.watch(planDistNotifierProvider).getCurrentDist();
-  dev.log(currentStrategy.toString());
+
   final initialSnowball = max(planIncome, actualIncome) * 0.1; //dist.dist[ExpenseLevel.saving]!;
   final loanPayThisMonth = loans.map((loan) {
     return transacts.where((transact) {

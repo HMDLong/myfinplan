@@ -21,26 +21,18 @@ class PersonalizeItemCard extends StatelessWidget {
           onPressed!();
         }
       },
-      child: Card(
-        color: color,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: SizedBox(
-          height: 60,
-          width: double.infinity,
-          child: Row(
-            children: [
-              const SizedBox(width: 15),
-              SizedBox(
-                width: 30,
-                child: icon,
-              ),
-              const SizedBox(width: 20),
-              Text(label),
-            ],
-          ),
+      child: SizedBox(
+        height: 40,
+        width: double.infinity,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 40,
+              child: icon,
+            ),
+            const SizedBox(width: 20),
+            Text(label),
+          ],
         ),
       ),
     );

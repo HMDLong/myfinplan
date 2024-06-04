@@ -16,7 +16,11 @@ final transactionNotifierProvider = ChangeNotifierProvider((ref) {
   final accountNotifier = ref.read(accountsProvider.notifier);
   final notificationService = ref.watch(notificationServiceProvider);
   final transactRepo = ref.watch(transactionRepoProvider);
-  return TransactionNotifier(transactRepo, accountNotifier, notificationService);
+  return TransactionNotifier(
+    transactRepo,
+    accountNotifier,
+    notificationService,
+  );
 });
 
 class TransactionNotifier extends ChangeNotifier {
@@ -70,5 +74,7 @@ class TransactionNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updatePlanTransacts() async {}
+  Future<void> updatePlanTransacts() async {
+    final transacts = await repo.getAll();
+  }
 }

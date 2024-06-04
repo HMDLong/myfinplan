@@ -85,7 +85,7 @@ final goalsDetailProvider = FutureProvider((ref) async {
   final savingTransacts = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.transact)).where((element) {
     return element.categoryId == "t1.3" && selectedTimeRange.contain(element.timestamp);
   });
-  final dist = await ref.watch(planDistNotifierProvider).getCurrentDist();
+  final dist = ref.watch(planDistProvider);
   final totalIncome = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income)).where((element) => selectedTimeRange.contain(element.timestamp));
   final actualIncome = totalIncome.where((element) => element.paid).fold(0, (prev, e) => prev + e.amount);
   final planIncome = totalIncome.where((element) => element.planDetail != null).fold(0, (prev, e) => prev + e.amount);

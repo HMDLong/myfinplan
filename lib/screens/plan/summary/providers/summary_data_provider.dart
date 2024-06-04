@@ -14,7 +14,7 @@ final summaryDataProvider = FutureProvider<List<int>>((ref) async {
   final time = ref.watch(planTimeRangeProvider);
   final transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) => time.contain(e.timestamp));
   final accsProvider = ref.watch(accountsProvider);
-  final dist = await ref.watch(planDistNotifierProvider).getCurrentDist();
+  final dist = ref.watch(planDistProvider);
   // incomes
   final incomes = transacts.where((e) => e.transactType == TransactionType.income);
   final planIncome = incomes.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount);

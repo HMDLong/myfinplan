@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/cash.dart';
+import 'package:myfinplan/data/models/account/credit.dart';
+import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/repositories/account/account_repo.dart';
 import 'package:myfinplan/data/repositories/account/account_repo_impl.dart';
 
@@ -61,7 +63,7 @@ class AccountsNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void rollback(Account from, Account? to, int amount) {
+  void rollbackTransfer(Account? from, Account? to, int amount) {
     notifyListeners();
   }
 
@@ -72,5 +74,8 @@ class AccountsNotifier extends ChangeNotifier {
 
   Future<void> updateAccountsStatus() async {
     // 1. Update loans status
+    final loans = (await repo.getByType(AccountType.loan)).cast<Loan>();
+    // 2. Update credits status
+    final credits = (await repo.getByType(AccountType.credit)).cast<Credit>();
   }
 }

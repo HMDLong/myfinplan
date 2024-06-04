@@ -12,13 +12,17 @@ class PersonalizeScreen extends StatefulWidget {
   State<PersonalizeScreen> createState() => _PersonalizeScreenState();
 }
 
+const titleStyle = TextStyle(
+  color: Colors.grey,
+);
+
 class _PersonalizeScreenState extends State<PersonalizeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: defaultStyledAppBar(title: "Cá nhân"),
       body: ListView(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         children: [
           const Column(
             children: [
@@ -26,7 +30,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               Text("Test 1"),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
+          const Text("Thiết lập chung", style: titleStyle),
+          const SizedBox(height: 12),
           PersonalizeItemCard(
             color: Colors.blue.shade50,
             icon: const Icon(Icons.category_rounded),
@@ -35,7 +41,11 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               pushNewScreen(context, screen: const CategoryScreen());
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
+          const Divider(indent: 8, endIndent: 18),
+          const SizedBox(height: 8),
+          const Text("Demo", style: titleStyle),
+          const SizedBox(height: 12),
           PersonalizeItemCard(
             color: Colors.blue.shade50,
             icon: const Icon(Icons.category_rounded),

@@ -36,23 +36,23 @@ class _LatestTransactionsSectionState extends ConsumerState<LatestTransactionsSe
           loading: () => [],
         );
     return last10Transactions.isEmpty
-        ? const Column(
-            children: [
-              Center(
-                child: Icon(
+        ? const SizedBox(
+            height: 100,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Icon(
                   Icons.edit_document,
                   color: Colors.grey,
                 ),
-              ),
-              Center(
-                child: Text(
+                Text(
                   "Chưa có bản ghi",
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(color: Colors.grey),
                 ),
-              ),
-            ],
+              ],
+            ),
           )
         : ListView.builder(
             itemCount: last10Transactions.length + 1,
@@ -60,9 +60,7 @@ class _LatestTransactionsSectionState extends ConsumerState<LatestTransactionsSe
             shrinkWrap: true,
             itemBuilder: (context, index) {
               if (index == last10Transactions.length) {
-                return const SizedBox(
-                  height: 80,
-                );
+                return const SizedBox(height: 80);
               }
               return TransactionCard(
                 transaction: last10Transactions[index],

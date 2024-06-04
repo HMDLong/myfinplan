@@ -67,20 +67,24 @@ class _PlanStrategyPickerState extends State<PlanStrategyPicker> {
                 child: Center(
                   child: Consumer(
                     builder: (context, ref, child) {
-                      final currentDist = ref.watch(planDistNotifierProvider).getCurrentDist();
-                      return FutureBuilder(
-                        future: currentDist,
-                        builder: (context, snapshot) {
-                          return snapshot.connectionState == ConnectionState.waiting
-                              ? const CircularProgressIndicator()
-                              : snapshot.hasError
-                                  ? const Text("error")
-                                  : Text(
-                                      snapshot.data!.title,
-                                      style: const TextStyle(color: Colors.white),
-                                    );
-                        },
+                      final currentDist = ref.watch(planDistProvider);
+                      return Text(
+                        currentDist.title,
+                        style: const TextStyle(color: Colors.white),
                       );
+                      // FutureBuilder(
+                      //   future: currentDist,
+                      //   builder: (context, snapshot) {
+                      //     return snapshot.connectionState == ConnectionState.waiting
+                      //         ? const CircularProgressIndicator()
+                      //         : snapshot.hasError
+                      //             ? const Text("error")
+                      //             : Text(
+                      //                 snapshot.data!.title,
+                      //                 style: const TextStyle(color: Colors.white),
+                      //               );
+                      //   },
+                      // );
                     },
                   ),
                 ),

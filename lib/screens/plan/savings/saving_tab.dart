@@ -107,9 +107,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                           trailing: Text("+ ${amountToDecimal(saved, currency: null)}"),
                         );
                       },
-                      separatorBuilder: (BuildContext context, int index) => const SizedBox(
-                        height: 6,
-                      ),
+                      separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 6),
                     ),
                   ],
                 ),

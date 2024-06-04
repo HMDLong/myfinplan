@@ -86,7 +86,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     // 2. init accounts with 1 cash account
     await ref.read(accountsProvider.notifier).init();
     // 3. init distribution strategy
-    await ref.read(planDistNotifierProvider.notifier).init();
+    await ref.read(planDistProvider.notifier).init();
     dev.log("Done init");
     await sharedRef.setBool("is_first_launch", false);
   }

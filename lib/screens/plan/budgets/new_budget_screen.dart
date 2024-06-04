@@ -24,7 +24,7 @@ class NewBudgetScreen extends ConsumerStatefulWidget {
 }
 
 final currentAvailableBudget = FutureProvider((ref) async {
-  final currentDist = await ref.watch(planDistNotifierProvider).getCurrentDist();
+  final currentDist = ref.watch(planDistProvider);
   final currentMonth = TimeRange.rangeByType(TimeType.month);
   final incomeTransacts = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income)).where((e) => currentMonth.contain(e.timestamp));
   final currentIncome = incomeTransacts.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount);

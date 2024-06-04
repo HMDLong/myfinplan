@@ -27,6 +27,14 @@ class _CashCardState extends State<LoanCard> {
       ),
       title: widget.account.title!,
       children: [
+        // AccountCardSection(
+        //   label: "Kỳ hạn",
+        //   value: amountToDecimal(widget.account.payment),
+        //   bottom: 10.0,
+        //   start: 10.0,
+        //   labelColor: Colors.green.shade50,
+        //   leftAligned: false,
+        // ),
         AccountCardSection(
           label: "Số dư",
           value: amountToDecimal(widget.account.amount!),
@@ -35,7 +43,7 @@ class _CashCardState extends State<LoanCard> {
           direction: TextDirection.rtl,
           labelColor: Colors.green.shade50,
           leftAligned: false,
-        )
+        ),
       ],
     );
   }

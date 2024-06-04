@@ -22,56 +22,55 @@ final plansProvider = Provider(
 );
 
 class _PlanPickerScreenState extends ConsumerState<PlanPickerScreen> {
-  DistType currentPlan = DistType.d532;
+  late DistType currentPlan;
+
+  @override
+  void initState() {
+    currentPlan = ref.read(planDistProvider).type;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final plans = ref.watch(plansProvider);
+
     return Scaffold(
       appBar: defaultStyledAppBar(
         title: "",
         onBackPressed: () => Navigator.pop(context),
       ),
-      body: FutureBuilder(
-        future: ref.read(planDistNotifierProvider).getCurrentDist(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          return Column(
-            children: plans
-                .map((e) => GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          currentPlan = e.type;
-                        });
-                      },
-                      child: SizedBox(
-                        height: 120,
-                        width: double.infinity,
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            side: BorderSide(
-                              color: currentPlan == e.type ? CupertinoColors.activeBlue : Colors.grey.shade300,
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(e.title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                Text(e.description),
-                              ],
-                            ),
-                          ),
+      body: Column(
+        children: plans
+            .map((e) => GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      currentPlan = e.type;
+                    });
+                  },
+                  child: SizedBox(
+                    height: 120,
+                    width: double.infinity,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        side: BorderSide(
+                          color: currentPlan == e.type ? CupertinoColors.activeBlue : Colors.grey.shade300,
                         ),
                       ),
-                    ))
-                .toList(),
-          );
-        },
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(e.title, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            Text(e.description),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ))
+            .toList(),
       ),
       persistentFooterButtons: [
         Row(
@@ -79,7 +78,7 @@ class _PlanPickerScreenState extends ConsumerState<PlanPickerScreen> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  ref.read(planDistNotifierProvider.notifier).setCurrentDist(currentPlan).then((value) => Navigator.pop(context)).onError(
+                  ref.read(planDistProvider.notifier).setDist(currentPlan).then((value) => Navigator.pop(context)).onError(
                     (error, stackTrace) {
                       ScaffoldMessenger.of(context)
                         ..hideCurrentSnackBar()
@@ -87,7 +86,7 @@ class _PlanPickerScreenState extends ConsumerState<PlanPickerScreen> {
                     },
                   );
                 },
-                child: Text("Xác nhận"),
+                child: const Text("Xác nhận"),
               ),
             ),
           ],
