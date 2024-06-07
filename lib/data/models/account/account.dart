@@ -36,14 +36,14 @@ enum AccountType {
 }
 
 abstract class Account with EquatableMixin {
-  String? id;
-  int? amount;
-  String? title;
+  String id;
+  int amount;
+  String title;
 
   Account({
     required this.id,
     this.amount = 0,
-    this.title,
+    required this.title,
   });
 
   Account.fromJson(Map<String, dynamic> json)
@@ -75,7 +75,15 @@ abstract class Account with EquatableMixin {
 
   AccountType get accountType;
 
-  int get usableBalance => amount!;
+  int get usableBalance => amount;
+
+  void moneyIn(int inAmount) {
+    amount += inAmount;
+  }
+
+  void moneyOut(int outAmount) {
+    amount += outAmount;
+  }
 
   @override
   List<Object?> get props => [id];

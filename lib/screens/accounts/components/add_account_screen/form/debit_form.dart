@@ -20,7 +20,7 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
   final _formKey = GlobalKey<FormState>();
   final _formData = <String, dynamic>{};
 
-  Future<void> _onSubmit() async {
+  Future<bool> _onSubmit() async {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       final newDebit = Debit(
@@ -33,7 +33,9 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
       } else {
         await ref.read(accountsProvider).updateAccount(newDebit);
       }
+      return true;
     }
+    return false;
   }
 
   @override
@@ -52,6 +54,7 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 16),
             TextFormField(
               initialValue: widget.prefill != null ? widget.prefill!.title : null,
               decoration: formFieldDecor(icon: const Icon(Icons.title), label: const Text("Tiêu đề")),
@@ -67,7 +70,7 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
                 _formData["title"] = newValue;
               },
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             AmountFormField(
               initValue: widget.prefill?.amount,
               label: "Số tiền",
@@ -77,24 +80,25 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
                 }
               },
             ),
-            Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: ElevatedButton(
-                child: const Text("Xác nhận"),
-                onPressed: () {
-                  _onSubmit().then((_) {
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(CustomSnackbar.success("Thêm thành công"));
-                    Navigator.of(context).pop();
-                  }).onError((error, stackTrace) {
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(CustomSnackbar.failure("Đã có lỗi xảy ra"));
-                    // Navigator.of(context).pop();
-                  });
-                },
-              ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              child: const Text("Xác nhận"),
+              onPressed: () {
+                _onSubmit().then((value) {
+                  if (!value) {
+                    return;
+                  }
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(CustomSnackbar.success("Thêm thành công"));
+                  Navigator.of(context).pop();
+                }).onError((error, stackTrace) {
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(CustomSnackbar.failure("Đã có lỗi xảy ra"));
+                  // Navigator.of(context).pop();
+                });
+              },
             ),
           ],
         ),

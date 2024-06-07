@@ -9,6 +9,7 @@ import 'package:myfinplan/data/models/account/saving.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/screens/accounts/components/saving_tab/saving_card.dart';
 import 'package:myfinplan/shared_widgets/graphs/balance_chart.dart';
+import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_list.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/format.dart';
@@ -25,9 +26,12 @@ class SavingTab extends StatefulWidget {
 enum SavingContentTab {
   graph,
   transacts,
-  // stats,
   goal,
 }
+
+const labelStyle = TextStyle(
+  fontSize: 12,
+);
 
 final getSavingAccountsDetail = FutureProvider((ref) async {
   final debits = (await ref.watch(accountsProvider).getAccountByType(AccountType.saving)).cast<Saving>();
@@ -44,6 +48,20 @@ class _SavingTabState extends State<SavingTab> {
 
   SavingContentTab _currentContent = SavingContentTab.graph;
   int _currentAccIndex = 0;
+
+  _contentRow(String label, String value) {
+    return Row(
+      children: [
+        Expanded(child: Text(label, style: labelStyle)),
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(value, style: labelStyle),
+          ),
+        ),
+      ],
+    );
+  }
 
   _buildContent(Saving account) {
     return switch (_currentContent) {
@@ -66,58 +84,31 @@ class _SavingTabState extends State<SavingTab> {
                 ],
               ),
             )
-          : ListView(
-              padding: const EdgeInsets.all(8),
-              children: [
-                Row(
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("${account.goal?.title}"),
-                          const SizedBox(height: 15),
-                          const Text(
-                            "Số tiền mục tiêu",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Text(
-                            amountToDecimal(account.goal!.targetAmount ?? 0),
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const Text(
-                            "Đến hạn",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Text(
-                            "${account.goal?.deadline}",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const Text("Dự kiến hoàn thành", style: TextStyle(fontSize: 12)),
-                          Text("${DateTime(2024, 10, 10)}", style: const TextStyle(fontSize: 14)),
-                        ],
-                      ),
+                    Text("${account.goal?.title}"),
+                    const SizedBox(height: 15),
+                    LinearProgressGauge(
+                      value: account.amount,
+                      max: account.goal!.targetAmount!,
+                      leadingLabel: "Đã tiết kiệm",
+                      trailingLabel: "Mục tiêu",
+                      mode: GaugeMode.goodOverflow,
                     ),
-                    Expanded(
-                      child: SizedBox(
-                        height: 180,
-                        child: SfRadialGauge(
-                          axes: [
-                            RadialAxis(
-                              pointers: [
-                                RangePointer(
-                                  value: account.goal!.targetAmount != null ? min(account.amount! / (account.goal!.targetAmount!) * 100, 100) : 100,
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 6),
+                    _contentRow("Tiến độ", "${100 * account.amount ~/ account.goal!.targetAmount!} %"),
+                    const SizedBox(height: 6),
+                    _contentRow("Đến hạn", "${account.goal?.deadline}"),
+                    const SizedBox(height: 6),
+                    _contentRow("Dự kiến hoàn thành", "${account.goal?.deadline}"),
+                    const SizedBox(height: 6),
                   ],
                 ),
-              ],
+              ),
             ),
     };
   }

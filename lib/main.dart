@@ -16,6 +16,7 @@ import 'package:myfinplan/screens/statistics/stats_screen.dart';
 import 'package:myfinplan/services/notification/notification_service.dart';
 import 'package:myfinplan/services/storage/hive/hive_storage.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/utils/time/times.dart';
 import "package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart";
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as dev;
@@ -87,16 +88,30 @@ class _MyAppState extends ConsumerState<MyApp> {
     await ref.read(accountsProvider.notifier).init();
     // 3. init distribution strategy
     await ref.read(planDistProvider.notifier).init();
+    // 4. Save launch as first monthly update
+    await sharedRef.setString("last_update", DateTime.now().toDateOnly().toIso8601String());
     dev.log("Done init");
     await sharedRef.setBool("is_first_launch", false);
   }
 
   Future<void> updateMonthProgress() async {
+    // check last update
+    final sharedRef = await SharedPreferences.getInstance();
+    final lastUpdateStr = sharedRef.getString("last_update");
+    final now = DateTime.now().toDateOnly();
+    if (lastUpdateStr != null) {
+      final lastUpdateDate = DateTime.parse(lastUpdateStr);
+      if (lastUpdateDate.month == now.month && lastUpdateDate.year == now.year) {
+        return;
+      }
+    }
     // If at the end of month, update infos
     // 1. Create new plan-transactions
-    await ref.read(transactionNotifierProvider.notifier).updatePlanTransacts();
+    ref.read(transactionNotifierProvider.notifier).updatePlanTransacts();
     // 2. Update loans infos
-    await ref.read(accountsProvider.notifier).updateAccountsStatus();
+    ref.read(accountsProvider.notifier).updateAccountsStatus();
+
+    sharedRef.setString("last_update", now.toIso8601String());
   }
 
   @override

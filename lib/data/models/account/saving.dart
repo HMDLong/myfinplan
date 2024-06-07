@@ -8,7 +8,7 @@ class Saving extends Account {
   Saving({
     required super.id,
     super.amount = 0,
-    super.title,
+    required super.title,
     this.interest = 0.0,
     this.period,
     this.goal,
@@ -31,9 +31,7 @@ class Saving extends Account {
     json["period"] = period;
     json["interest"] = interest;
     json["type"] = accountType.toStringValue();
-    if (title != null) {
-      json["title"] = title;
-    }
+    json["title"] = title;
     if (goal != null) {
       json["goal"] = goal?.toJson();
     }

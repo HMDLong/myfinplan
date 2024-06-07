@@ -27,21 +27,50 @@ class DemoPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: defaultStyledAppBar(
-        title: "",
+        title: "Demo",
         onBackPressed: () => Navigator.pop(context),
       ),
       body: Column(
         children: [
           ElevatedButton(
-            onPressed: () => _genData(ref),
-            child: Text("Generate mock data"),
+            onPressed: () {
+              showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) {
+                  return WillPopScope(
+                    onWillPop: () async => false,
+                    child: const AlertDialog(
+                      content: SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 10),
+                            Text("Sinh dữ liệu mockup..."),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+              _genData(ref).then((value) {
+                Navigator.of(context, rootNavigator: true).pop();
+                ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.success("Xong"));
+              });
+            },
+            child: const Text("Generate mock data"),
           ),
         ],
       ),
     );
   }
 
-  void _genData(WidgetRef ref) async {
+  Future<void> _genData(WidgetRef ref) async {
     randomDate(int start, int end) => Random().nextInt(end - start) + start;
     // 1. Generate accounts
     final debitIds = List.generate(3, (index) => getRandomKey());

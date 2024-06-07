@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,36 +21,57 @@ class NewSavingForm extends ConsumerStatefulWidget {
 
 class _NewSavingFormState extends ConsumerState<NewSavingForm> {
   final _formKey = GlobalKey<FormState>();
-  final _formData = <String, dynamic>{};
-  final _deadlineController = TextEditingController();
   var _hasGoal = false;
+  String? title;
+  double? interest;
+  int? period;
+  int? amount;
+  String? goalTitle;
+  int? targetAmount;
+  DateTime? deadline;
 
-  void _onSubmit() {
-    _formKey.currentState!.save();
-    if (_formKey.currentState!.validate()) {
-      final newSaving = Saving(id: getRandomKey());
-      newSaving.interest = _formData["interest"] ?? 0.0;
-      newSaving.amount = _formData["amount"] ?? 0;
-      newSaving.title = _formData["title"];
-      newSaving.period = _formData["period"] ?? 0;
-      if (_hasGoal) {
-        newSaving.goal = Goal(
-          targetAmount: _formData["targetAmount"] as int,
-          title: _formData["goalTitle"] as String,
-          deadline: _formData["deadline"] as DateTime,
-        );
-      }
-      ref.read(accountsProvider).addAccount(newSaving).then((_) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(CustomSnackbar.success("Thêm tài khoản thành công"));
-        Navigator.pop(context);
-      }).onError((error, stackTrace) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(CustomSnackbar.failure("Đã có lỗi xảy ra"));
-      });
+  Future<bool> _onSubmit() async {
+    final newSaving = Saving(
+      id: widget.prefill?.id ?? getRandomKey(),
+      interest: interest ?? 0,
+      title: title ?? "",
+      period: period ?? 0,
+      amount: amount ?? 0,
+    );
+    if (_hasGoal) {
+      newSaving.goal = Goal(
+        targetAmount: targetAmount,
+        title: title,
+        deadline: deadline,
+      );
     }
+    if (_formKey.currentState!.validate()) {
+      log(newSaving.toString());
+      if (widget.prefill == null) {
+        await ref.read(accountsProvider.notifier).addAccount(newSaving);
+      } else {
+        await ref.read(accountsProvider.notifier).updateAccount(newSaving);
+      }
+      return true;
+    }
+    log("Not validated: $newSaving");
+    return false;
+  }
+
+  @override
+  void initState() {
+    final prefill = widget.prefill;
+    if (prefill != null) {
+      title = prefill.title;
+      interest = prefill.interest;
+      period = prefill.period;
+      amount = prefill.amount;
+      _hasGoal = prefill.goal != null;
+      goalTitle = prefill.goal?.title;
+      targetAmount = prefill.goal?.targetAmount;
+      deadline = prefill.goal?.deadline;
+    }
+    super.initState();
   }
 
   @override
@@ -60,27 +83,30 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 5),
+            const SizedBox(height: 14),
             TextFormField(
+              initialValue: title,
               decoration: formFieldDecor(
                 icon: const Icon(Icons.title),
                 label: const Text("Tiêu đề"),
               ),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Hãy điền";
                 }
-                _formData["title"] = value;
+                title = value;
                 return null;
+              },
+              onChanged: (value) {
+                title = value;
               },
             ),
             const SizedBox(height: 10),
             AmountFormField(
-              initValue: 0,
+              initValue: amount,
               label: "Số tiền đã tiết kiệm",
               onChanged: (value) {
-                _formData["amount"] = value;
+                amount = value;
               },
             ),
             const SizedBox(height: 10.0),
@@ -91,16 +117,18 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextFormField(
-                        initialValue: "0.0",
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: formFieldDecor(icon: const Icon(CupertinoIcons.money_dollar), label: const Text("Lãi suất")),
+                        initialValue: "${interest ?? 0.0}",
+                        decoration: formFieldDecor(
+                          icon: const Icon(CupertinoIcons.money_dollar),
+                          label: const Text("Lãi suất"),
+                        ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Hãy điền";
                           }
                           final parsed = double.tryParse(value);
-                          if (_formData["period"] == null || _formData["period"] == 0) {
+                          if (period == null || period == 0) {
                             if (parsed == null || parsed == 0) {
                               return null;
                             }
@@ -109,14 +137,14 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                           if (parsed == null) {
                             return "Cần là 1 số";
                           }
-                          if (parsed <= 0) {
+                          if (parsed < 0) {
                             return "Cần là số dương";
                           }
-                          _formData["interest"] = parsed;
+                          interest = parsed;
                           return null;
                         },
-                        onSaved: (newValue) {
-                          _formData["interest"] = double.parse(newValue!);
+                        onChanged: (newValue) {
+                          interest = double.parse(newValue);
                         },
                       ),
                     ],
@@ -128,11 +156,11 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextFormField(
-                        initialValue: "0",
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        initialValue: "${period ?? 0}",
                         decoration: formFieldDecor(
                           icon: const Icon(CupertinoIcons.money_dollar),
                           label: const Text("Kỳ hạn"),
+                          suffix: const Text("tháng"),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
@@ -143,16 +171,19 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                           if (parsed == null) {
                             return "Cần là số";
                           }
-                          if (_formData["interest"] == null || _formData["interest"] == 0.0) {
+                          if (interest == null || interest == 0.0) {
                             if (parsed == 0) {
                               return null;
                             }
                             return "Hãy nhập 'Lãi suất'";
                           }
-                          if (parsed <= 0) {
+                          if (parsed < 0) {
                             return "Cần lớn hơn 0";
                           }
                           return null;
+                        },
+                        onChanged: (value) {
+                          period = int.tryParse(value);
                         },
                       ),
                     ],
@@ -164,10 +195,7 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
             Row(
               children: [
                 const SizedBox(width: 10, height: 20),
-                const Text(
-                  "Thêm mục tiêu",
-                  style: TextStyle(fontSize: 14.0),
-                ),
+                const Text("Thêm mục tiêu", style: TextStyle(fontSize: 14.0)),
                 const SizedBox(width: 5.0),
                 const Text(
                   "(tùy chọn)",
@@ -190,7 +218,7 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
             ),
             TextFormField(
               enabled: _hasGoal,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
+              initialValue: goalTitle,
               decoration: formFieldDecor(
                 icon: const Icon(Icons.label_outline),
                 label: const Text("Tiêu đề"),
@@ -204,19 +232,18 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                 }
                 return null;
               },
-              onSaved: (newValue) {
-                _formData["goalTitle"] = newValue;
+              onChanged: (newValue) {
+                goalTitle = newValue;
               },
             ),
             const SizedBox(height: 10),
-            TextFormField(
+            AmountFormField(
+              initValue: targetAmount,
               enabled: _hasGoal,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: formFieldDecor(
-                icon: const Icon(CupertinoIcons.money_dollar),
-                label: const Text("Số tiền mục tiêu"),
-              ),
-              keyboardType: TextInputType.number,
+              label: "Số tiền mục tiêu",
+              onChanged: (value) {
+                targetAmount = value;
+              },
               validator: (value) {
                 if (!_hasGoal) {
                   return null;
@@ -224,34 +251,44 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                 if (value == null || value.isEmpty) {
                   return "Hãy điền";
                 }
-                final parsedAmount = int.tryParse(value);
+                final parsedAmount = int.tryParse(value.split(',').join());
                 if (parsedAmount == null) {
                   return "Cần là số dương";
                 }
-                if (parsedAmount <= (_formData["amount"] ?? 0)) {
+                if (parsedAmount <= (amount ?? 0)) {
                   return "Cần phải lớn hơn số tiền gốc";
                 }
-                _formData["targetAmount"] = parsedAmount;
+                amount = parsedAmount;
                 return null;
-              },
-              onSaved: (newValue) {
-                if (_hasGoal) {
-                  _formData["targetAmount"] = int.parse(newValue!);
-                }
               },
             ),
             const SizedBox(height: 10),
             TimestampPicker(
+              initValue: deadline,
               enabled: _hasGoal,
               label: "Ngày đến hạn",
-              onTimeChange: (value) {},
+              onTimeChange: (value) {
+                deadline = value;
+              },
             ),
             Align(
               alignment: FractionalOffset.bottomCenter,
               child: ElevatedButton(
-                child: const Text("Submit"),
+                child: const Text("Xác nhận"),
                 onPressed: () {
-                  _onSubmit();
+                  _onSubmit().then((done) {
+                    if (!done) {
+                      return;
+                    }
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(CustomSnackbar.success("Thêm tài khoản thành công"));
+                    Navigator.pop(context);
+                  }).onError((error, stackTrace) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(CustomSnackbar.failure("Lỗi: $error"));
+                  });
                 },
               ),
             ),
@@ -259,22 +296,5 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
         ),
       ),
     );
-  }
-
-  _selectDate() async {
-    final now = DateTime.now();
-    DateTime? pickedDeadline = await showDatePicker(
-      context: context,
-      initialDate: now,
-      firstDate: DateTime(now.year),
-      lastDate: DateTime(now.year + 10),
-    );
-
-    if (pickedDeadline != null) {
-      setState(() {
-        _deadlineController.text = DateFormat.yMd().format(pickedDeadline);
-        _formData["deadline"] = pickedDeadline;
-      });
-    }
   }
 }

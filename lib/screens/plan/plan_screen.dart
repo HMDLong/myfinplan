@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/screens/plan/budgets/budget_tab.dart';
 import 'package:myfinplan/screens/plan/debts/debt_tab.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/plan_transact_tab.dart';
 import 'package:myfinplan/screens/plan/savings/saving_tab.dart';
 import 'package:myfinplan/screens/plan/schedule/schedule_tab.dart';
 import 'package:myfinplan/screens/plan/summary/components/plan_timerange_picker.dart';
 import 'package:myfinplan/screens/plan/summary/plan_summary_tab.dart';
-import 'package:myfinplan/shared_widgets/pickers/timerange_picker/timerange_picker.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:myfinplan/utils/time/times.dart';
@@ -24,7 +22,6 @@ final planTabBarItems = [
   const Tab(child: Text(planSummaryTabLabel)),
   const Tab(child: Text(planScheduleTabLabel)),
   const Tab(child: Text(planTransactionTabLabel)),
-  const Tab(child: Text(planBudgetTabLabel)),
   const Tab(child: Text(planSavingTabLabel)),
   const Tab(child: Text(planDebtTabLabel)),
 ];
@@ -77,10 +74,7 @@ class _PlanScreenState extends State<PlanScreen> with SingleTickerProviderStateM
                           },
                         );
                       },
-                      icon: const Icon(
-                        Icons.calendar_today,
-                        color: Colors.black,
-                      ),
+                      icon: const Icon(Icons.calendar_today, color: Colors.black),
                     ),
                   ],
                 );
@@ -93,7 +87,6 @@ class _PlanScreenState extends State<PlanScreen> with SingleTickerProviderStateM
           PlanSummaryTab(),
           ScheduleTab(),
           PlanTransactionTab(),
-          BudgetTab(),
           SavingTab(),
           DebtManageTab(),
         ],

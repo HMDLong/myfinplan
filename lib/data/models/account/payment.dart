@@ -26,6 +26,7 @@ sealed class Payment {
   DateTime get payDate;
   Map<DateTime, AmortizingEntry> paymentInfo(double balance, {double snowball = 0});
   double getInterest(int balance);
+  int nextMonthBalance(int balance);
 }
 
 class AmortizingFixedTermPayment extends Payment {
@@ -84,6 +85,11 @@ class AmortizingFixedTermPayment extends Payment {
     }
     return schedule;
   }
+
+  @override
+  int nextMonthBalance(int balance) {
+    return (balance * (1 + interestRate / 12)).toInt();
+  }
 }
 
 class Infull extends Payment {
@@ -134,5 +140,10 @@ class Infull extends Payment {
         remainingBalance: 1000000 - 60000,
       ),
     };
+  }
+
+  @override
+  int nextMonthBalance(int balance) {
+    return balance;
   }
 }

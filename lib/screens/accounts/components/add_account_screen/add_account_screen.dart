@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myfinplan/data/models/account/account.dart';
+import 'package:myfinplan/data/models/account/credit.dart';
+import 'package:myfinplan/data/models/account/debit.dart';
+import 'package:myfinplan/data/models/account/saving.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/form/credit_form.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/form/debit_form.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/form/loan_form.dart';
@@ -9,7 +12,8 @@ import 'package:myfinplan/shared_widgets/menu/menu.dart';
 
 class AddOrEditAccountScreen extends StatefulWidget {
   final AccountType? initType;
-  const AddOrEditAccountScreen({super.key, this.initType});
+  final Account? prefill;
+  const AddOrEditAccountScreen({super.key, this.initType, this.prefill});
 
   @override
   State<AddOrEditAccountScreen> createState() => _AddOrEditAccountScreenState();
@@ -64,10 +68,10 @@ class _AddOrEditAccountScreenState extends State<AddOrEditAccountScreen> {
             ),
           ),
           (switch (newAccountType) {
-            AccountType.credit => const NewCreditForm(),
-            AccountType.debit => const NewDebitForm(),
-            AccountType.saving => const NewSavingForm(),
-            AccountType.loan => const NewLoanForm(),
+            AccountType.credit => NewCreditForm(prefill: widget.prefill as Credit?),
+            AccountType.debit => NewDebitForm(prefill: widget.prefill as Debit?),
+            AccountType.saving => NewSavingForm(prefill: widget.prefill as Saving?),
+            AccountType.loan => NewLoanForm(),
             _ => const SizedBox(),
           })
         ],

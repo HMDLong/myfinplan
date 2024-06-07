@@ -31,7 +31,7 @@ class Loan extends Account {
   @override
   AccountType get accountType => AccountType.loan;
 
-  int get balance => amount!.abs();
+  int get balance => amount.abs();
   double get interest => payment.getInterest(balance);
 
   double getMonthlyPayment() => payment.paymentInfo(balance.toDouble()).values.first.payment;
@@ -39,7 +39,7 @@ class Loan extends Account {
   Map<DateTime, Map<String, AmortizingEntry>> getPaymentInfo() {
     final paymentInfo = payment.paymentInfo(balance.toDouble());
     return paymentInfo.map((key, value) {
-      return MapEntry(key, {id!: value});
+      return MapEntry(key, {id: value});
     });
   }
 
@@ -47,8 +47,19 @@ class Loan extends Account {
     return Loan(id: id, amount: amount, title: title, payment: payment);
   }
 
+  Loan? monthlyUpdate() {
+    return null;
+    final newBalance = payment.nextMonthBalance(amount);
+    return Loan(
+      id: id,
+      amount: newBalance,
+      title: title,
+      payment: payment,
+    );
+  }
+
   @override
   String toString() {
-    return "Loan{id:$id, amount: $amount}";
+    return "Loan{$amount, itr: $interest}";
   }
 }

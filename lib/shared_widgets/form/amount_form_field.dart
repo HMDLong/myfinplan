@@ -9,12 +9,14 @@ class AmountFormField extends StatefulWidget {
   final String label;
   final int? initValue;
   final void Function(int? value)? onChanged;
+  final bool enabled;
   const AmountFormField({
     super.key,
     this.validator,
     this.initValue,
     this.onChanged,
     required this.label,
+    this.enabled = true,
   });
 
   @override
@@ -36,6 +38,7 @@ class _AmountFormFieldState extends State<AmountFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      enabled: widget.enabled,
       inputFormatters: [
         FieldInputFormatter(),
       ],

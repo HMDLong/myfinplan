@@ -1,7 +1,11 @@
 import 'package:myfinplan/data/models/account/account.dart';
 
 class Debit extends Account {
-  Debit({required super.id, super.amount, super.title});
+  Debit({
+    required super.id,
+    super.amount,
+    required super.title,
+  });
 
   Debit.fromJson(Map<String, dynamic> json) : super.fromJson(json);
 

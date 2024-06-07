@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:myfinplan/data/models/category/base_category.dart';
 import 'package:myfinplan/utils/random.dart';
 
-class ParentCategory extends BaseCategory {
+class ParentCategory extends BaseCategory with EquatableMixin {
   @override
   final String id;
   @override
@@ -28,4 +29,7 @@ class ParentCategory extends BaseCategory {
 
   /// get parentId from [childId]
   static String parentIdFromChild(String childId) => childId.split(".").first;
+
+  @override
+  List<Object?> get props => [id];
 }

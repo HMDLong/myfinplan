@@ -29,7 +29,7 @@ sealed class DebtStrategy {
     final minPayments = loans.fold(
       <String, double>{},
       (prev, e) {
-        prev[e.id!] = e.getMonthlyPayment();
+        prev[e.id] = e.getMonthlyPayment();
         return prev;
       },
     );
@@ -41,7 +41,7 @@ sealed class DebtStrategy {
       for (var i = 0; i < loans.length; i++) {
         final loan = loans[i];
         if (loan.balance <= 0) {
-          tmp[loan.id!] = AmortizingEntry(
+          tmp[loan.id] = AmortizingEntry(
             time: time.end,
             payment: 0,
             snowball: 0,
@@ -53,7 +53,7 @@ sealed class DebtStrategy {
         final payAmount = minPayments[loan.id]! + availableSnowball;
         final balanceBeforePay = loan.balance + loan.interest;
         if (balanceBeforePay < payAmount) {
-          tmp[loan.id!] = AmortizingEntry(
+          tmp[loan.id] = AmortizingEntry(
             time: time.end,
             payment: balanceBeforePay,
             snowball: max(balanceBeforePay - minPayments[loan.id]!, 0),
@@ -64,7 +64,7 @@ sealed class DebtStrategy {
           snowball += minPayments[loan.id]!;
           availableSnowball = payAmount - balanceBeforePay;
         } else {
-          tmp[loan.id!] = AmortizingEntry(
+          tmp[loan.id] = AmortizingEntry(
             time: time.end,
             payment: minPayments[loan.id]!,
             snowball: availableSnowball,

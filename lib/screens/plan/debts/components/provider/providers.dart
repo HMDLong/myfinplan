@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:developer' as dev;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
@@ -14,16 +13,15 @@ import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 final loansInfoProvider = FutureProvider<LoanInfo>((ref) async {
+  final dist = ref.watch(planDistProvider);
   final timeRange = TimeRange.rangeByType(TimeType.month);
   final loans = (await ref.watch(accountsProvider).getAccountByType(AccountType.loan)).cast<Loan>();
   final currentStrategy = ref.watch(currentDebtStratProvider);
-
   final transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction());
   final planIncome = transacts.where((e) => e.transactType == TransactionType.income && e.planDetail != null && timeRange.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount);
   final actualIncome = transacts.where((e) => e.transactType == TransactionType.income && e.paid && timeRange.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount);
-  // final dist = await ref.watch(planDistNotifierProvider).getCurrentDist();
 
-  final initialSnowball = max(planIncome, actualIncome) * 0.1; //dist.dist[ExpenseLevel.saving]!;
+  final initialSnowball = max(planIncome, actualIncome) * dist.dist[ExpenseLevel.saving]!;
   final loanPayThisMonth = loans.map((loan) {
     return transacts.where((transact) {
       return transact.paid && transact.toAccId == loan.id && timeRange.contain(transact.timestamp);

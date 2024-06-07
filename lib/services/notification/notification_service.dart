@@ -14,6 +14,9 @@ List<NotificationChannel> channels = [
 ];
 
 class NotificationService {
+  final bool demo;
+  NotificationService({this.demo = true});
+
   static Future<bool> initialize() {
     return AwesomeNotifications().initialize(null, channels);
   }

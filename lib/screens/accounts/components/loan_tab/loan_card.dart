@@ -1,22 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/cash.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
+import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
 import 'package:myfinplan/screens/accounts/widgets/account_card.dart';
 import 'package:myfinplan/utils/format.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
+import 'package:provider/provider.dart';
 
-class LoanCard extends StatefulWidget {
+class LoanCard extends ConsumerWidget {
   final Loan account;
-  const LoanCard({super.key, required this.account});
+  final void Function()? onDelete;
+  const LoanCard({
+    super.key,
+    required this.account,
+    this.onDelete,
+  });
 
   @override
-  State<LoanCard> createState() => _CashCardState();
-}
-
-class _CashCardState extends State<LoanCard> {
-  @override
-  Widget build(BuildContext context) {
-    return AccountCard(
+  Widget build(BuildContext context, WidgetRef ref) {
+    throw AccountCard(
       gradient: LinearGradient(
         colors: [
           Colors.green.shade400,
@@ -25,11 +31,26 @@ class _CashCardState extends State<LoanCard> {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
-      title: widget.account.title!,
+      title: account.title,
+      onEdit: () {
+        pushNewScreen(
+          context,
+          screen: AddOrEditAccountScreen(
+            initType: AccountType.loan,
+            prefill: account,
+          ),
+        );
+      },
+      onDelete: () {
+        if (onDelete != null) {
+          onDelete!();
+        }
+        ref.read(accountsProvider.notifier).deleteAccount(account.id);
+      },
       children: [
         // AccountCardSection(
         //   label: "Kỳ hạn",
-        //   value: amountToDecimal(widget.account.payment),
+        //   value: amountToDecimal(account.payment),
         //   bottom: 10.0,
         //   start: 10.0,
         //   labelColor: Colors.green.shade50,
@@ -37,7 +58,7 @@ class _CashCardState extends State<LoanCard> {
         // ),
         AccountCardSection(
           label: "Số dư",
-          value: amountToDecimal(widget.account.amount!),
+          value: amountToDecimal(account.amount!),
           bottom: 10.0,
           start: 10.0,
           direction: TextDirection.rtl,

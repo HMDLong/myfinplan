@@ -8,7 +8,7 @@ class Credit extends Account {
   late Payment payment;
 
   Credit({
-    super.id,
+    required super.id,
     super.amount = 0,
     required super.title,
     required this.payment,
@@ -16,7 +16,7 @@ class Credit extends Account {
   });
 
   @override
-  int get usableBalance => amount!.abs();
+  int get usableBalance => amount.abs();
 
   @override
   Map<String, dynamic> toJson() => {

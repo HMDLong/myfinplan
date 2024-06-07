@@ -13,7 +13,7 @@ class CategoryNotifier extends ChangeNotifier {
   final CategoryRepository repo;
   CategoryNotifier(this.repo);
 
-  void addCategory(Category newValue) async {
+  Future<void> addCategory(Category newValue) async {
     await repo.add(newValue);
     notifyListeners();
   }
