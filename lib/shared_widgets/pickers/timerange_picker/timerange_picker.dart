@@ -94,52 +94,56 @@ class _TimerangePickerState extends ConsumerState<TimerangePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22.0)),
-      color: Theme.of(context).primaryColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 1,
-            child: IconButton(
-              icon: const Icon(
-                CupertinoIcons.chevron_left,
-                color: Colors.white,
-              ),
-              onPressed: _previousRange,
-              // () => setState(() {
-              //   _currentTime = _currentTime.previous();
-              //   widget.onTimeChanged(_currentTime);
-              // }),
-            ),
+    return SizedBox(
+      height: 60,
+      width: double.infinity,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22.0),
+          side: const BorderSide(
+            color: CupertinoColors.activeBlue,
           ),
-          Expanded(
-            flex: 5,
-            child: GestureDetector(
-              onTap: _selectTimeType,
-              child: Text(
-                _currentTime.toString(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
+        ),
+        color: CupertinoColors.activeBlue,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Container(
+                constraints: const BoxConstraints.expand(),
+                color: Colors.blue.shade50,
+                child: IconButton(
+                  icon: const Icon(CupertinoIcons.chevron_left, color: CupertinoColors.activeBlue),
+                  onPressed: _previousRange,
                 ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: IconButton(
-              icon: const Icon(
-                CupertinoIcons.chevron_right,
-                color: Colors.white,
+            Expanded(
+              flex: 5,
+              child: GestureDetector(
+                onTap: _selectTimeType,
+                child: Text(
+                  _currentTime.toString(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
-              onPressed: _nextRange,
             ),
-          ),
-        ],
+            Expanded(
+              child: Container(
+                constraints: const BoxConstraints.expand(),
+                color: Colors.blue.shade50,
+                child: IconButton(
+                  icon: const Icon(CupertinoIcons.chevron_right, color: CupertinoColors.activeBlue),
+                  onPressed: _nextRange,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

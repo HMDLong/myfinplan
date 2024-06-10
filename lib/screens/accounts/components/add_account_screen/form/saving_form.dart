@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
@@ -23,8 +22,8 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
   final _formKey = GlobalKey<FormState>();
   var _hasGoal = false;
   String? title;
-  double? interest;
-  int? period;
+  double? interest = 0.0;
+  int? period = 0;
   int? amount;
   String? goalTitle;
   int? targetAmount;

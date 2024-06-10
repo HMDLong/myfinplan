@@ -117,7 +117,7 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
-                amountToDecimal(spentAmount), // (${(spentAmount / totalAmount * 100).toStringAsFixed(2)} %)",
+                Formatter.amountToDecimal(spentAmount), // (${(spentAmount / totalAmount * 100).toStringAsFixed(2)} %)",
                 style: const TextStyle(fontSize: 16),
               ),
             ],

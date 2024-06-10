@@ -19,7 +19,11 @@ class CategoryScreen extends ConsumerStatefulWidget {
 }
 
 class _CategoryScreenState extends ConsumerState<CategoryScreen> {
-  Widget _buildListOfCategory(List<ParentCategory> parents, List<Category> children) {
+  Widget _buildListOfCategory(
+    TransactionType type,
+    List<ParentCategory> parents,
+    List<Category> children,
+  ) {
     return ListView(
       padding: const EdgeInsets.all(8),
       shrinkWrap: true,
@@ -28,16 +32,36 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              parent.name,
-              style: const TextStyle(fontSize: 18),
+            Row(
+              children: [
+                SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: Center(
+                    child: ShaderMask(
+                        blendMode: BlendMode.srcIn,
+                        shaderCallback: (Rect bounds) => RadialGradient(
+                              center: Alignment.center,
+                              stops: const [.5, 1],
+                              radius: 0.5,
+                              colors: parent.color,
+                              tileMode: TileMode.mirror,
+                            ).createShader(bounds),
+                        child: Icon(parent.icon.toMaterialIconData())),
+                  ),
+                ),
+                Text(
+                  parent.name,
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ],
             ),
             Wrap(
               spacing: 4.0,
               children: children.where((category) => category.parentId == parent.id).map((category) {
                 return InputChip(
-                  backgroundColor: CupertinoColors.activeBlue,
-                  labelStyle: const TextStyle(color: Colors.white),
+                  backgroundColor: category.color[1],
+                  labelStyle: TextStyle(color: category.color[0]),
                   label: Text(category.name),
                   onPressed: () {
                     if (widget.onPicked != null) {
@@ -76,13 +100,14 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
             ),
             trailings: [
               IconButton(
-                  onPressed: () {
-                    pushNewScreen(context, screen: const AddCategoryScreen());
-                  },
-                  icon: const Icon(
-                    Icons.new_label_rounded,
-                    color: Colors.black,
-                  )),
+                onPressed: () {
+                  pushNewScreen(context, screen: const AddCategoryScreen());
+                },
+                icon: const Icon(
+                  Icons.new_label_rounded,
+                  color: Colors.black,
+                ),
+              ),
             ]),
         body: FutureBuilder(
           future: ref.watch(categoryNotifierProvider).getCategories(),
@@ -102,6 +127,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
               children: TransactionType.values
                   .map(
                     (transactType) => _buildListOfCategory(
+                      transactType,
                       parents.where((group) => group.type == transactType).toList(),
                       snapshot.data!,
                     ),

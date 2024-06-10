@@ -2,19 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/utils/format.dart';
 
 class AccountBottomSheet extends ConsumerStatefulWidget {
   final AccountType? onlyTypeOf;
+  final bool payableOnly;
   const AccountBottomSheet({
     super.key,
     this.onlyTypeOf,
+    this.payableOnly = false,
   });
 
   @override
   ConsumerState<AccountBottomSheet> createState() => _AccountBottomSheetState();
 }
 
-class _AccountBottomSheetState extends ConsumerState<AccountBottomSheet> {
+class _AccountBottomSheetState extends ConsumerState<AccountBottomSheet> with SingleTickerProviderStateMixin {
+  late TabController controller;
+
+  List<Tab> tabs() => AccountType.values.map((e) {
+        return Tab(
+          child: Text(
+            e.toText(),
+            style: TextStyle(
+              color: widget.payableOnly && e == AccountType.loan ? Colors.grey : Colors.black,
+            ),
+          ),
+        );
+      }).toList();
+
+  Widget _accountsList(List<Account> accounts) {
+    return ListView.builder(
+      itemCount: accounts.length,
+      itemBuilder: ((context, index) {
+        final account = accounts[index];
+        return GestureDetector(
+          onTap: () => Navigator.of(context).pop(account),
+          child: ListTile(
+            title: Text(account.title),
+            subtitle: Text(account.accountType.toText()),
+            trailing: Text(Formatter.amountToDecimal(account.usableBalance)),
+          ),
+        );
+      }),
+    );
+  }
+
+  onTap() {
+    if (!widget.payableOnly) {
+      return;
+    }
+    final index = controller.previousIndex;
+    if (AccountType.values[controller.index] == AccountType.loan) {
+      controller.index = index;
+    }
+  }
+
+  @override
+  void initState() {
+    controller = TabController(length: tabs().length, vsync: this)..addListener(onTap);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -47,6 +96,11 @@ class _AccountBottomSheetState extends ConsumerState<AccountBottomSheet> {
               ),
             ),
           ),
+          TabBar.secondary(
+            controller: controller,
+            tabs: tabs(),
+            isScrollable: true,
+          ),
           const SizedBox(height: 10),
           Expanded(
             child: FutureBuilder(
@@ -66,19 +120,11 @@ class _AccountBottomSheetState extends ConsumerState<AccountBottomSheet> {
                       if (widget.onlyTypeOf != null) {
                         accounts.retainWhere((e) => e.accountType == widget.onlyTypeOf);
                       }
-                      return ListView.builder(
-                        itemCount: accounts.length,
-                        itemBuilder: ((context, index) {
-                          final account = accounts[index];
-                          return GestureDetector(
-                            onTap: () => Navigator.of(context).pop(account),
-                            child: ListTile(
-                              title: Text(account.title ?? "Tiền mặt"),
-                              subtitle: Text(account.accountType.toText()),
-                              trailing: Text("${account.amount}"),
-                            ),
-                          );
-                        }),
+                      return TabBarView(
+                        controller: controller,
+                        children: AccountType.values.map((type) {
+                          return _accountsList(accounts.where((acc) => acc.accountType == type).toList());
+                        }).toList(),
                       );
                     case _:
                       return const CircularProgressIndicator();

@@ -22,17 +22,20 @@ class PersonalizeItemCard extends StatelessWidget {
         }
       },
       child: SizedBox(
-        height: 40,
+        height: 64,
         width: double.infinity,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 40,
-              child: icon,
-            ),
-            const SizedBox(width: 20),
-            Text(label),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 40,
+                child: icon,
+              ),
+              const SizedBox(width: 20),
+              Text(label),
+            ],
+          ),
         ),
       ),
     );

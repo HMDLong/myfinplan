@@ -106,7 +106,7 @@ class _SpendingChartState extends State<SpendingChart> {
                         Row(
                           children: [
                             Text(
-                              amountToDecimal(data[1].y.toInt()),
+                              Formatter.amountToDecimal(data[1].y.toInt()),
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,

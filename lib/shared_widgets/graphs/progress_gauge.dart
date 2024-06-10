@@ -62,14 +62,14 @@ class LinearProgressGauge extends StatelessWidget {
               height: 0.1,
             ),
           GaugeMode.limit => Text(
-              "Quá hạn: ${amountToDecimal(value - max)}",
+              "Quá hạn: ${Formatter.amountToDecimal(value - max)}",
               style: TextStyle(
                 fontSize: valueFontSize,
                 color: Colors.red,
               ),
             ),
           GaugeMode.goodOverflow => Text(
-              "Vượt mục tiêu: ${amountToDecimal(value - max)}",
+              "Vượt mục tiêu: ${Formatter.amountToDecimal(value - max)}",
               style: TextStyle(
                 fontSize: valueFontSize,
                 color: Colors.green.shade600,
@@ -98,7 +98,7 @@ class LinearProgressGauge extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  compactLabel ? amountToCompact(value) : amountToDecimal(value),
+                  compactLabel ? Formatter.amountToCompact(value) : Formatter.amountToDecimal(value),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: valueFontSize,
@@ -118,7 +118,7 @@ class LinearProgressGauge extends StatelessWidget {
                         fontSize: labelFontSize,
                       )),
                   Text(
-                    compactLabel ? amountToCompact(trailingValue ?? max) : amountToDecimal(trailingValue ?? max),
+                    compactLabel ? Formatter.amountToCompact(trailingValue ?? max) : Formatter.amountToDecimal(trailingValue ?? max),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: valueFontSize,

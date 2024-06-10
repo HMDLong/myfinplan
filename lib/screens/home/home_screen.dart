@@ -6,8 +6,8 @@ import 'package:myfinplan/screens/home/components/account_summary_section.dart';
 import 'package:myfinplan/screens/home/components/budget_carousel.dart';
 import 'package:myfinplan/screens/home/components/latest_transaction_section.dart';
 import 'package:myfinplan/screens/home/components/spending_chart/spending_chart.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen/add_transaction_screen.dart';
-import 'package:myfinplan/screens/transactions/transactions_log/transact_log_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/transact_log_screen.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return Text(
-                    amountToDecimal(
+                    Formatter.amountToDecimal(
                       ref.watch(totalBalanceProvider).when(
                             data: (data) => data,
                             error: (error, _) => -1,
@@ -78,10 +78,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: CupertinoColors.activeBlue,
         onPressed: () {
           pushNewScreen(context, screen: const AddOrEditTransactScreen());
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.post_add_rounded),
       ),
     );
   }

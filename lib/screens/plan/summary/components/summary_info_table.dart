@@ -30,41 +30,41 @@ class SummaryInfoTable extends StatelessWidget {
                     DataRow(
                       cells: [
                         const DataCell(Text("Thu nhập")),
-                        DataCell(Text(amountToDecimal(data[0], currency: null))),
-                        DataCell(Text(amountToDecimal(data[1], currency: null))),
-                        DataCell(Text(amountToDecimal(data[1] - data[0], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[0], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[1], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[1] - data[0], currency: null))),
                       ],
                     ),
                     DataRow(
                       cells: [
                         const DataCell(Text("Chi phí")),
-                        DataCell(Text(amountToDecimal(data[2], currency: null))),
-                        DataCell(Text(amountToDecimal(data[3], currency: null))),
-                        DataCell(Text(amountToDecimal(data[3] - data[2], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[2], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[3], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[3] - data[2], currency: null))),
                       ],
                     ),
                     DataRow(
                       cells: [
                         const DataCell(Text("Tiết kiệm")),
-                        DataCell(Text(amountToDecimal(data[4], currency: null))),
-                        DataCell(Text(amountToDecimal(data[5], currency: null))),
-                        DataCell(Text(amountToDecimal(data[5] - data[4], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[4], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[5], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[5] - data[4], currency: null))),
                       ],
                     ),
                     DataRow(
                       cells: [
                         const DataCell(Text("Trả nợ")),
-                        DataCell(Text(amountToDecimal(data[6], currency: null))),
-                        DataCell(Text(amountToDecimal(data[7], currency: null))),
-                        DataCell(Text(amountToDecimal(data[7] - data[6], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[6], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[7], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[7] - data[6], currency: null))),
                       ],
                     ),
                     DataRow(
                       cells: [
                         const DataCell(Text("Tăng trưởng")),
-                        DataCell(Text(amountToDecimal(data[0], currency: null))),
-                        DataCell(Text(amountToDecimal(data[1], currency: null))),
-                        DataCell(Text(amountToDecimal(data[1] - data[0], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[0], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[1], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[1] - data[0], currency: null))),
                       ],
                     ),
                   ],

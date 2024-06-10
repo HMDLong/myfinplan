@@ -1,11 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/shared_widgets/pickers/accounts_picker/account_picker.dart';
 import 'package:myfinplan/shared_widgets/pickers/category_picker/category_picker.dart';
 import 'package:myfinplan/shared_widgets/pickers/timerange_picker/timerange_picker.dart';
-import 'package:myfinplan/screens/transactions/transactions_log/transact_log_screen.dart';
+import 'package:myfinplan/screens/transactions/transact_log_screen.dart';
 import 'package:myfinplan/utils/styles.dart';
 
 class FilterScreen extends ConsumerStatefulWidget {
@@ -52,6 +50,7 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
                     },
                   ),
                 ),
+                const SizedBox(height: 16),
                 CategoryPicker(
                   icon: const Icon(Icons.category_rounded),
                   allowGroup: true,
@@ -60,12 +59,14 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
                   },
                   isFormField: false,
                 ),
+                const SizedBox(height: 16),
                 AccountPicker(
                   onAccountChanged: (account) {
                     _formData.fromAcc = account;
                   },
                   label: "Tài khoản nguồn",
                 ),
+                const SizedBox(height: 16),
                 AccountPicker(
                   onAccountChanged: (account) {
                     _formData.toAcc = account;

@@ -78,7 +78,7 @@ class AccountDistributionChart extends ConsumerWidget {
                                         style: TextStyle(color: Colors.black, fontSize: 10),
                                       ),
                                       Text(
-                                        "${amountToCompact(point.y, currency: null)} (${(point.y * 100 / total).round()}%)",
+                                        "${Formatter.amountToCompact(point.y, currency: null)} (${(point.y * 100 / total).round()}%)",
                                         style: TextStyle(fontSize: 12),
                                       ),
                                     ],

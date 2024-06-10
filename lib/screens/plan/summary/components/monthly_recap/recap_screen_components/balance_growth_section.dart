@@ -30,7 +30,7 @@ class BalanceGrowthSection extends ConsumerWidget {
             flex: 2,
             child: Align(
               alignment: Alignment.centerRight,
-              child: Text(amountToCompact(value), style: const TextStyle(fontSize: 12)),
+              child: Text(Formatter.amountToCompact(value), style: const TextStyle(fontSize: 12)),
             ),
           ),
         ],
@@ -90,7 +90,7 @@ class BalanceGrowthSection extends ConsumerWidget {
             padding: const EdgeInsets.all(12.0),
             child: Wrap(children: [
               Text(
-                "Đây là tháng thứ 2 liên tiếp số dư tăng trưởng. Từ tháng 3/2024 (${amountToDecimal(100000000)}) đã tăng ${amountToDecimal(120530000 - 100000000)} (+20.53%).",
+                "Đây là tháng thứ 2 liên tiếp số dư tăng trưởng. Từ tháng 3/2024 (${Formatter.amountToDecimal(100000000)}) đã tăng ${Formatter.amountToDecimal(120530000 - 100000000)} (+20.53%).",
                 softWrap: true,
               ),
             ]),

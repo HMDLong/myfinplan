@@ -39,6 +39,12 @@ abstract class BaseCategory {
         _ => throw Exception(),
       };
 
+  List<Color> get color => switch (type) {
+        TransactionType.expense => [Colors.red.shade600, Colors.red.shade100],
+        TransactionType.income => [Colors.green.shade600, Colors.green.shade100],
+        TransactionType.transact => [Colors.blue.shade600, Colors.blue.shade100],
+      };
+
   /// check if [id] is a child [Category]
   static bool isChild(String id) => id.split(".").length > 1;
 }

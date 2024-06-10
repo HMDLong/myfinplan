@@ -169,7 +169,7 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                                       flex: 2,
                                       child: Align(
                                         alignment: Alignment.centerRight,
-                                        child: Text(amountToDecimal(e.planDetail!.planAmount, currency: null)),
+                                        child: Text(Formatter.amountToDecimal(e.planDetail!.planAmount, currency: null)),
                                       ),
                                     ),
                                   ],
@@ -222,7 +222,7 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                         log(availableBudget.toString());
                         return availableBudget >= 0
                             ? Text(
-                                "Số quỹ còn lại có thể sử dụng: ${amountToDecimal(availableBudget.toInt())}",
+                                "Số quỹ còn lại có thể sử dụng: ${Formatter.amountToDecimal(availableBudget.toInt())}",
                                 // style: const TextStyle(color: Colors.white),
                               )
                             : const Text(

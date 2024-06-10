@@ -4,7 +4,7 @@ import 'package:myfinplan/providers/categories/category_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/add_plan_transact_screen.dart';
 import 'package:myfinplan/screens/plan/schedule/schedule_calendart_state.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -35,6 +35,10 @@ final scheduleDetailsProvider = FutureProvider((ref) async {
   }
   return res;
 });
+
+const menuItemStyle = TextStyle(
+  fontSize: 14,
+);
 
 class _ScheduleTabState extends ConsumerState<ScheduleTab> {
   @override
@@ -88,8 +92,8 @@ class _ScheduleTabState extends ConsumerState<ScheduleTab> {
                             scheduleItem.title,
                             style: const TextStyle(fontSize: 12),
                           ),
-                          Text(scheduleItem.statusText, style: TextStyle(fontSize: 10)),
-                          Text("${scheduleItem.actual}/${scheduleItem.amount}", style: TextStyle(fontSize: 10)),
+                          Text(scheduleItem.statusText, style: const TextStyle(fontSize: 10)),
+                          Text("${scheduleItem.actual}/${scheduleItem.amount}", style: const TextStyle(fontSize: 10)),
                         ],
                       ),
                     ),
@@ -121,13 +125,22 @@ class _ScheduleTabState extends ConsumerState<ScheduleTab> {
   _buildPopupMenuItems(ScheduleItem item) {
     if (item.paid) {
       return [
-        PopupMenuItem(child: Text("Chỉnh sửa")),
+        const PopupMenuItem(
+          height: 30,
+          child: Text(
+            "Chỉnh sửa",
+            style: menuItemStyle,
+          ),
+        ),
       ];
     }
     return [
       PopupMenuItem(
         height: 30,
-        child: Text("Thực hiện"),
+        child: const Text(
+          "Thực hiện",
+          style: menuItemStyle,
+        ),
         onTap: () {
           pushNewScreen(
             context,
@@ -135,13 +148,22 @@ class _ScheduleTabState extends ConsumerState<ScheduleTab> {
           );
         },
       ),
-      PopupMenuItem(
+      const PopupMenuItem(
         height: 30,
-        child: Text("Hủy lịch"),
+        child: Text(
+          "Hủy lịch",
+          style: menuItemStyle,
+        ),
       ),
       PopupMenuItem(
         height: 30,
-        child: Text("Chỉnh sửa"),
+        onTap: () {
+          pushNewScreen(context, screen: AddOrEditTransactScreen(prefill: item.transact));
+        },
+        child: const Text(
+          "Chỉnh sửa",
+          style: menuItemStyle,
+        ),
       ),
     ];
   }

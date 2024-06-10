@@ -77,7 +77,7 @@ class _NewBudgetScreenState extends ConsumerState<NewBudgetScreen> {
                         children: [
                           availableBudget >= 0
                               ? Text(
-                                  "Số quỹ còn lại có thể sử dụng: ${amountToDecimal(availableBudget.toInt())}",
+                                  "Số quỹ còn lại có thể sử dụng: ${Formatter.amountToDecimal(availableBudget.toInt())}",
                                   style: const TextStyle(color: Colors.white),
                                 )
                               : const Text(

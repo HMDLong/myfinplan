@@ -35,142 +35,138 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            CupertinoIcons.back,
-            color: Colors.black,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          "Thông tin bản ghi",
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: defaultStyledAppBar(
+        title: "Thông tin bản ghi",
+        onBackPressed: () => Navigator.of(context).pop(),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10),
-                AmountFormField(
-                  label: "Số tiền",
-                  onChanged: (value) {
-                    _formData["amount"] = value;
-                  },
-                ),
-                const SizedBox(height: 10),
-                CategoryPicker(
-                  icon: const Icon(Icons.category_rounded),
-                  onCategoryChanged: (value) {
-                    _formData["category"] = value;
-                    // transactionType = value.type;
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    inputLabelWithPadding("Kì hạn"),
-                    Radio(
-                      value: 0,
-                      groupValue: period,
-                      onChanged: (value) => setState(() {
-                        period = value ?? period;
-                      }),
-                    ),
-                    inputLabelWithPadding("Định kỳ"),
-                    const SizedBox(width: 15),
-                    Radio(
-                      value: 1,
-                      groupValue: period,
-                      onChanged: (value) => setState(() {
-                        period = value ?? period;
-                      }),
-                    ),
-                    inputLabelWithPadding("Một lần"),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                CustomDatePicker(
-                  onDatePicked: (pickedDate) => _formData["date"] = pickedDate,
-                ),
-                const SizedBox(height: 10),
-                if (period == 0)
-                  DropdownButtonFormField<TimeType>(
-                    decoration: formFieldDecor(
-                      icon: const Icon(Icons.timelapse_rounded),
-                      label: const Text("Chu kỳ"),
-                    ),
-                    value: _formData["period"],
-                    items: const [
-                      DropdownMenuItem(value: TimeType.month, child: Text("Hàng tháng")),
-                      DropdownMenuItem(value: TimeType.week, child: Text("Hàng tuần")),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _formData["period"] = value;
-                      });
-                    },
-                  ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    const Expanded(
-                      flex: 8,
-                      child: Text("Nhắc tôi khi đến ngày thực hiện"),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Switch(
-                        value: _formData["isNotified"],
+      body: Column(
+        children: [
+          Expanded(
+            flex: 7,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(height: 10),
+                      AmountFormField(
+                        label: "Số tiền",
                         onChanged: (value) {
-                          setState(() {
-                            _formData["isNotified"] = value;
-                          });
+                          _formData["amount"] = value;
                         },
                       ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 15),
-                ElevatedButton(
-                  onPressed: () {
-                    _onSubmit().then((value) {
-                      ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(CustomSnackbar.success(addSuccessMessage));
-                      Navigator.of(context).pop();
-                    }).onError((error, stackTrace) {
-                      ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(CustomSnackbar.failure("$error"));
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    backgroundColor: CupertinoColors.activeBlue,
+                      const SizedBox(height: 10),
+                      CategoryPicker(
+                        icon: const Icon(Icons.category_rounded),
+                        onCategoryChanged: (value) {
+                          _formData["category"] = value;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          inputLabelWithPadding("Kì hạn"),
+                          Radio(
+                            value: 0,
+                            groupValue: period,
+                            onChanged: (value) => setState(() {
+                              period = value ?? period;
+                            }),
+                          ),
+                          inputLabelWithPadding("Định kỳ"),
+                          const SizedBox(width: 15),
+                          Radio(
+                            value: 1,
+                            groupValue: period,
+                            onChanged: (value) => setState(() {
+                              period = value ?? period;
+                            }),
+                          ),
+                          inputLabelWithPadding("Một lần"),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      CustomDatePicker(
+                        onDatePicked: (pickedDate) => _formData["date"] = pickedDate,
+                      ),
+                      const SizedBox(height: 10),
+                      if (period == 0)
+                        DropdownButtonFormField<TimeType>(
+                          decoration: formFieldDecor(
+                            icon: const Icon(Icons.timelapse_rounded),
+                            label: const Text("Chu kỳ"),
+                          ),
+                          value: _formData["period"],
+                          items: const [
+                            DropdownMenuItem(value: TimeType.month, child: Text("Hàng tháng")),
+                            DropdownMenuItem(value: TimeType.week, child: Text("Hàng tuần")),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _formData["period"] = value;
+                            });
+                          },
+                        ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Expanded(
+                            flex: 8,
+                            child: Text("Nhắc tôi khi đến ngày thực hiện"),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Switch(
+                              value: _formData["isNotified"],
+                              onChanged: (value) {
+                                setState(() {
+                                  _formData["isNotified"] = value;
+                                });
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _onSubmit().then((value) {
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(CustomSnackbar.success(addSuccessMessage));
+                                Navigator.of(context).pop();
+                              }).onError((error, stackTrace) {
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(CustomSnackbar.failure("$error"));
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              backgroundColor: CupertinoColors.activeBlue,
+                            ),
+                            child: const SizedBox(
+                              height: 30,
+                              width: double.infinity,
+                              child: Center(child: Text("Xác nhận")),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: const SizedBox(
-                    height: 30,
-                    width: double.infinity,
-                    child: Text("Xác nhận"),
-                  ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

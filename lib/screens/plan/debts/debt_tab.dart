@@ -107,7 +107,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text("Tổng số dư"),
-                                    Text(amountToDecimal(info.totalBalance.toInt())),
+                                    Text(Formatter.amountToDecimal(info.totalBalance.toInt())),
                                   ],
                                 ),
                               ),
@@ -116,7 +116,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            "Lịch trình (${toVnMonthYear(months.first)} ~ ${toVnMonthYear(months.last)})",
+                            "Lịch trình (${Formatter.toVnMonthYear(months.first)} ~ ${Formatter.toVnMonthYear(months.last)})",
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
@@ -185,7 +185,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                                             }
                                             final entry = info.schedule[month]?[info.loans[i - 1].id];
                                             return _cell(
-                                              amountToDecimal(entry!.totalPayment.round(), currency: null),
+                                              Formatter.amountToDecimal(entry!.totalPayment.round(), currency: null),
                                               color: i.remainder(2) == 0 ? Colors.grey.shade300 : Colors.white,
                                             );
                                           },
@@ -274,7 +274,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
               ...info.loans.map((e) {
                 final data = scheduleData?[e.id];
                 return DataCell(
-                  Text(amountToDecimal(data!.principal.round(), currency: null)),
+                  Text(Formatter.amountToDecimal(data!.principal.round(), currency: null)),
                 );
               }),
             ],
@@ -286,7 +286,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
               ...info.loans.map((e) {
                 final data = scheduleData?[e.id];
                 return DataCell(
-                  Text(amountToDecimal(data!.interest.round(), currency: null)),
+                  Text(Formatter.amountToDecimal(data!.interest.round(), currency: null)),
                 );
               }),
             ],
@@ -297,7 +297,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
               ...info.loans.map((e) {
                 final data = scheduleData?[e.id];
                 return DataCell(
-                  Text(amountToDecimal(data!.snowball.round(), currency: null)),
+                  Text(Formatter.amountToDecimal(data!.snowball.round(), currency: null)),
                 );
               }),
             ],
@@ -310,7 +310,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                 final data = scheduleData?[e.id];
                 return DataCell(
                   Text(
-                    amountToDecimal(data!.totalPayment.round(), currency: null),
+                    Formatter.amountToDecimal(data!.totalPayment.round(), currency: null),
                   ),
                 );
               }),
@@ -320,7 +320,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
             cells: [
               const DataCell(Text("Đã trả")),
               ...info.paysThisMonth.map((e) => DataCell(
-                    Text(amountToDecimal(e.round(), currency: null)),
+                    Text(Formatter.amountToDecimal(e.round(), currency: null)),
                   )),
             ],
           ),
@@ -331,7 +331,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
               ...info.loans.map((e) {
                 final data = scheduleData?[e.id];
                 return DataCell(
-                  Text(amountToDecimal(data!.remainingBalance.round(), currency: null)),
+                  Text(Formatter.amountToDecimal(data!.remainingBalance.round(), currency: null)),
                 );
               }),
             ],
@@ -370,23 +370,23 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
               DataCell(Text("${e.month}/${e.year}")),
               DataCell(
                 Text(
-                  amountToDecimal(
+                  Formatter.amountToDecimal(
                     monthData!.totalPayment.round(),
                     currency: null,
                   ),
                 ),
               ),
               DataCell(
-                Text(amountToDecimal(monthData.principal.round(), currency: null)),
+                Text(Formatter.amountToDecimal(monthData.principal.round(), currency: null)),
               ),
               DataCell(
-                Text(amountToDecimal(monthData.interest.round(), currency: null)),
+                Text(Formatter.amountToDecimal(monthData.interest.round(), currency: null)),
               ),
               DataCell(
-                Text(amountToDecimal(monthData.snowball.round(), currency: null)),
+                Text(Formatter.amountToDecimal(monthData.snowball.round(), currency: null)),
               ),
               DataCell(
-                Text(amountToDecimal(monthData.remainingBalance.round(), currency: null)),
+                Text(Formatter.amountToDecimal(monthData.remainingBalance.round(), currency: null)),
               ),
             ],
           );

@@ -49,9 +49,9 @@ class _GoalsSectionState extends ConsumerState<GoalsSection> {
         ...ref.watch(goalsDetailProvider).when<List<Widget>>(
               data: (data) {
                 return [
-                  _infoRow("Dự kiến", amountToDecimal(1000000), fill: true),
-                  _infoRow("Thực tế", amountToDecimal(1000000)),
-                  _infoRow("Tổng quỹ tiết kiệm", amountToDecimal(1000000), fill: true),
+                  _infoRow("Dự kiến", Formatter.amountToDecimal(1000000), fill: true),
+                  _infoRow("Thực tế", Formatter.amountToDecimal(1000000)),
+                  _infoRow("Tổng quỹ tiết kiệm", Formatter.amountToDecimal(1000000), fill: true),
                   const SizedBox(height: 15),
                   SizedBox(
                     height: 150,

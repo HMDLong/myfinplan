@@ -139,7 +139,7 @@ class AccountTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    amountToDecimal(amount),
+                    Formatter.amountToDecimal(amount),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,

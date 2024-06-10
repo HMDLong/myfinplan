@@ -59,6 +59,7 @@ class _TransactionListState extends ConsumerState<TransactionList> {
     return ref.watch(transactionsProvider).when(
       data: (data) {
         final displayData = prepData(data);
+        final keys = displayData.keys.toList()..sort((a, b) => a.compareTo(b));
         return displayData.isEmpty
             ? const SizedBox(
                 height: 300,
@@ -78,29 +79,34 @@ class _TransactionListState extends ConsumerState<TransactionList> {
               )
             : ListView.builder(
                 shrinkWrap: true,
-                itemCount: displayData.length,
+                itemCount: keys.length,
                 itemBuilder: ((context, index) {
-                  final transactData = displayData.entries.toList()[displayData.length - index - 1];
+                  final key = keys[index];
+                  final transactData = displayData[key];
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
+                        width: double.infinity,
                         decoration: const BoxDecoration(
                           border: Border.symmetric(
-                            horizontal: BorderSide(),
+                            horizontal: BorderSide(
+                              color: Colors.grey,
+                              width: 0.5,
+                            ),
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(toFullVnDate(transactData.key)),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+                          child: Text(Formatter.toFullVnDate(key)),
                         ),
                       ),
                       ListView.builder(
-                        itemCount: transactData.value.length,
+                        itemCount: transactData!.length,
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemBuilder: (context, i) {
-                          return TransactionCard(transaction: transactData.value[i]);
+                          return TransactionCard(transaction: transactData[i]);
                         },
                       ),
                       const SizedBox(height: 10)

@@ -48,7 +48,7 @@ class _BudgetSectionState extends State<BudgetSection> {
                 child: Column(
                   children: [
                     Text(
-                      "Bạn đã tiêu ${amountToDecimal(totalBudgetSpent)} trong tổng quỹ ${amountToDecimal(totalBudgetAmount)}.",
+                      "Bạn đã tiêu ${Formatter.amountToDecimal(totalBudgetSpent)} trong tổng quỹ ${Formatter.amountToDecimal(totalBudgetAmount)}.",
                       softWrap: true,
                     ),
                     const SizedBox(

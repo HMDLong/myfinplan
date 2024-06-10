@@ -22,7 +22,7 @@ class LoanCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    throw AccountCard(
+    return AccountCard(
       gradient: LinearGradient(
         colors: [
           Colors.green.shade400,
@@ -58,7 +58,7 @@ class LoanCard extends ConsumerWidget {
         // ),
         AccountCardSection(
           label: "Số dư",
-          value: amountToDecimal(account.amount!),
+          value: Formatter.amountToDecimal(account.amount),
           bottom: 10.0,
           start: 10.0,
           direction: TextDirection.rtl,

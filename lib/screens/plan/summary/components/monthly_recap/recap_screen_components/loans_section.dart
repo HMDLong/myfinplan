@@ -61,7 +61,7 @@ class _LoansSectionState extends ConsumerState<LoansSection> {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: amountToDecimal(actual),
+                      text: Formatter.amountToDecimal(actual),
                       style: TextStyle(
                         fontSize: 12,
                         color: plan < actual ? Colors.green : Colors.red,
@@ -69,7 +69,7 @@ class _LoansSectionState extends ConsumerState<LoansSection> {
                     ),
                     const TextSpan(text: " / "),
                     TextSpan(
-                      text: amountToDecimal(plan),
+                      text: Formatter.amountToDecimal(plan),
                       style: const TextStyle(
                         fontSize: 12,
                       ),
@@ -105,10 +105,10 @@ class _LoansSectionState extends ConsumerState<LoansSection> {
           children: [
             const RecapSectionTitle(title: "Khoản nợ"),
             const SizedBox(height: 15),
-            _infoRow("Dư nợ gốc", amountToDecimal(0), fill: true),
-            _infoRow("Trả dự kiến", amountToDecimal(15540000)),
-            _infoRow("Thực trả kì này", amountToDecimal(totalPaid.toInt()), fill: true),
-            _infoRow("Dư nợ kì sau", amountToDecimal(200000000)),
+            _infoRow("Dư nợ gốc", Formatter.amountToDecimal(0), fill: true),
+            _infoRow("Trả dự kiến", Formatter.amountToDecimal(15540000)),
+            _infoRow("Thực trả kì này", Formatter.amountToDecimal(totalPaid.toInt()), fill: true),
+            _infoRow("Dư nợ kì sau", Formatter.amountToDecimal(200000000)),
             // _infoRow("Giảm nợ", "", fill: true),
             const Padding(
               padding: EdgeInsets.all(14.0),

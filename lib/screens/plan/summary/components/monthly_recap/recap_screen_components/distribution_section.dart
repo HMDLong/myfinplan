@@ -144,9 +144,9 @@ class _DistributionSectionState extends ConsumerState<DistributionSection> {
           child: Text.rich(
             TextSpan(
               children: [
-                TextSpan(
-                  text: "Đây là tháng thứ 2 liên tiếp số dư tăng trưởng. Từ tháng 3/2024 (${amountToDecimal(100000000)}) đã tăng ${amountToDecimal(120530000 - 100000000)} (+20.53%).",
-                )
+                // TextSpan(
+                //   text: "Đây là tháng thứ 2 liên tiếp số dư tăng trưởng. Từ tháng 3/2024 (${amountToDecimal(100000000)}) đã tăng ${amountToDecimal(120530000 - 100000000)} (+20.53%).",
+                // )
               ],
             ),
           ),

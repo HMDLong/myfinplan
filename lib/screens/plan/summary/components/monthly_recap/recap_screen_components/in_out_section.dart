@@ -69,7 +69,7 @@ class InOutSection extends ConsumerWidget {
           child: Wrap(
             children: [
               Text(
-                "Trong tháng 4/2024, bạn chi tổng cộng ${amountToDecimal(7500000)}, thu tổng cộng ${amountToDecimal(12000000)}. Chi phí của bạn chiếm ${7500000 / 12000000 * 100} % tổng thu nhập.",
+                "Trong tháng 4/2024, bạn chi tổng cộng ${Formatter.amountToDecimal(7500000)}, thu tổng cộng ${Formatter.amountToDecimal(12000000)}. Chi phí của bạn chiếm ${7500000 / 12000000 * 100} % tổng thu nhập.",
                 softWrap: true,
               ),
             ],

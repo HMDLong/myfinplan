@@ -8,11 +8,13 @@ class AccountPicker extends StatefulWidget {
   final String? label;
   final void Function(Account value) onAccountChanged;
   final String? initAccountName;
+  final bool payableOnly;
   const AccountPicker({
     super.key,
     this.label,
     required this.onAccountChanged,
     this.initAccountName,
+    this.payableOnly = false,
   });
 
   @override
@@ -59,13 +61,15 @@ class _AccountPickerState extends State<AccountPicker> {
           topRight: Radius.circular(10.0),
         )),
         builder: (context) {
-          return const AccountBottomSheet();
+          return AccountBottomSheet(
+            payableOnly: widget.payableOnly,
+          );
         });
 
     if (account != null) {
       setState(() {
         widget.onAccountChanged(account);
-        controller.text = account.title ?? "TM";
+        controller.text = account.title;
       });
     }
   }

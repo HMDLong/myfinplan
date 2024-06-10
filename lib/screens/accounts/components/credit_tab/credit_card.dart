@@ -77,7 +77,7 @@ class _CreditCardState extends ConsumerState<CreditCard> {
       children: [
         AccountCardSection(
           label: "Số dư tín dụng",
-          value: amountToDecimal(widget.account.amount!),
+          value: Formatter.amountToDecimal(widget.account.amount!),
           bottom: 10.0,
           start: 10.0,
           direction: TextDirection.rtl,
@@ -86,7 +86,7 @@ class _CreditCardState extends ConsumerState<CreditCard> {
         ),
         AccountCardSection(
           label: "Hạn mức tín dụng",
-          value: amountToDecimal(widget.account.limit),
+          value: Formatter.amountToDecimal(widget.account.limit),
           bottom: 60.0,
           start: 10.0,
           labelColor: Colors.pink.shade50,

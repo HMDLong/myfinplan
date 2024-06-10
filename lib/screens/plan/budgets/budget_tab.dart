@@ -89,7 +89,7 @@ class _BudgetTabState extends ConsumerState<BudgetTab> {
               children: [
                 const Text("Tổng ngân sách"),
                 Text(
-                  amountToDecimal(budgetTotals[0]),
+                  Formatter.amountToDecimal(budgetTotals[0]),
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 10),

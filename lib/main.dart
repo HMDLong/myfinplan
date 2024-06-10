@@ -99,19 +99,22 @@ class _MyAppState extends ConsumerState<MyApp> {
     final sharedRef = await SharedPreferences.getInstance();
     final lastUpdateStr = sharedRef.getString("last_update");
     final now = DateTime.now().toDateOnly();
+    dev.log("last_update: $lastUpdateStr");
     if (lastUpdateStr != null) {
       final lastUpdateDate = DateTime.parse(lastUpdateStr);
       if (lastUpdateDate.month == now.month && lastUpdateDate.year == now.year) {
         return;
       }
     }
+    dev.log("Should update. Updating...");
     // If at the end of month, update infos
     // 1. Create new plan-transactions
     ref.read(transactionNotifierProvider.notifier).updatePlanTransacts();
     // 2. Update loans infos
     ref.read(accountsProvider.notifier).updateAccountsStatus();
-
+    // Lastly, update new last_update date.
     sharedRef.setString("last_update", now.toIso8601String());
+    dev.log("Done update.");
   }
 
   @override

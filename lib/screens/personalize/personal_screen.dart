@@ -32,7 +32,6 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
           ),
           const SizedBox(height: 16),
           const Text("Thiết lập chung", style: titleStyle),
-          const SizedBox(height: 12),
           PersonalizeItemCard(
             color: Colors.blue.shade50,
             icon: const Icon(Icons.category_rounded),
@@ -41,11 +40,9 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
               pushNewScreen(context, screen: const CategoryScreen());
             },
           ),
-          const SizedBox(height: 8),
           const Divider(indent: 8, endIndent: 18),
           const SizedBox(height: 8),
           const Text("Demo", style: titleStyle),
-          const SizedBox(height: 12),
           PersonalizeItemCard(
             color: Colors.blue.shade50,
             icon: const Icon(Icons.category_rounded),

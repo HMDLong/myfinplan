@@ -29,7 +29,7 @@ class _AmountFormFieldState extends State<AmountFormField> {
       return "Hãy nhập số tiền";
     }
     int parsedAmount = int.parse(value.split(',').join());
-    if (parsedAmount <= 0) {
+    if (parsedAmount < 0) {
       return "Số tiền cần lớn hơn 0";
     }
     return null;

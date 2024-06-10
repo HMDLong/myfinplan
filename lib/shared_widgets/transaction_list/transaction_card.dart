@@ -10,7 +10,7 @@ import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/categories/category_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
@@ -55,14 +55,25 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          content: const SizedBox(
-            height: 50,
+          content: SizedBox(
+            height: 80,
             child: Column(
               children: [
-                Icon(Icons.warning_amber_rounded),
-                SizedBox(height: 10),
-                Text("Xác nhận xóa?"),
-                SizedBox(height: 10),
+                ShaderMask(
+                    shaderCallback: (bounds) {
+                      return RadialGradient(
+                        colors: [
+                          Colors.red.shade600,
+                          Colors.orange,
+                          Colors.amber,
+                        ],
+                        stops: const [.4, .7, 1],
+                      ).createShader(bounds);
+                    },
+                    child: const Icon(Icons.warning_amber_rounded, size: 24)),
+                const SizedBox(height: 10),
+                const Text("Xác nhận xóa?"),
+                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -74,7 +85,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.red.shade50,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                           side: const BorderSide(width: 0.2),
@@ -96,7 +107,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                         ),
                       ),
                       onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text("Xác nhận", style: TextStyle(color: Colors.white)),
+                      child: Text("Xác nhận", style: TextStyle(color: Colors.green.shade50)),
                     ),
                   ),
                 ),
@@ -154,18 +165,17 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    margin: const EdgeInsets.all(5.0),
-                    constraints: const BoxConstraints(minHeight: 60.0),
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade400,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  constraints: const BoxConstraints(maxHeight: 50.0, maxWidth: 50, minHeight: 40, minWidth: 40),
+                  decoration: BoxDecoration(
+                    color: data.category?.color[0],
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Center(
                     child: Icon(
                       data.category?.icon.toMaterialIconData() ?? Icons.house,
-                      color: Colors.white,
+                      color: data.category?.color[1],
                     ),
                   ),
                 ),
@@ -182,43 +192,39 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                         style: const TextStyle(fontSize: 10),
                       ),
                       const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          if (data.transact.accId != null)
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  const TextSpan(
-                                    text: "Từ: ",
-                                    style: TextStyle(fontSize: 10, color: Colors.grey),
-                                  ),
-                                  TextSpan(
-                                    text: data.transact.accName,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  )
-                                ],
+                      if (data.transact.accId != null)
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: "Từ: ",
+                                style: TextStyle(fontSize: 10, color: Colors.grey),
                               ),
-                            ),
-                          if (data.transact.toAccId != null)
-                            Text.rich(
                               TextSpan(
-                                children: [
-                                  const TextSpan(
-                                    text: "  Đến: ",
-                                    style: TextStyle(fontSize: 10, color: Colors.grey),
-                                  ),
-                                  TextSpan(
-                                    text: data.transact.toAccName,
-                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                                  )
-                                ],
+                                text: data.transact.accName,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      if (data.transact.toAccId != null)
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: "Đến: ",
+                                style: TextStyle(fontSize: 10, color: Colors.grey),
                               ),
-                            ),
-                        ],
-                      ),
+                              TextSpan(
+                                text: data.transact.toAccName,
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),

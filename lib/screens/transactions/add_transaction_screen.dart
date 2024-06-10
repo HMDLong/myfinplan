@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
+import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
@@ -54,6 +55,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
       fromAccountName = prefill.accName;
       toAccountId = prefill.toAccId;
       toAccountName = prefill.toAccName;
+      transactionType = Category.getType(categoryId!);
     }
     super.initState();
   }
@@ -88,12 +90,58 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
         );
         await ref.read(transactionNotifierProvider.notifier).addTransaction(newTransaction);
         await ref.read(accountsProvider).transfer(
-              newTransaction.accId!,
+              newTransaction.accId,
               newTransaction.toAccId,
               newTransaction.amount,
             );
       }
     }
+  }
+
+  List<Widget> _accountPicker() {
+    return switch (transactionType) {
+      TransactionType.transact => [
+          AccountPicker(
+            label: "Tài khoản nguồn",
+            payableOnly: true,
+            initAccountName: widget.prefill?.accName,
+            onAccountChanged: (Account value) {
+              fromAccountId = value.id;
+              fromAccountName = value.title;
+            },
+          ),
+          AccountPicker(
+            label: "Tài khoản đích",
+            initAccountName: widget.prefill?.toAccName,
+            onAccountChanged: (Account value) {
+              toAccountId = value.id;
+              toAccountName = value.title;
+            },
+          ),
+        ],
+      TransactionType.income => [
+          AccountPicker(
+            payableOnly: true,
+            label: "Tài khoản đích",
+            initAccountName: widget.prefill?.accName,
+            onAccountChanged: (Account value) {
+              toAccountId = value.id;
+              toAccountName = value.title;
+            },
+          ),
+        ],
+      TransactionType.expense => [
+          AccountPicker(
+            payableOnly: true,
+            initAccountName: widget.prefill?.accName,
+            onAccountChanged: (Account value) {
+              fromAccountId = value.id;
+              fromAccountName = value.title;
+            },
+          ),
+        ],
+      null => [const SizedBox(height: 1)],
+    };
   }
 
   @override
@@ -150,26 +198,8 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                     icon: const Icon(CupertinoIcons.circle_grid_hex),
                   ),
                   const SizedBox(height: 15),
-                  AccountPicker(
-                    initAccountName: widget.prefill?.accName,
-                    onAccountChanged: (Account value) {
-                      fromAccountId = value.id;
-                      fromAccountName = value.title;
-                    },
-                  ),
+                  ..._accountPicker(),
                   const SizedBox(height: 15),
-                  (switch (transactionType) {
-                    TransactionType.transact => AccountPicker(
-                        label: "Tài khoản đích",
-                        initAccountName: widget.prefill?.toAccName,
-                        onAccountChanged: (Account value) {
-                          toAccountId = value.id;
-                          toAccountName = value.title;
-                        },
-                      ),
-                    _ => const SizedBox(height: 5.0),
-                  }),
-                  const SizedBox(height: 10),
                   TextFormField(
                     keyboardType: TextInputType.text,
                     decoration: formFieldDecor(
@@ -198,11 +228,12 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                       ..hideCurrentSnackBar()
                       ..showSnackBar(CustomSnackbar.success("Bản ghi được thêm thành công"));
                     Navigator.of(context).pop(true);
-                  }).onError((error, stackTrace) {
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(CustomSnackbar.failure("Có lỗi xảy ra: $error"));
                   });
+                  // .onError((error, stackTrace) {
+                  //   ScaffoldMessenger.of(context)
+                  //     ..hideCurrentSnackBar()
+                  //     ..showSnackBar(CustomSnackbar.failure("Có lỗi xảy ra: $error"));
+                  // });
                 },
               ),
             ),

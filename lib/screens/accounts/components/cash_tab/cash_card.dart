@@ -28,7 +28,7 @@ class _CashCardState extends State<CashCard> {
       children: [
         AccountCardSection(
           label: "Số dư",
-          value: amountToDecimal(widget.account.amount!),
+          value: Formatter.amountToDecimal(widget.account.amount!),
           bottom: 10.0,
           start: 10.0,
           direction: TextDirection.rtl,

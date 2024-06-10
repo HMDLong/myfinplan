@@ -29,7 +29,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
           loading: () => SavingTabStateModel.empty(),
         );
     final totalSaving = savingData.savings.fold(0, (prev, e) {
-      return prev + e.amount!;
+      return prev + e.amount;
     });
     final totalSavedThisRange = savingData.savedThisRange.fold(0, (prev, e) {
       return prev + e;
@@ -62,7 +62,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                     Align(
                       alignment: Alignment.center,
                       child: Text(
-                        amountToDecimal(totalSaving),
+                        Formatter.amountToDecimal(totalSaving),
                         style: const TextStyle(fontSize: 18),
                       ),
                     ),
@@ -98,13 +98,13 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           tileColor: Colors.blue.shade50,
-                          key: Key(saving.id!),
+                          key: Key(saving.id),
                           dense: true,
                           minLeadingWidth: 12,
-                          title: Text(saving.title!),
-                          subtitle: Text(amountToDecimal(saving.amount!)),
+                          title: Text(saving.title),
+                          subtitle: Text(Formatter.amountToDecimal(saving.amount)),
                           leading: Text("${index + 1}"),
-                          trailing: Text("+ ${amountToDecimal(saved, currency: null)}"),
+                          trailing: Text("+ ${Formatter.amountToDecimal(saved, currency: null)}"),
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 6),

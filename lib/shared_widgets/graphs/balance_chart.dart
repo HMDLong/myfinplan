@@ -52,7 +52,7 @@ final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<D
   }
   final groupByDateData = transacts.fold(<DateTime, int>{}, (previousValue, transact) {
     final dateOnly = transact.timestamp.toDateOnly();
-    previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) + transact.amount * (transact.toAccId == info.accountId ? -1 : 1);
+    previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) + transact.amount * (transact.toAccId == info.accountId ? 1 : -1);
     return previousValue;
   });
   var chartData = <BalanceChartData<DateTime, int>>[];

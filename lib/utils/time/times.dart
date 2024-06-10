@@ -107,13 +107,13 @@ class TimeRange extends Equatable {
       case TimeType.day:
         return "${start.day} Th${start.month} ${start.year}";
       case TimeType.week:
-        return "${toFullVnDate(start)}  ~  ${toFullVnDate(end)}";
+        return "${Formatter.toFullVnDate(start)}  ~  ${Formatter.toFullVnDate(end)}";
       case TimeType.month:
-        return toVnMonthYear(start);
+        return Formatter.toVnMonthYear(start);
       case TimeType.year:
         return "${start.year}";
       case TimeType.custom:
-        return "${toFullVnDate(start)}  ~  ${toFullVnDate(end)}";
+        return "${Formatter.toFullVnDate(start)}  ~  ${Formatter.toFullVnDate(end)}";
     }
   }
 

@@ -148,10 +148,10 @@ class _ExpandableDataTableState extends ConsumerState<ExpandableDataTable> {
                 ),
               ),
             ),
-      Text(amountToDecimal(plan, currency: null), style: dataStyle),
-      Text(amountToDecimal(actual, currency: null), style: dataStyle),
+      Text(Formatter.amountToDecimal(plan, currency: null), style: dataStyle),
+      Text(Formatter.amountToDecimal(actual, currency: null), style: dataStyle),
       Text(
-        amountToDecimal((plan - actual) * (widget.type == TransactionType.income ? -1 : 1), currency: null),
+        Formatter.amountToDecimal((plan - actual) * (widget.type == TransactionType.income ? -1 : 1), currency: null),
         style: _diffStyle(actual > plan, widget.type),
       ),
       selected: isOpened,

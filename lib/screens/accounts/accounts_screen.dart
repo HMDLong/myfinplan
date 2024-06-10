@@ -38,7 +38,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Tiền mặt"),
-                    Text(amountToCompact(data[AccountType.cash] ?? 0)),
+                    Text(Formatter.amountToCompact(data[AccountType.cash] ?? 0)),
                   ],
                 ),
               ),
@@ -47,7 +47,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Ghi nợ/ Ví"),
-                    Text(amountToCompact(data[AccountType.debit] ?? 0)),
+                    Text(Formatter.amountToCompact(data[AccountType.debit] ?? 0)),
                   ],
                 ),
               ),
@@ -56,7 +56,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Tín dụng"),
-                    Text(amountToCompact(data[AccountType.credit] ?? 0)),
+                    Text(Formatter.amountToCompact(data[AccountType.credit] ?? 0)),
                   ],
                 ),
               ),
@@ -65,7 +65,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Tiết kiệm"),
-                    Text(amountToCompact(data[AccountType.saving] ?? 0)),
+                    Text(Formatter.amountToCompact(data[AccountType.saving] ?? 0)),
                   ],
                 ),
               ),
@@ -74,7 +74,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Vay nợ"),
-                    Text(amountToCompact(data[AccountType.loan] ?? 0)),
+                    Text(Formatter.amountToCompact(data[AccountType.loan] ?? 0)),
                   ],
                 ),
               ),
@@ -115,7 +115,7 @@ class _AccountsScreenState extends ConsumerState<AccountsScreen> with SingleTick
               style: TextStyle(fontSize: 12, color: Colors.black),
             ),
             Text(
-              amountToDecimal(totalBalance),
+              Formatter.amountToDecimal(totalBalance),
               style: const TextStyle(color: Colors.black),
             ),
           ],
