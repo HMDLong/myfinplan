@@ -18,6 +18,7 @@ import 'package:myfinplan/providers/categories/category_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/styles.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 class DemoPanel extends ConsumerWidget {

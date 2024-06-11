@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/transaction/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
 import 'package:myfinplan/utils/random.dart';
 
@@ -45,11 +46,15 @@ class Transaction extends HiveObject {
     this.planDetail,
   }) : _amount = amount.abs();
 
-  int get amount => _amount * (transactType == TransactionType.expense ? -1 : 1);
   set amount(int value) => _amount = value.abs();
 
+  int get amount => _amount * (transactType == TransactionType.expense ? -1 : 1);
+
   TransactionType get transactType => Category.getType(categoryId);
+
   bool get paid => amount != 0;
+
+  Recurrence? get recurrence => planDetail == null ? null : Recurrence.fromPlanTransactId(planDetail!.planId);
 
   factory Transaction.planTransact({
     required DateTime planTimestamp,

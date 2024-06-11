@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:myfinplan/screens/home/components/spending_chart/spending_chart_providers.dart';
 import 'package:myfinplan/utils/format.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 

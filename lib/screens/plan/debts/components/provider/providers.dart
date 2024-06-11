@@ -10,6 +10,7 @@ import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/plan/debt_strat.dart';
 import 'package:myfinplan/providers/plan/distributor.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 final loansInfoProvider = FutureProvider<LoanInfo>((ref) async {

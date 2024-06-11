@@ -10,6 +10,7 @@ import 'package:myfinplan/shared_widgets/pickers/date_picker.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/styles.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 class NewPlanTransactScreen extends ConsumerStatefulWidget {
@@ -42,13 +43,14 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
       body: Column(
         children: [
           Expanded(
-            flex: 7,
+            flex: 8,
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(height: 10),
@@ -130,42 +132,42 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
                           )
                         ],
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _onSubmit().then((value) {
-                                ScaffoldMessenger.of(context)
-                                  ..hideCurrentSnackBar()
-                                  ..showSnackBar(CustomSnackbar.success(addSuccessMessage));
-                                Navigator.of(context).pop();
-                              }).onError((error, stackTrace) {
-                                ScaffoldMessenger.of(context)
-                                  ..hideCurrentSnackBar()
-                                  ..showSnackBar(CustomSnackbar.failure("$error"));
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              backgroundColor: CupertinoColors.activeBlue,
-                            ),
-                            child: const SizedBox(
-                              height: 30,
-                              width: double.infinity,
-                              child: Center(child: Text("Xác nhận")),
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
             ),
           ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  _onSubmit().then((value) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(CustomSnackbar.success(addSuccessMessage));
+                    Navigator.of(context).pop();
+                  }).onError((error, stackTrace) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(CustomSnackbar.failure("$error"));
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  backgroundColor: CupertinoColors.activeBlue,
+                ),
+                child: const SizedBox(
+                  height: 30,
+                  width: double.infinity,
+                  child: Center(child: Text("Xác nhận")),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

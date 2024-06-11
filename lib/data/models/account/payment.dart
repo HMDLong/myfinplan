@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:myfinplan/data/models/account/amortizing_info.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 enum PaymentType {

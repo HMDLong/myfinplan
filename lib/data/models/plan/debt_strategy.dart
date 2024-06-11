@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:developer' as dev;
 import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 sealed class DebtStrategy {

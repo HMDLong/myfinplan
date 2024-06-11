@@ -5,6 +5,7 @@ import 'package:myfinplan/providers/categories/get_categories_with_budget.dart';
 import 'package:myfinplan/screens/plan/budgets/budget_detail/budget_detail_screen.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 

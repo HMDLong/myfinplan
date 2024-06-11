@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 class LoanInfo {

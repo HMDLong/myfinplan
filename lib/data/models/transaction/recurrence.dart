@@ -1,4 +1,5 @@
 import 'package:myfinplan/utils/random.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 enum Periodic {
@@ -27,6 +28,7 @@ sealed class Recurrence {
   }
 
   String stringify();
+  List<DateTime> planOccurences(DateTime start, DateTime end);
 }
 
 String _pad(int i) {
@@ -66,6 +68,12 @@ class PeriodicRecurrence extends Recurrence {
         TimeType.year => "${example.day}/${example.month} hàng năm",
         TimeType.custom => "",
       };
+
+  @override
+  List<DateTime> planOccurences(DateTime start, DateTime end) {
+    // TODO: implement planOccurences
+    throw UnimplementedError();
+  }
 }
 
 class IntervalRecurrence extends Recurrence {
@@ -111,5 +119,11 @@ class IntervalRecurrence extends Recurrence {
   @override
   String stringify() {
     return "Mỗi $interval ${intervalType.stringify()}";
+  }
+
+  @override
+  List<DateTime> planOccurences(DateTime start, DateTime end) {
+    // TODO: implement planOccurences
+    throw UnimplementedError();
   }
 }

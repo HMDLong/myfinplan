@@ -13,6 +13,7 @@ import 'package:myfinplan/providers/plan/distributor.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/recap_screen_components/distribution_section.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 final selectedTimeRangeProvider = StateProvider((ref) => TimeRange.rangeByType(TimeType.month).previous());
