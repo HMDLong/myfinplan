@@ -21,6 +21,8 @@ import "package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart";
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as dev;
 
+import 'utils/time/date_time_ext.dart';
+
 Future<void> main() async {
   await initFlutter();
   runApp(const ProviderScope(child: MyApp()));

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/plan/plan_transact_detail.dart';
-import 'package:myfinplan/data/models/transaction/recurrence.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/categories/category_notifier.dart';
 import 'package:myfinplan/screens/plan/budgets/new_budget_screen.dart';
@@ -162,7 +162,7 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                                         children: [
                                           Text(e.categoryName),
                                           Text(e.description ?? ""),
-                                          Text(Recurrence.fromPlanTransactId(e.planDetail!.planId).stringify()),
+                                          Text(Recurrence.parse(e.planDetail!.planId).toString()),
                                         ],
                                       ),
                                     ),

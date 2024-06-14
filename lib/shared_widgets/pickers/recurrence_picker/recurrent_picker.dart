@@ -1,48 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:myfinplan/data/models/transaction/recurrence.dart';
+import 'package:myfinplan/shared_widgets/pickers/recurrence_picker/recur_picker_dialog.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/utils/styles.dart';
 
-class MyWidget extends StatefulWidget {
-  const MyWidget({super.key});
+class RecurPicker extends StatefulWidget {
+  final void Function(Recurrence recur) onChanged;
+  const RecurPicker({
+    super.key,
+    required this.onChanged,
+  });
 
   @override
-  State<MyWidget> createState() => _MyWidgetState();
+  State<RecurPicker> createState() => _RecurPickerState();
 }
 
-class _MyWidgetState extends State<MyWidget> {
+class _RecurPickerState extends State<RecurPicker> {
   late TextEditingController controller;
-  late Periodic type;
 
-  void _selectDetail() {
-    showDialog(
+  void _selectDetail() async {
+    Recurrence? recur = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          content: SizedBox(
-            width: 100,
-            child: Column(
-              children: [],
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {},
-              child: Text(""),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text(""),
-            ),
-          ],
-        );
+        return const RecurPickerDialog();
       },
     );
+    if (recur != null) {
+      controller.text = recur.toString();
+      widget.onChanged(recur);
+    }
   }
 
   @override
   void initState() {
     controller = TextEditingController();
-    type = Periodic.monthly;
     super.initState();
   }
 

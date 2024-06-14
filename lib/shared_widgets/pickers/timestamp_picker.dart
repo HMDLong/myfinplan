@@ -7,12 +7,14 @@ class TimestampPicker extends StatefulWidget {
   final String? label;
   final void Function(DateTime value) onTimeChange;
   final DateTime? initValue;
+  final bool dateOnly;
   const TimestampPicker({
     super.key,
     this.label,
     required this.onTimeChange,
     this.initValue,
     this.enabled = true,
+    this.dateOnly = false,
   });
 
   @override
@@ -97,18 +99,19 @@ class _TimestampPickerState extends State<TimestampPicker> {
               },
             )),
         // const SizedBox(width: 6),
-        Expanded(
-            flex: 2,
-            child: TextFormField(
-              enabled: widget.enabled,
-              controller: _timeController,
-              decoration: formFieldDecor(
-                icon: const Icon(Icons.timer_sharp),
-                label: const Text("Giờ"),
-              ),
-              readOnly: true,
-              onTap: _selectTime,
-            )),
+        if (!widget.dateOnly)
+          Expanded(
+              flex: 2,
+              child: TextFormField(
+                enabled: widget.enabled,
+                controller: _timeController,
+                decoration: formFieldDecor(
+                  icon: const Icon(Icons.timer_sharp),
+                  label: const Text("Giờ"),
+                ),
+                readOnly: true,
+                onTap: _selectTime,
+              )),
       ],
     );
   }

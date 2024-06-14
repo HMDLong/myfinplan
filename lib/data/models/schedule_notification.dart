@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:myfinplan/data/models/transaction/recurrence.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 
 class ScheduledNotification with EquatableMixin {
   final String planId;

@@ -13,6 +13,8 @@ import 'package:myfinplan/utils/time/times.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 
+import '../../utils/time/date_time_ext.dart';
+
 class BalanceChart<T extends Account> extends ConsumerStatefulWidget {
   final T? account;
   final TimeRange timeRange;
@@ -32,7 +34,7 @@ class BalanceChart<T extends Account> extends ConsumerStatefulWidget {
 
 final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<DateTime, int>>, BalanceChartInfo>((ref, info) async {
   var transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) {
-    final matchAccount = info.accountId == null ? true : (info.accountId == e.accId || info.accountId == e.toAccId);
+    final matchAccount = info.accountId == null ? true : (info.accountId == e.srcAccId || info.accountId == e.toAccId);
     return matchAccount && e.paid;
   }).toList();
   int balance = 0;

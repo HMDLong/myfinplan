@@ -2,7 +2,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:myfinplan/data/models/schedule_notification.dart';
 import 'dart:developer' as dev;
 
-import 'package:myfinplan/data/models/transaction/recurrence.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 
 List<NotificationChannel> channels = [
   NotificationChannel(

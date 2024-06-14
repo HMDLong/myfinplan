@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/transaction/recurrence.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/data/repositories/transaction/transaction_repo.dart';
 import 'package:myfinplan/data/repositories/transaction/transaction_repo_impl.dart';
@@ -10,6 +10,7 @@ import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/services/notification/notification_service.dart';
 import 'package:myfinplan/services/notification/notification_service_provider.dart';
 import 'package:myfinplan/utils/constants/globals.dart';
+import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
@@ -58,19 +59,27 @@ class TransactionNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> scheduleTransaction(Transaction example, TimeType recurrence) async {
-    final occurrencesInNext6Months = TimeRange.nextNofTimeType(
-      TimeType.month,
-      DEFAULT_PLAN_AHEAD_SPAN,
-    ).getOccurences(
-      recurrence,
-      example.planDetail!.planTime,
-    );
-    example.planDetail!.planId = PeriodicRecurrence(
-      periodicType: recurrence,
-      example: example.planDetail!.planTime,
-    ).getPlanTransactId;
-    final planTransacts = occurrencesInNext6Months.map((e) => example.copyWith(planTime: e)).toList();
+  // Future<void> scheduleTransaction(Transaction example, TimeType recurrence) async {
+  //   final occurrencesInNext6Months = TimeRange.nextNofTimeType(
+  //     TimeType.month,
+  //     DEFAULT_PLAN_AHEAD_SPAN,
+  //   ).getOccurences(
+  //     recurrence,
+  //     example.planDetail!.planTime,
+  //   );
+  //   example.planDetail!.planId = PeriodicRecurrence(
+  //     periodicType: recurrence,
+  //     example: example.planDetail!.planTime,
+  //   ).toInfoString;
+  //   final planTransacts = occurrencesInNext6Months.map((e) => example.copyWith(planTime: e)).toList();
+  //   await repo.addAll(planTransacts);
+  //   notifyListeners();
+  // }
+
+  Future<void> schedule(Transaction example, Recurrence recurrence) async {
+    final occurrences = recurrence.planOccurences();
+    example.planDetail!.planId = recurrence.toInfoString;
+    final planTransacts = occurrences.map((e) => example.copyWith(planTime: e)).toList();
     await repo.addAll(planTransacts);
     notifyListeners();
   }

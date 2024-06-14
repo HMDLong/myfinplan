@@ -3,6 +3,8 @@ import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
+import '../../../utils/time/date_time_ext.dart';
+
 class LoanInfo {
   List<Loan> loans;
   List<double> paysThisMonth;

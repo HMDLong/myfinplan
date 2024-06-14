@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
-import 'package:myfinplan/data/models/transaction/recurrence.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
@@ -41,7 +41,13 @@ class _NewCreditFormState extends ConsumerState<NewCreditForm> {
         ),
       );
       await ref.read(accountsProvider).addAccount(newCredit);
-      await ref.read(transactionNotifierProvider.notifier).scheduleTransaction(newCredit.planTransactInfo, TimeType.month);
+      // await ref.read(transactionNotifierProvider.notifier).schedule(
+      //       newCredit.planTransactInfo,
+      //       PeriodicRecurrence(
+      //         periodicType: TimeType.month,
+      //         example: _formData["duedate"],
+      //       ),
+      //     );
     }
   }
 

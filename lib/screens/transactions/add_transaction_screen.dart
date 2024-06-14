@@ -51,8 +51,8 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
       categoryName = prefill.categoryName;
       timestamp = prefill.timestamp;
       description = prefill.description;
-      fromAccountId = prefill.accId;
-      fromAccountName = prefill.accName;
+      fromAccountId = prefill.srcAccId;
+      fromAccountName = prefill.srcAccName;
       toAccountId = prefill.toAccId;
       toAccountName = prefill.toAccName;
       transactionType = Category.getType(categoryId!);
@@ -69,8 +69,8 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
         prefill.amount = amount!;
         prefill.categoryId = categoryId!;
         prefill.categoryName = categoryName!;
-        prefill.accId = fromAccountId;
-        prefill.accName = fromAccountName;
+        prefill.srcAccId = fromAccountId;
+        prefill.srcAccName = fromAccountName;
         prefill.toAccId = toAccountId;
         prefill.toAccName = toAccountName;
         prefill.description = description;
@@ -82,15 +82,15 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
           amount: amount!,
           categoryId: categoryId!,
           categoryName: categoryName!,
-          accId: fromAccountId,
-          accName: fromAccountName,
+          srcAccId: fromAccountId,
+          srcAccName: fromAccountName,
           toAccId: toAccountId,
           toAccName: toAccountName,
           description: description,
         );
         await ref.read(transactionNotifierProvider.notifier).addTransaction(newTransaction);
         await ref.read(accountsProvider).transfer(
-              newTransaction.accId,
+              newTransaction.srcAccId,
               newTransaction.toAccId,
               newTransaction.amount,
             );
@@ -104,7 +104,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
           AccountPicker(
             label: "Tài khoản nguồn",
             payableOnly: true,
-            initAccountName: widget.prefill?.accName,
+            initAccountName: widget.prefill?.srcAccName,
             onAccountChanged: (Account value) {
               fromAccountId = value.id;
               fromAccountName = value.title;
@@ -123,7 +123,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
           AccountPicker(
             payableOnly: true,
             label: "Tài khoản đích",
-            initAccountName: widget.prefill?.accName,
+            initAccountName: widget.prefill?.srcAccName,
             onAccountChanged: (Account value) {
               toAccountId = value.id;
               toAccountName = value.title;
@@ -133,7 +133,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
       TransactionType.expense => [
           AccountPicker(
             payableOnly: true,
-            initAccountName: widget.prefill?.accName,
+            initAccountName: widget.prefill?.srcAccName,
             onAccountChanged: (Account value) {
               fromAccountId = value.id;
               fromAccountName = value.title;

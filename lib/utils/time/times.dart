@@ -6,6 +6,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myfinplan/utils/time/time_lib.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 
+import 'date_time_ext.dart';
+
 part 'times.g.dart';
 
 @HiveType(typeId: 8)
@@ -131,11 +133,25 @@ class TimeRange extends Equatable {
     return res;
   }
 
+  /// Get all occurences of [monthday] in the current range
   List<DateTime> monthdaysOfRange(int monthday) {
     final res = <DateTime>[];
     final daysInMonth = getDaysInMonth(start.year, start.month);
     res.add(DateTime(start.year, start.month, min(monthday, daysInMonth)));
     return res;
+  }
+
+  static DateTime makeDateFromTimeType({
+    required TimeType type,
+    required int value,
+  }) {
+    return switch (type) {
+      TimeType.day => DateTime.now(),
+      TimeType.week => getRangeOfTheWeek().getRangeDates().where((e) => e.weekday == value).first,
+      TimeType.month => DateTime(2022, 1, value),
+      TimeType.year => DateTime(value),
+      TimeType.custom => throw "Unsupported type: TimeType.custom",
+    };
   }
 
   /// Currently only usable for type=[TimeType.month, TimeType.week]
@@ -154,18 +170,4 @@ class TimeRange extends Equatable {
 
   @override
   bool? get stringify => true;
-}
-
-extension TimeRangeExt on DateTime {
-  DateTime toDateOnly() {
-    return DateTime(year, month, day);
-  }
-
-  DateTime to9PM() {
-    return DateTime(year, month, day, 21, 0, 0);
-  }
-
-  DateTime to9AM() {
-    return DateTime(year, month, day, 9, 0, 0);
-  }
 }

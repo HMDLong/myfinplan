@@ -5,6 +5,10 @@ class Formatter {
     return "${time.day} Th${time.month}";
   }
 
+  static String toStandartDate(DateTime time) {
+    return "${time.day}/${time.month}/${time.year - 2000}";
+  }
+
   static String toFullVnDate(DateTime time) {
     return "${time.day} Th${time.month} ${time.year}";
   }

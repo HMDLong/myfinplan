@@ -10,6 +10,8 @@ import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
+import '../../utils/time/date_time_ext.dart';
+
 class TransactionList extends ConsumerStatefulWidget {
   final TimeRange? timeRange;
   final Account? account;
@@ -39,7 +41,7 @@ class _TransactionListState extends ConsumerState<TransactionList> {
         .where((transact) {
           final inTimeRange = widget.timeRange?.contain(transact.timestamp) ?? true;
           final accountId = widget.account?.id;
-          final isAccount = accountId == null ? true : (accountId == transact.toAccId || accountId == transact.accId);
+          final isAccount = accountId == null ? true : (accountId == transact.toAccId || accountId == transact.srcAccId);
           final category = widget.categoryId;
           final isOfCategory = category == null ? true : (transact.categoryId == category || ParentCategory.parentHasChild(category, transact.categoryId));
           final isOfType = widget.transactType == null ? true : widget.transactType == transact.transactType;

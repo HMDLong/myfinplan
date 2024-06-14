@@ -43,7 +43,7 @@ final transactionDetailProvider = FutureProvider.family<TransactDetail, Transact
   final categoryProvider = ref.watch(categoryNotifierProvider);
   return TransactDetail(
     transact: transact,
-    transactAccount: transact.accId == null ? null : await accountProvider.getAccountById(transact.accId!),
+    transactAccount: transact.srcAccId == null ? null : await accountProvider.getAccountById(transact.srcAccId!),
     targetAccount: transact.toAccId == null ? null : await accountProvider.getAccountById(transact.toAccId!),
     category: await categoryProvider.getCategoryById(transact.categoryId),
   );
@@ -192,7 +192,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                         style: const TextStyle(fontSize: 10),
                       ),
                       const SizedBox(height: 5),
-                      if (data.transact.accId != null)
+                      if (data.transact.srcAccId != null)
                         Text.rich(
                           TextSpan(
                             children: [
@@ -201,7 +201,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                                 style: TextStyle(fontSize: 10, color: Colors.grey),
                               ),
                               TextSpan(
-                                text: data.transact.accName,
+                                text: data.transact.srcAccName,
                                 style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,

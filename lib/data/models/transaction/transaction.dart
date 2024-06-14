@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/transaction/recurrence.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
 import 'package:myfinplan/utils/random.dart';
 
@@ -20,9 +20,9 @@ class Transaction extends HiveObject {
   @HiveField(4)
   int _amount;
   @HiveField(5)
-  String? accId;
+  String? srcAccId;
   @HiveField(6)
-  String? accName;
+  String? srcAccName;
   @HiveField(7)
   String? toAccId;
   @HiveField(8)
@@ -38,8 +38,8 @@ class Transaction extends HiveObject {
     int amount = 0,
     required this.categoryId,
     required this.categoryName,
-    this.accId,
-    this.accName,
+    this.srcAccId,
+    this.srcAccName,
     this.toAccId,
     this.toAccName,
     this.description,
@@ -54,7 +54,7 @@ class Transaction extends HiveObject {
 
   bool get paid => amount != 0;
 
-  Recurrence? get recurrence => planDetail == null ? null : Recurrence.fromPlanTransactId(planDetail!.planId);
+  Recurrence? get recurrence => planDetail == null ? null : Recurrence.parse(planDetail!.planId);
 
   factory Transaction.planTransact({
     required DateTime planTimestamp,
@@ -70,12 +70,12 @@ class Transaction extends HiveObject {
   }) {
     return Transaction(
       id: id ?? getRandomKey(),
-      timestamp: DateTime.now(),
+      timestamp: planTimestamp,
       amount: 0,
       categoryId: categoryId,
       categoryName: categoryName,
-      accId: transactAccId,
-      accName: transactAccName,
+      srcAccId: transactAccId,
+      srcAccName: transactAccName,
       toAccId: targetAccId,
       toAccName: targetAccName,
       planDetail: TransactPlanDetail(
@@ -95,9 +95,9 @@ class Transaction extends HiveObject {
       amount: amount,
       categoryId: categoryId,
       categoryName: categoryName,
-      accId: accId,
-      accName: accName,
-      toAccId: accId,
+      srcAccId: srcAccId,
+      srcAccName: srcAccName,
+      toAccId: srcAccId,
       toAccName: toAccName,
       planDetail: planDetail?.copyWith(planTime: planTime) ?? planDetail,
     );

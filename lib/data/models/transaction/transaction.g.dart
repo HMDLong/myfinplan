@@ -21,8 +21,8 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       timestamp: fields[1] as DateTime,
       categoryId: fields[2] as String,
       categoryName: fields[3] as String,
-      accId: fields[5] as String?,
-      accName: fields[6] as String?,
+      srcAccId: fields[5] as String?,
+      srcAccName: fields[6] as String?,
       toAccId: fields[7] as String?,
       toAccName: fields[8] as String?,
       description: fields[11] as String?,
@@ -45,9 +45,9 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       ..writeByte(4)
       ..write(obj._amount)
       ..writeByte(5)
-      ..write(obj.accId)
+      ..write(obj.srcAccId)
       ..writeByte(6)
-      ..write(obj.accName)
+      ..write(obj.srcAccName)
       ..writeByte(7)
       ..write(obj.toAccId)
       ..writeByte(8)
@@ -62,9 +62,5 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TransactionAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+  bool operator ==(Object other) => identical(this, other) || other is TransactionAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }
