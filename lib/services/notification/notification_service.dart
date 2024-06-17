@@ -57,14 +57,14 @@ class NotificationService {
   void scheduleNotification(ScheduledNotification noti, {bool demo = true}) {
     AwesomeNotifications().createNotification(
       schedule: demo
-          ? null
+          ? NotificationInterval(interval: 30)
           : switch (noti.type) {
               Periodic.daily => NotificationAndroidCrontab.daily(referenceDateTime: noti.referenceDate),
               Periodic.weekly => NotificationAndroidCrontab.weekly(referenceDateTime: noti.referenceDate),
               Periodic.monthly => NotificationAndroidCrontab.monthly(referenceDateTime: noti.referenceDate),
               Periodic.yearly => NotificationAndroidCrontab.yearly(referenceDateTime: noti.referenceDate),
               Periodic.onetime => NotificationAndroidCrontab.fromDate(date: noti.referenceDate),
-              Periodic.custom => null
+              Periodic.custom => null,
             },
       content: NotificationContent(
         id: noti.notiId,

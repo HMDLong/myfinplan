@@ -24,7 +24,7 @@ final planTransactDetailProvider = Provider(
   (ref) async {
     final timeRange = ref.watch(selectedTimeRangeProvider);
     final categories = await ref.watch(categoryNotifierProvider).getCategories();
-    final transactions = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) => timeRange.contain(e.timestamp));
+    final transactions = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) => timeRange.contain(e.timestamp ?? e.planDetail!.planTime));
 
     final res = <PlanTransactDetail>[];
     for (var category in categories) {
@@ -87,7 +87,7 @@ final goalsDetailProvider = FutureProvider((ref) async {
     return element.categoryId == "t1.3" && selectedTimeRange.contain(element.timestamp);
   });
   final dist = ref.watch(planDistProvider);
-  final totalIncome = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income)).where((element) => selectedTimeRange.contain(element.timestamp));
+  final totalIncome = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income)).where((e) => selectedTimeRange.contain(e.timestamp ?? e.planDetail!.planTime));
   final actualIncome = totalIncome.where((element) => element.paid).fold(0, (prev, e) => prev + e.amount);
   final planIncome = totalIncome.where((element) => element.planDetail != null).fold(0, (prev, e) => prev + e.amount);
   final planSaving = max(planIncome, actualIncome) * dist.dist[ExpenseLevel.saving]!;

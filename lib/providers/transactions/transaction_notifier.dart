@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/schedule_notification.dart';
 import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/data/repositories/transaction/transaction_repo.dart';
@@ -75,6 +76,13 @@ class TransactionNotifier extends ChangeNotifier {
     final occurrences = recurrence.planOccurences();
     example.planDetail!.planId = recurrence.toInfoString;
     final planTransacts = occurrences.map((e) => example.copyWith(planTime: e)).toList();
+    notiService.scheduleNotification(ScheduledNotification(
+      title: "Nhắc nhở thu chi",
+      content: "",
+      planId: "",
+      transactId: "",
+      referenceDate: example.planDetail!.planTime,
+    ));
     await repo.addAll(planTransacts);
     notifyListeners();
   }

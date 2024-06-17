@@ -18,7 +18,7 @@ final last10TransactionsProvider = FutureProvider(
         )
         .toList()
       ..sort((b, a) {
-        return a.timestamp.compareTo(b.timestamp);
+        return a.timestamp!.compareTo(b.timestamp!);
       });
     if (allTransactions.length > 10) {
       allTransactions = allTransactions.sublist(0, 10);

@@ -6,7 +6,7 @@ import 'package:myfinplan/screens/home/components/account_summary_section.dart';
 import 'package:myfinplan/screens/home/components/budget_carousel.dart';
 import 'package:myfinplan/screens/home/components/latest_transaction_section.dart';
 import 'package:myfinplan/screens/home/components/spending_chart/spending_chart.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
 import 'package:myfinplan/screens/transactions/transact_log_screen.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';

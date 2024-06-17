@@ -13,9 +13,9 @@ final spendingChartDataProvider = FutureProvider<List<ColumnData>>(
     final timeRange = TimeRange.rangeByType(ref.watch(currentTimeTypeProvider));
     final prevRange = timeRange.previous();
     final res = transacts.where((e) {
-      return e.paid && e.transactType == TransactionType.expense && (timeRange.contain(e.timestamp) || prevRange.contain(e.timestamp));
+      return e.paid && e.transactType == TransactionType.expense && (timeRange.contain(e.timestamp!) || prevRange.contain(e.timestamp!));
     }).fold([0, 0], (prev, e) {
-      if (prevRange.contain(e.timestamp)) {
+      if (prevRange.contain(e.timestamp!)) {
         prev[0] += e.amount.abs();
       } else {
         prev[1] += e.amount.abs();

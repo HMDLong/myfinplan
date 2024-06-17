@@ -19,13 +19,13 @@ final loansInfoProvider = FutureProvider<LoanInfo>((ref) async {
   final loans = (await ref.watch(accountsProvider).getAccountByType(AccountType.loan)).cast<Loan>();
   final currentStrategy = ref.watch(currentDebtStratProvider);
   final transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction());
-  final planIncome = transacts.where((e) => e.transactType == TransactionType.income && e.planDetail != null && timeRange.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount);
-  final actualIncome = transacts.where((e) => e.transactType == TransactionType.income && e.paid && timeRange.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount);
+  final planIncome = transacts.where((e) => e.transactType == TransactionType.income && e.planDetail != null && timeRange.contain(e.planDetail!.planTime)).fold(0, (prev, e) => prev + e.amount);
+  final actualIncome = transacts.where((e) => e.transactType == TransactionType.income && e.paid && timeRange.contain(e.timestamp!)).fold(0, (prev, e) => prev + e.amount);
 
   final initialSnowball = max(planIncome, actualIncome) * dist.dist[ExpenseLevel.saving]!;
   final loanPayThisMonth = loans.map((loan) {
     return transacts.where((transact) {
-      return transact.paid && transact.toAccId == loan.id && timeRange.contain(transact.timestamp);
+      return transact.paid && transact.toAccId == loan.id && timeRange.contain(transact.timestamp!);
     }).fold<double>(0, (prev, e) => prev + e.amount);
   }).toList();
   final amortizingResult = currentStrategy.scheduleLoans(loans.map((e) => e.clone()).toList(), initialSnowball);

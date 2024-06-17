@@ -4,7 +4,7 @@ import 'package:myfinplan/providers/categories/category_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/add_plan_transact_screen.dart';
 import 'package:myfinplan/screens/plan/schedule/schedule_calendart_state.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 

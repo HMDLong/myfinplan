@@ -38,14 +38,16 @@ class _TransactionListState extends ConsumerState<TransactionList> {
   /// Group [transactions] by date
   Map<DateTime, List<Transaction>> prepData(List<Transaction> transactions) {
     return transactions
+        .where((transact) => transact.paid && (widget.timeRange?.contain(transact.timestamp) ?? true))
         .where((transact) {
-          final inTimeRange = widget.timeRange?.contain(transact.timestamp) ?? true;
+          // final inTimeRange = widget.timeRange?.contain(transact.timestamp) ?? true;
           final accountId = widget.account?.id;
           final isAccount = accountId == null ? true : (accountId == transact.toAccId || accountId == transact.srcAccId);
           final category = widget.categoryId;
           final isOfCategory = category == null ? true : (transact.categoryId == category || ParentCategory.parentHasChild(category, transact.categoryId));
           final isOfType = widget.transactType == null ? true : widget.transactType == transact.transactType;
-          return inTimeRange && isAccount && isOfCategory && isOfType;
+          // return inTimeRange && isAccount && isOfCategory && isOfType;
+          return isAccount && isOfCategory && isOfType;
         })
         .toList()
         .fold(<DateTime, List<Transaction>>{}, (prev, transact) {

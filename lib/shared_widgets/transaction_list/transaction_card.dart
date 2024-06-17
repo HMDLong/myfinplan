@@ -10,7 +10,8 @@ import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/categories/category_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/selected_transact_provider.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
@@ -50,95 +51,6 @@ final transactionDetailProvider = FutureProvider.family<TransactDetail, Transact
 });
 
 class _TransactionCardState extends ConsumerState<TransactionCard> {
-  _onDelete(BuildContext context, TransactDetail detail) {
-    showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: SizedBox(
-            height: 80,
-            child: Column(
-              children: [
-                ShaderMask(
-                    shaderCallback: (bounds) {
-                      return RadialGradient(
-                        colors: [
-                          Colors.red.shade600,
-                          Colors.orange,
-                          Colors.amber,
-                        ],
-                        stops: const [.4, .7, 1],
-                      ).createShader(bounds);
-                    },
-                    child: const Icon(Icons.warning_amber_rounded, size: 24)),
-                const SizedBox(height: 10),
-                const Text("Xác nhận xóa?"),
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
-          actions: [
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade50,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: const BorderSide(width: 0.2),
-                        ),
-                      ),
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text("Hủy", style: TextStyle(color: Colors.red)),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: Text("Xác nhận", style: TextStyle(color: Colors.green.shade50)),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    ).then((confirmDelete) {
-      if (confirmDelete != null && confirmDelete) {
-        ref.read(transactionNotifierProvider.notifier).deleteTransaction(detail.transact.id).then(
-          (value) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(CustomSnackbar.success("Xóa thành công"));
-            Navigator.pop(context);
-          },
-        ).onError(
-          (error, stackTrace) {},
-        );
-      }
-    });
-  }
-
-  _onEdit(BuildContext context, TransactDetail detail) {
-    pushNewScreen(
-      context,
-      screen: AddOrEditTransactScreen(prefill: detail.transact),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return ref.watch(transactionDetailProvider(widget.transaction)).when(
@@ -274,6 +186,98 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
           child: CircularProgressIndicator(),
         );
       },
+    );
+  }
+
+  _onDelete(BuildContext context, TransactDetail detail) {
+    showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          content: SizedBox(
+            height: 80,
+            child: Column(
+              children: [
+                ShaderMask(
+                  blendMode: BlendMode.srcIn,
+                  shaderCallback: (bounds) {
+                    return RadialGradient(
+                      colors: [
+                        Colors.red.shade600,
+                        Colors.orange,
+                        Colors.amber,
+                      ],
+                      stops: const [.4, .7, 1],
+                    ).createShader(bounds);
+                  },
+                  child: const Icon(Icons.warning_amber_rounded, size: 32),
+                ),
+                const SizedBox(height: 10),
+                const Text("Xác nhận xóa?"),
+              ],
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: const BorderSide(width: 0.2),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(dialogContext).pop(false),
+                      child: const Text("Hủy", style: TextStyle(color: CupertinoColors.activeBlue)),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: CupertinoColors.activeBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(dialogContext).pop(true),
+                      child: const Text("Xác nhận", style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    ).then((confirmDelete) {
+      if (confirmDelete != null && confirmDelete) {
+        ref.read(transactionNotifierProvider.notifier).deleteTransaction(detail.transact.id).then(
+          (value) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(CustomSnackbar.success("Xóa thành công"));
+            Navigator.pop(context);
+          },
+        ).onError(
+          (error, stackTrace) {},
+        );
+      }
+    });
+  }
+
+  _onEdit(BuildContext context, TransactDetail detail) {
+    ref.read(selectedTransactionProvider.notifier).setTransact(detail.transact);
+    pushNewScreen(
+      context,
+      // screen: AddOrEditTransactScreen(prefill: detail.transact),
+      screen: const AddOrEditTransactScreen(),
     );
   }
 }

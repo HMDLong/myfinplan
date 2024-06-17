@@ -5,7 +5,6 @@ import 'package:myfinplan/screens/plan/debts/debt_tab.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/plan_transact_tab.dart';
 import 'package:myfinplan/screens/plan/savings/saving_tab.dart';
 import 'package:myfinplan/screens/plan/schedule/schedule_list_tab.dart';
-import 'package:myfinplan/screens/plan/schedule/schedule_tab.dart';
 import 'package:myfinplan/screens/plan/summary/components/plan_timerange_picker.dart';
 import 'package:myfinplan/screens/plan/summary/plan_summary_tab.dart';
 import 'package:myfinplan/utils/constants/strings.dart';

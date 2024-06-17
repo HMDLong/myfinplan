@@ -7,7 +7,7 @@ import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/shared_widgets/pickers/timerange_picker/timerange_picker.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_list.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
 import 'package:myfinplan/screens/transactions/fliter_screen.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:myfinplan/utils/time/time_type.dart';

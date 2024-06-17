@@ -88,8 +88,11 @@ class _RecurPickerDialogState extends State<RecurPickerDialog> {
   }
 
   Widget yearDetail() {
-    return Column(
-      children: [],
+    return TimestampPicker(
+      dateOnly: true,
+      onTimeChange: (value) {
+        example = value;
+      },
     );
   }
 
@@ -105,6 +108,7 @@ class _RecurPickerDialogState extends State<RecurPickerDialog> {
     return AlertDialog(
       title: const Text("Thông tin lịch"),
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField(
             decoration: formFieldDecor(

@@ -36,7 +36,7 @@ final getTransactionDataProvider = FutureProvider<List<InOutChartData<DateTime, 
   final content = ref.watch(inOutChartContentTypeProvider);
   final valueMode = ref.watch(inOutChartValueModeProvider);
   var transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) {
-    return e.paid && e.transactType == content && statTimeRange.contain(e.timestamp);
+    return e.paid && e.transactType == content && statTimeRange.contain(e.timestamp!);
   }).toList();
   if (transacts.isEmpty) {
     return statTimeRange.getRangeDates().map((e) {
@@ -44,7 +44,7 @@ final getTransactionDataProvider = FutureProvider<List<InOutChartData<DateTime, 
     }).toList();
   }
   final groupByDateData = transacts.fold(<DateTime, int>{}, (previousValue, transact) {
-    final dateOnly = transact.timestamp.toDateOnly();
+    final dateOnly = transact.timestamp!.toDateOnly();
     previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) + transact.amount.abs();
     return previousValue;
   });

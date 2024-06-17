@@ -88,7 +88,7 @@ class _LoansSectionState extends ConsumerState<LoansSection> {
     final res = <Widget>[];
     for (var i = 0; i < info.loans.length; i++) {
       res.add(
-        _buildLoanRow(info.loans[i].title!, info.paysThisMonth[i].toInt(), 1000000),
+        _buildLoanRow(info.loans[i].title, info.paysThisMonth[i].toInt(), 1000000),
       );
     }
     return res;

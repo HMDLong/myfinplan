@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/providers/categories/get_categories_with_budget.dart';
-import 'package:myfinplan/screens/plan/budgets/budget_detail/budget_detail_screen.dart';
+// import 'package:myfinplan/screens/plan/budgets/budget_detail/budget_detail_screen.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class BudgetCard extends StatefulWidget {
   final Category category;
@@ -31,10 +30,10 @@ final class _BudgetCardState extends State<BudgetCard> {
     final currentMonth = TimeRange.rangeByType(TimeType.month);
     return GestureDetector(
       onTap: () {
-        pushNewScreen(
-          context,
-          screen: BudgetDetailScreen(category: widget.category),
-        );
+        // pushNewScreen(
+        //   context,
+        //   screen: BudgetDetailScreen(category: widget.category),
+        // );
       },
       child: SizedBox(
         width: 200,

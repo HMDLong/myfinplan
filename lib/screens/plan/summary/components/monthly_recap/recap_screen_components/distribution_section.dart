@@ -7,7 +7,6 @@ import 'package:myfinplan/screens/plan/summary/components/monthly_recap/widgets/
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/widgets/recap_section_title.dart';
 import 'package:myfinplan/shared_widgets/menu/menu.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
-import 'package:myfinplan/utils/format.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DistributionSection extends ConsumerStatefulWidget {

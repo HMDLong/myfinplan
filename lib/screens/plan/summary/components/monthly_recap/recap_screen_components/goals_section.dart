@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/providers/providers.dart';
-import 'package:myfinplan/screens/plan/summary/components/monthly_recap/widgets/comment_card.dart';
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/widgets/recap_section_title.dart';
 import 'package:myfinplan/utils/format.dart';
 
@@ -148,7 +147,7 @@ class _GoalsSectionState extends ConsumerState<GoalsSection> {
                                       )
                                     : DataCell(
                                         Text(
-                                          "${e.account.amount! * 100 / e.account.goal!.targetAmount!} %",
+                                          "${e.account.amount * 100 / e.account.goal!.targetAmount!} %",
                                           style: dataTextStyle,
                                         ),
                                       ),

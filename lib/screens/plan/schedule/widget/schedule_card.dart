@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 
 import 'package:myfinplan/screens/plan/schedule/widget/status_box.dart';
-import 'package:myfinplan/screens/transactions/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
 import 'package:myfinplan/shared_widgets/button/round_icon_button.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';

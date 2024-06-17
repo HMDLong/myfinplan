@@ -70,8 +70,8 @@ class Transaction extends HiveObject {
   }) {
     return Transaction(
       id: id ?? getRandomKey(),
-      timestamp: planTimestamp,
       amount: 0,
+      timestamp: planTimestamp,
       categoryId: categoryId,
       categoryName: categoryName,
       srcAccId: transactAccId,
