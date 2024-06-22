@@ -42,10 +42,16 @@ class _CashTabState extends ConsumerState<CashTab> {
   _buildContent(Cash account) {
     return switch (_currentContent) {
       CashContentTab.graph => SingleChildScrollView(
-          child: BalanceChart<Cash>(
-            chartHeight: 240,
-            account: account,
-            timeRange: TimeRange.lastNDays(30),
+          child: Column(
+            children: [
+              const Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              const SizedBox(height: 10),
+              BalanceChart<Cash>(
+                chartHeight: 240,
+                account: account,
+                timeRange: TimeRange.lastNDays(30),
+              ),
+            ],
           ),
         ),
       CashContentTab.transacts => TransactionList(

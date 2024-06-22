@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 
 import 'package:myfinplan/screens/plan/schedule/widget/status_box.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/selected_transact_provider.dart';
 import 'package:myfinplan/shared_widgets/button/round_icon_button.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -159,13 +161,19 @@ class ScheduleCard extends StatelessWidget {
                         onPressed: () {},
                       ),
                       const SizedBox(width: 8),
-                      RoundedIconButton(
-                        icon: const Icon(Icons.edit_calendar_outlined, size: 16),
-                        backgroundColor: CupertinoColors.activeBlue,
-                        onPressed: () {
-                          pushNewScreen(
-                            context,
-                            screen: AddOrEditTransactScreen(prefill: schedule),
+                      Consumer(
+                        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                          return RoundedIconButton(
+                            icon: const Icon(Icons.edit_calendar_outlined, size: 16),
+                            backgroundColor: CupertinoColors.activeBlue,
+                            onPressed: () {
+                              if (schedule.paid) {
+                                ref.read(selectedTransactionProvider.notifier).setTransact(schedule);
+                              } else {
+                                ref.read(selectedTransactionProvider.notifier).setPlanTransact(schedule);
+                              }
+                              pushNewScreen(context, screen: AddOrEditTransactScreen(prefill: schedule));
+                            },
                           );
                         },
                       ),

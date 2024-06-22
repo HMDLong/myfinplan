@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               const SectionTitle(title: "Ngân quỹ tháng này"),
               const BudgetsCarousel(),
+              const SizedBox(height: 10),
               const SectionTitle(title: "Báo cáo chi tiêu"),
               Card(
                 margin: EdgeInsets.zero,

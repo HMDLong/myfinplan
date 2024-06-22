@@ -44,10 +44,16 @@ class _CreditTabState extends State<CreditTab> {
   _buildContent(Credit account) {
     return switch (_currentContent) {
       CreditContentTab.graph => SingleChildScrollView(
-          child: BalanceChart<Credit>(
-            chartHeight: 240,
-            account: account,
-            timeRange: TimeRange.lastNDays(30),
+          child: Column(
+            children: [
+              const Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              const SizedBox(height: 10),
+              BalanceChart<Credit>(
+                chartHeight: 240,
+                account: account,
+                timeRange: TimeRange.lastNDays(30),
+              ),
+            ],
           ),
         ),
       CreditContentTab.transacts => TransactionList(

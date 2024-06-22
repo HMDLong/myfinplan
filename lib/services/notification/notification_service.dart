@@ -77,6 +77,20 @@ class NotificationService {
     );
   }
 
+  void scheduleNotisAtDate(List<ScheduledNotification> notis) {
+    final notiEngine = AwesomeNotifications();
+    for (var noti in notis) {
+      notiEngine
+          .createNotification(
+            content: NotificationContent(
+              id: noti.notiId,
+              channelKey: channels[0].channelKey!,
+            ),
+          )
+          .then((value) => dev.log("noti{${noti.referenceDate}-$value}"));
+    }
+  }
+
   void cancelNotification(int notiId) {
     AwesomeNotifications().cancelSchedule(notiId);
   }

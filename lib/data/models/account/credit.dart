@@ -16,7 +16,7 @@ class Credit extends Account {
   });
 
   @override
-  int get usableBalance => amount.abs();
+  int get usableBalance => limit.abs() - amount.abs();
 
   @override
   Map<String, dynamic> toJson() => {

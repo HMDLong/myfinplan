@@ -40,10 +40,16 @@ class _DebitTabState extends State<DebitTab> {
   _buildContent(Debit account) {
     return switch (_currentContent) {
       DebitContentTab.graph => SingleChildScrollView(
-          child: BalanceChart<Debit>(
-            chartHeight: 240,
-            account: account,
-            timeRange: TimeRange.lastNDays(30),
+          child: Column(
+            children: [
+              const Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              const SizedBox(height: 10),
+              BalanceChart<Debit>(
+                chartHeight: 240,
+                account: account,
+                timeRange: TimeRange.lastNDays(30),
+              ),
+            ],
           ),
         ),
       DebitContentTab.transacts => TransactionList(

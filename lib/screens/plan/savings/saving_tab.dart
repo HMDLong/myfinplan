@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
@@ -14,11 +15,6 @@ class SavingTab extends ConsumerStatefulWidget {
   @override
   ConsumerState<SavingTab> createState() => _SavingTabState();
 }
-
-// final getSavingData = FutureProvider((ref) async {
-//   final savings = (await ref.watch(accountsProvider).getAccountByType(AccountType.saving)).cast<Saving>();
-//   return savings;
-// });
 
 class _SavingTabState extends ConsumerState<SavingTab> {
   @override
@@ -54,10 +50,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                   children: [
                     const Align(
                       alignment: Alignment.center,
-                      child: Text(
-                        "Tổng tiết kiệm",
-                        style: TextStyle(fontSize: 12),
-                      ),
+                      child: Text("Tổng tiết kiệm", style: TextStyle(fontSize: 12)),
                     ),
                     Align(
                       alignment: Alignment.center,
@@ -69,7 +62,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                     const SizedBox(height: 10),
                     LinearProgressGauge(
                       value: totalSavedThisRange,
-                      max: 100000000,
+                      max: savingData.totalNeedToSave,
                       mode: GaugeMode.goodOverflow,
                       showOverflow: true,
                       leadingLabel: "Đã tiết kiệm",
@@ -78,13 +71,12 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                     const SizedBox(height: 10),
                     const Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            WidgetSpan(child: Icon(Icons.wallet)),
-                            TextSpan(text: "Các khoản tháng này"),
-                          ],
-                        ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.wallet),
+                          SizedBox(width: 8),
+                          Text("Các khoản tháng này"),
+                        ],
                       ),
                     ),
                     ListView.separated(
@@ -114,6 +106,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
               ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: CupertinoColors.activeBlue,
         onPressed: () {
           pushNewScreen(
             context,

@@ -55,27 +55,13 @@ class TransactionNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> scheduleTransaction(Transaction example, TimeType recurrence) async {
-  //   final occurrencesInNext6Months = TimeRange.nextNofTimeType(
-  //     TimeType.month,
-  //     DEFAULT_PLAN_AHEAD_SPAN,
-  //   ).getOccurences(
-  //     recurrence,
-  //     example.planDetail!.planTime,
-  //   );
-  //   example.planDetail!.planId = PeriodicRecurrence(
-  //     periodicType: recurrence,
-  //     example: example.planDetail!.planTime,
-  //   ).toInfoString;
-  //   final planTransacts = occurrencesInNext6Months.map((e) => example.copyWith(planTime: e)).toList();
-  //   await repo.addAll(planTransacts);
-  //   notifyListeners();
-  // }
-
   Future<void> schedule(Transaction example, Recurrence recurrence) async {
     final occurrences = recurrence.planOccurences();
     example.planDetail!.planId = recurrence.toInfoString;
-    final planTransacts = occurrences.map((e) => example.copyWith(planTime: e)).toList();
+    final planTransacts = <Transaction>[];
+    for (var occur in occurrences) {
+      planTransacts.add(example.copyWith(planTime: occur));
+    }
     notiService.scheduleNotification(ScheduledNotification(
       title: "Nhắc nhở thu chi",
       content: "",

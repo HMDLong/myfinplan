@@ -10,4 +10,9 @@ extension DateTimeExt on DateTime {
   DateTime to9AM() {
     return DateTime(year, month, day, 9, 0, 0);
   }
+
+  bool isToday() {
+    final now = DateTime.now();
+    return year == now.year && month == now.month && day == now.day;
+  }
 }

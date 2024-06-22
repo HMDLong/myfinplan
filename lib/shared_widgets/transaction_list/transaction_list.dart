@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
@@ -63,7 +64,7 @@ class _TransactionListState extends ConsumerState<TransactionList> {
     return ref.watch(transactionsProvider).when(
       data: (data) {
         final displayData = prepData(data);
-        final keys = displayData.keys.toList()..sort((a, b) => a.compareTo(b));
+        final keys = displayData.keys.toList()..sort((a, b) => b.compareTo(a));
         return displayData.isEmpty
             ? const SizedBox(
                 height: 300,
@@ -92,17 +93,17 @@ class _TransactionListState extends ConsumerState<TransactionList> {
                     children: [
                       Container(
                         width: double.infinity,
-                        decoration: const BoxDecoration(
-                          border: Border.symmetric(
-                            horizontal: BorderSide(
-                              color: Colors.grey,
-                              width: 0.5,
-                            ),
-                          ),
+                        decoration: BoxDecoration(
+                          color: key.isToday() ? CupertinoColors.activeBlue : Colors.blue.shade50,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
-                          child: Text(Formatter.toFullVnDate(key)),
+                          child: Text(
+                            Formatter.toFullVnDate(key),
+                            style: TextStyle(
+                              color: key.isToday() ? Colors.white : Colors.black,
+                            ),
+                          ),
                         ),
                       ),
                       ListView.builder(

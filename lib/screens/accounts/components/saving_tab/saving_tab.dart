@@ -66,10 +66,16 @@ class _SavingTabState extends State<SavingTab> {
   _buildContent(Saving account) {
     return switch (_currentContent) {
       SavingContentTab.graph => SingleChildScrollView(
-          child: BalanceChart<Saving>(
-            chartHeight: 240,
-            account: account,
-            timeRange: TimeRange.lastNDays(30),
+          child: Column(
+            children: [
+              const Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              const SizedBox(height: 10),
+              BalanceChart<Saving>(
+                chartHeight: 240,
+                account: account,
+                timeRange: TimeRange.lastNDays(30),
+              ),
+            ],
           ),
         ),
       SavingContentTab.transacts => TransactionList(

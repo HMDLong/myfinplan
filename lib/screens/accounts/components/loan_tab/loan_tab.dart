@@ -48,36 +48,43 @@ class _LoanTabState extends ConsumerState<LoanTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  const Text("Hiển thị biến động trong  ", style: TextStyle(fontSize: 12)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: CustomMenu<int>(
-                      isScrollable: true,
-                      items: const [
-                        DropdownMenuEntry(value: 30, label: "30 ngày"),
-                        DropdownMenuEntry(value: 60, label: "60 ngày"),
-                        DropdownMenuEntry(value: 90, label: "90 ngày"),
-                      ],
-                      onChanged: (value) {
-                        ref.read(balanceChartTimeRangeProvider.notifier).state = TimeRange.lastNDays(value);
-                      },
-                    ),
-                  )
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     const Text("Hiển thị biến động trong  ", style: TextStyle(fontSize: 12)),
+              //     const SizedBox(width: 10),
+              //     Expanded(
+              //       child: CustomMenu<int>(
+              //         isScrollable: true,
+              //         items: const [
+              //           DropdownMenuEntry(value: 30, label: "30 ngày"),
+              //           DropdownMenuEntry(value: 60, label: "60 ngày"),
+              //           DropdownMenuEntry(value: 90, label: "90 ngày"),
+              //         ],
+              //         onChanged: (value) {
+              //           ref.read(balanceChartTimeRangeProvider.notifier).state = TimeRange.lastNDays(value);
+              //         },
+              //       ),
+              //     )
+              //   ],
+              // ),
+              // const SizedBox(height: 10),
+              // Consumer(
+              //   builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              //     final timeRange = ref.watch(balanceChartTimeRangeProvider);
+              //     return BalanceChart<Loan>(
+              //       chartHeight: 240,
+              //       account: account,
+              //       timeRange: timeRange,
+              //     );
+              //   },
+              // ),
+              const Text("Hiển thị biến động trong 30 ngày vừa qua"),
               const SizedBox(height: 10),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  final timeRange = ref.watch(balanceChartTimeRangeProvider);
-                  return BalanceChart<Loan>(
-                    chartHeight: 240,
-                    account: account,
-                    timeRange: timeRange,
-                  );
-                },
-              ),
+              BalanceChart<Loan>(
+                chartHeight: 240,
+                account: account,
+                timeRange: TimeRange.lastNDays(30),
+              )
             ],
           ),
         ),
