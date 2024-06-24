@@ -46,13 +46,22 @@ class TransactionNotifier extends ChangeNotifier {
   }
 
   Future<void> updateTransaction(Transaction updatedItem) async {
-    await repo.update(updatedItem);
-    notifyListeners();
+    final oldTransact = await repo.getById(updatedItem.id);
+    if (oldTransact != null) {
+      await accountsNotifier.rollbackTransfer(oldTransact.srcAccId, oldTransact.toAccId, oldTransact.amount);
+      await accountsNotifier.transfer(oldTransact.srcAccId, oldTransact.toAccId, oldTransact.amount);
+      await repo.update(updatedItem);
+      notifyListeners();
+    }
   }
 
   Future<void> deleteTransaction(String id) async {
-    await repo.delete(id);
-    notifyListeners();
+    final transact = await repo.getById(id);
+    if (transact != null && transact.paid) {
+      await accountsNotifier.rollbackTransfer(transact.srcAccId, transact.toAccId, transact.amount);
+      await repo.delete(id);
+      notifyListeners();
+    }
   }
 
   Future<void> schedule(Transaction example, Recurrence recurrence) async {

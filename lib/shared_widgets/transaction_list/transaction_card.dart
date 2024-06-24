@@ -231,7 +231,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                           side: const BorderSide(width: 0.2),
                         ),
                       ),
-                      onPressed: () => Navigator.of(dialogContext).pop(false),
+                      onPressed: () => Navigator.of(dialogContext, rootNavigator: true).pop(false),
                       child: const Text("Hủy", style: TextStyle(color: CupertinoColors.activeBlue)),
                     ),
                   ),
@@ -260,10 +260,10 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
       if (confirmDelete != null && confirmDelete) {
         ref.read(transactionNotifierProvider.notifier).deleteTransaction(detail.transact.id).then(
           (value) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(CustomSnackbar.success("Xóa thành công"));
-            Navigator.pop(context);
+            // ScaffoldMessenger.of(context)
+            //   ..hideCurrentSnackBar()
+            //   ..showSnackBar(CustomSnackbar.success("Xóa thành công"));
+            // Navigator.pop(context);
           },
         ).onError(
           (error, stackTrace) {},

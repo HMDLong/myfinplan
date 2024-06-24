@@ -40,11 +40,15 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
   @override
   Widget build(BuildContext context) {
     ref.listen(addTransactFormVMProvider, (prevState, newState) {
+      if(prevState != null && prevState.submitState == newState.submitState) {
+        return;
+      }
       switch (newState.submitState) {
         case SubmitState.idle:
           break;
         case SubmitState.working:
           showDialog(
+            useRootNavigator: false,
             context: context,
             builder: (ctx) {
               return WillPopScope(
@@ -60,17 +64,21 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                 onWillPop: () async => false,
               );
             },
-          );
+          ).then((success) {
+            if (success) {
+              Navigator.of(context).pop();
+            }
+          });
           break;
         case SubmitState.success:
-          Navigator.of(context, rootNavigator: true).pop();
+          log("pop");
+          Navigator.of(context).pop(true);
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(CustomSnackbar.success(newState.message));
-          Navigator.of(context).pop();
           break;
         case SubmitState.error:
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(context).pop(false);
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(CustomSnackbar.failure(newState.message));

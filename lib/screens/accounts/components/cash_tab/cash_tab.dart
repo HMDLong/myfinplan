@@ -43,8 +43,12 @@ class _CashTabState extends ConsumerState<CashTab> {
     return switch (_currentContent) {
       CashContentTab.graph => SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              ),
               const SizedBox(height: 10),
               BalanceChart<Cash>(
                 chartHeight: 240,

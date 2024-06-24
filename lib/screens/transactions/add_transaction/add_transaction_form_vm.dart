@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
@@ -7,9 +6,6 @@ import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_form_model.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/selected_transact_provider.dart';
 import 'package:myfinplan/utils/random.dart';
-
-final selectedTransactProvider = Provider<Transaction?>((ref) => null);
-final selectedPlanTransactProvider = Provider<Transaction?>((ref) => null);
 
 final addTransactFormVMProvider = NotifierProvider<AddTransactionFormViewModel, AddTransactionFormModel>(() {
   return AddTransactionFormViewModel();
@@ -24,6 +20,10 @@ class AddTransactionFormViewModel extends Notifier<AddTransactionFormModel> {
       SelectedType.planTransact => AddTransactionFormModel.fromPlanTransact(selectedTransact.transact!),
       null => AddTransactionFormModel(),
     };
+  }
+
+  void reset() {
+    state = AddTransactionFormModel();
   }
 
   void setFormData({
@@ -106,6 +106,7 @@ class AddTransactionFormViewModel extends Notifier<AddTransactionFormModel> {
         //TODO: rollback transfer
       }
       ref.read(selectedTransactionProvider.notifier).reset();
+
       state = state.copyWith(
         status: SubmitState.success,
         message: "Đã lưu lại",

@@ -6,6 +6,7 @@ import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/repositories/account/account_repo.dart';
 import 'package:myfinplan/data/repositories/account/account_repo_impl.dart';
+import 'package:myfinplan/utils/exceptions/account_exceptions.dart';
 
 final accountsProvider = ChangeNotifierProvider((ref) {
   return AccountsNotifier(repo: ref.watch(accountRepoProvider));
@@ -43,28 +44,46 @@ class AccountsNotifier extends ChangeNotifier {
   }
 
   Future<void> transfer(String? fromId, String? toId, int amount) async {
+    Account? from;
     if (fromId != null) {
-      final from = await getAccountById(fromId);
-      // if (from.amount! < amount) {
-      //   throw Exception("Not enough balance in ${from.title}");
-      // }
+      from = await getAccountById(fromId);
       if (from != null) {
-        from.amount = from.amount - amount.abs();
-        await repo.update(from);
+        // from.amount = from.amount - amount.abs();
+        try {
+          from.moneyOut(amount);
+          await repo.update(from);
+        } catch (e) {
+          rethrow;
+        }
       }
     }
     if (toId != null) {
       final to = await getAccountById(toId);
       if (to != null) {
-        to.amount = to.amount + amount.abs();
-        await repo.update(to);
+        // to.amount = to.amount + amount.abs();
+        try {
+          to.moneyIn(amount);
+          await repo.update(to);
+        } catch (e) {
+          // if error occurred, first rollback the withdrawal;
+          if (from != null) {
+            try {
+              from.moneyIn(amount);
+              await repo.update(from);
+            } catch (e) {
+              rethrow;
+            }
+          }
+          // second, rethrow
+          rethrow;
+        }
       }
     }
     notifyListeners();
   }
 
-  void rollbackTransfer(Account? from, Account? to, int amount) {
-    notifyListeners();
+  Future<void> rollbackTransfer(String? from, String? to, int amount) async {
+    await transfer(to, from, amount.abs());
   }
 
   Future<void> updateAccount(Account account) async {

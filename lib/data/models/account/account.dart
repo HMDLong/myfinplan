@@ -4,6 +4,7 @@ import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/debit.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
+import 'package:myfinplan/utils/exceptions/account_exceptions.dart';
 
 enum AccountType {
   cash,
@@ -82,7 +83,10 @@ abstract class Account with EquatableMixin {
   }
 
   void moneyOut(int outAmount) {
-    amount += outAmount;
+    if (amount - outAmount < 0) {
+      throw AccountNotEnoughBalanceException(id);
+    }
+    amount -= outAmount;
   }
 
   @override

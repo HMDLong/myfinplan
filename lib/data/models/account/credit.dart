@@ -1,6 +1,7 @@
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
+import 'package:myfinplan/utils/exceptions/account_exceptions.dart';
 import 'package:myfinplan/utils/random.dart';
 
 class Credit extends Account {
@@ -27,6 +28,22 @@ class Credit extends Account {
         "limit": limit,
         "payment": payment.toJson(),
       };
+
+  @override
+  void moneyIn(int inAmount) {
+    if (amount + inAmount > 0) {
+      throw OverflowLoanPaymentException();
+    }
+    amount += inAmount;
+  }
+
+  @override
+  void moneyOut(int outAmount) {
+    if (amount - outAmount < limit) {
+      throw AccountNotEnoughBalanceException(id);
+    }
+    amount -= outAmount;
+  }
 
   Transaction get planTransactInfo {
     return Transaction.planTransact(

@@ -23,17 +23,20 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final important = Random().nextBool();
+    // final important = Random().nextBool();
     return ExpandableNotifier(
       child: ScrollOnExpand(
         child: Expandable(
           collapsed: ExpandableButton(
             child: _mainCard(
               isOpened: false,
-              important: important,
+              // important: important,
             ),
           ),
-          expanded: _expandedCard(context, important: important),
+          expanded: _expandedCard(
+            context,
+            // important: important,
+          ),
         ),
       ),
     );
@@ -65,16 +68,24 @@ class ScheduleCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(text: schedule.categoryName),
-                          const TextSpan(text: "  "),
-                          const TextSpan(text: ""),
-                        ],
-                      ),
-                    ),
+                    Text(schedule.categoryName),
                     Text(Formatter.amountToDecimal(schedule.planDetail!.planAmount)),
+                    Row(
+                      children: [
+                        Text(
+                          schedule.srcAccName ?? "",
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const Icon(
+                          Icons.keyboard_double_arrow_right_rounded,
+                          color: Colors.grey,
+                        ),
+                        Text(
+                          schedule.toAccName ?? "",
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -198,8 +209,6 @@ class ScheduleCard extends StatelessWidget {
                     Formatter.toStandartDate(schedule.planDetail!.planTime),
                     Formatter.toStandartDate(schedule.planDetail!.planTime),
                   ),
-                  _row("Từ", "Dự kiến", "Thực tế"),
-                  _row("Đến", "Dự kiến", "Thực tế"),
                 ],
               ),
             ),

@@ -6,9 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/providers/accounts/accounts/account_usecases.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/time/times.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:myfinplan/data/models/account/account.dart';
@@ -54,11 +56,20 @@ final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<D
   }
   final groupByDateData = transacts.fold(<DateTime, int>{}, (previousValue, transact) {
     final dateOnly = transact.timestamp.toDateOnly();
-    previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) - transact.amount * (transact.toAccId == info.accountId ? 1 : -1);
+    previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) +
+        transact.amount *
+            (transact.transactType != TransactionType.transact
+                ? 1
+                : transact.toAccId == info.accountId
+                    ? 1
+                    : -1);
     return previousValue;
   });
   var chartData = <BalanceChartData<DateTime, int>>[];
-  int traceBalance = balance - groupByDateData.values.fold(0, (prev, e) => prev + e);
+  int traceBalance = balance -
+      groupByDateData.entries.where((transactsByDate) {
+        return transactsByDate.key.isAfter(info.timeRange.start);
+      }).fold(0, (prev, e) => prev + e.value);
   for (var date in info.timeRange.getRangeDates()) {
     chartData.add(BalanceChartData(x: date, y: traceBalance));
     traceBalance += groupByDateData[date] ?? 0;
@@ -117,7 +128,7 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
                   AreaSeries<BalanceChartData<DateTime, int>, String>(
                     dataSource: data,
                     xValueMapper: (BalanceChartData<DateTime, int> data, _) {
-                      return DateFormat.MMMd().format(data.x);
+                      return Formatter.toMonthDate(data.x);
                       //data.x;
                     },
                     yValueMapper: (BalanceChartData<DateTime, int> data, _) => data.y,

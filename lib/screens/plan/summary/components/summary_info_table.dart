@@ -62,9 +62,9 @@ class SummaryInfoTable extends StatelessWidget {
                     DataRow(
                       cells: [
                         const DataCell(Text("Tăng trưởng")),
-                        DataCell(Text(Formatter.amountToDecimal(data[0], currency: null))),
-                        DataCell(Text(Formatter.amountToDecimal(data[1], currency: null))),
-                        DataCell(Text(Formatter.amountToDecimal(data[1] - data[0], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[8], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[9], currency: null))),
+                        DataCell(Text(Formatter.amountToDecimal(data[9] - data[8], currency: null))),
                       ],
                     ),
                   ],

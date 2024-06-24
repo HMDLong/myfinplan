@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:developer' as dev;
+import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
@@ -9,6 +10,14 @@ import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/plan/distributor.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/plan_screen.dart';
+
+// class SummaryDataModel with EquatableMixin {
+//   int planIncome;
+//   int realIncome;
+
+//   @override
+//   List<Object?> get props => throw UnimplementedError();
+// }
 
 final summaryDataProvider = FutureProvider<List<int>>((ref) async {
   final time = ref.watch(planTimeRangeProvider);
@@ -31,5 +40,19 @@ final summaryDataProvider = FutureProvider<List<int>>((ref) async {
   final debts = (await accsProvider.getAccountByType(AccountType.loan)).cast<Loan>();
   final planDebtPay = debts.fold(0, (prev, e) => prev + e.getMonthlyPayment().toInt().abs()); // TODO
   final realDebtPaid = transacts.where((e) => e.paid && e.categoryId == "t1.2").fold(0, (prev, e) => prev + e.amount.abs());
-  return [planIncome, realIncome, planExpenses, realExpenses, planSaving.toInt(), realSaving, planDebtPay, realDebtPaid];
+  // growth
+  final planInflow = planIncome - planExpenses - planDebtPay.abs();
+  final realInflow = realIncome - realExpenses - realDebtPaid.abs();
+  return [
+    planIncome,
+    realIncome,
+    planExpenses,
+    realExpenses,
+    planSaving.toInt(),
+    realSaving,
+    planDebtPay,
+    realDebtPaid,
+    planInflow,
+    realInflow,
+  ];
 });

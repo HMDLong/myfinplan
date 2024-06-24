@@ -45,8 +45,12 @@ class _CreditTabState extends State<CreditTab> {
     return switch (_currentContent) {
       CreditContentTab.graph => SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: const Text("Hiển thị biến động trong 30 ngày vừa qua"),
+              ),
               const SizedBox(height: 10),
               BalanceChart<Credit>(
                 chartHeight: 240,

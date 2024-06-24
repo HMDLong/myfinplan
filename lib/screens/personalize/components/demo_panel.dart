@@ -33,53 +33,56 @@ class DemoPanel extends ConsumerWidget {
         title: "Demo",
         onBackPressed: () => Navigator.pop(context),
       ),
-      body: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) {
-                  return WillPopScope(
-                    onWillPop: () async => false,
-                    child: const AlertDialog(
-                      content: SizedBox(
-                        height: 100,
-                        width: 100,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 10),
-                            Text("Sinh dữ liệu mockup..."),
-                          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return WillPopScope(
+                        onWillPop: () async => false,
+                        child: const AlertDialog(
+                          content: SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(height: 10),
+                                Text("Sinh dữ liệu mockup..."),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   );
+                  _genData(ref).then((value) {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.success("Xong"));
+                  });
                 },
-              );
-              _genData(ref).then((value) {
-                Navigator.of(context, rootNavigator: true).pop();
-                ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.success("Xong"));
-              });
-            },
-            child: const Text("Generate mock data"),
+                child: const Text("Generate mock data"),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Future<void> _genData(WidgetRef ref) async {
-    const startBalance = 10000000000;
+    const startBalance = 200000000;
     randomDate(int start, int end) => Random().nextInt(end - start) + start;
     // 1. Generate accounts
-    // final debitIds = List.generate(3, (index) => getRandomKey());
-    // final creditIds = List.generate(2, (index) => getRandomKey());
-    // final savingIds = List.generate(3, (index) => getRandomKey());
     final debits = [
       Debit(id: getRandomKey(), amount: startBalance, title: 'momo'),
       Debit(id: getRandomKey(), amount: startBalance, title: 'mb 201'),
@@ -92,7 +95,7 @@ class DemoPanel extends ConsumerWidget {
       Credit(
         id: getRandomKey(),
         title: "mb credit 223",
-        limit: 10000000,
+        limit: -100000000,
         payment: Infull(
           duedate: DateTime(2023, 4, randomDate(25, 28)),
           minPayment: 0,
@@ -102,7 +105,7 @@ class DemoPanel extends ConsumerWidget {
       Credit(
         id: getRandomKey(),
         title: "vietinbank credit 983",
-        limit: 30000000,
+        limit: -120000000,
         payment: Infull(
           duedate: DateTime(2023, 4, randomDate(25, 28)),
           minPayment: 0,
@@ -172,21 +175,29 @@ class DemoPanel extends ConsumerWidget {
       ...savings,
       ...loans,
     ];
-    randomAccount() => payableAccount[Random().nextInt(payableAccount.length)];
+    // randomAccount() => payableAccount[Random().nextInt(payableAccount.length)];
 
     final now = DateTime.now().toDateOnly();
     bool shouldPay(DateTime date) => now.isAfter(date) ? Random().nextBool() : false;
 
     final accountNoti = ref.read(accountsProvider.notifier);
+    dev.log("--- Adding accounts");
     for (var account in accounts) {
       await accountNoti.addAccount(account);
     }
+    dev.log("> Done add accounts");
     final categoryNotifier = ref.read(categoryNotifierProvider.notifier);
     final categoryProvider = ref.read(categoryNotifierProvider);
     final transactController = ref.read(transactionNotifierProvider);
-    var monthRange = TimeRange.rangeByType(TimeType.month);
-    // Insert data each month, for total 12 months previously
+    var range = TimeRange.rangeByType(TimeType.month);
+    final monthRanges = <TimeRange>[];
     for (var i = 0; i < 13; i++) {
+      monthRanges.insert(0, range);
+      range = range.previous();
+    }
+    // Insert data each month, for total 12 months previously
+    for (var monthRange in monthRanges) {
+      dev.log("--- Generating data for ${monthRange.start.month}/${monthRange.start.year}");
       // 2. Generate some budget
       final budgets = {
         "e2.3": Budget(amount: 1000000, period: monthRange),
@@ -314,16 +325,17 @@ class DemoPanel extends ConsumerWidget {
         Transaction(
           id: getRandomKey(),
           timestamp: monthRange.dayOfMonthRange(27),
-          amount: 100000000,
+          amount: 20000000,
           categoryId: "i1.1",
           categoryName: "Lương",
           toAccId: sourceAcc.id,
+          toAccName: sourceAcc.title,
           planDetail: TransactPlanDetail(
             id: PeriodicRecurrence(
               periodicType: TimeType.month,
               example: DateTime(2024, 5, 29),
             ).toInfoString,
-            planAmount: 100000000,
+            planAmount: 20000000,
             planTime: monthRange.dayOfMonthRange(29),
           ),
         ),
@@ -366,7 +378,8 @@ class DemoPanel extends ConsumerWidget {
       }
       final categories = (await categoryProvider.getCategories()).where((e) => !planTransactsCategory.contains(e.id)).toList();
       for (var date in monthRange.getRangeDates()) {
-        final transactCount = randomDate(1, 5);
+        if (date.isAfter(now)) continue;
+        final transactCount = randomDate(1, 4);
         for (var i = 0; i < transactCount; i++) {
           final cate = categories[randomDate(0, categories.length)];
           final acc = Random().nextBool() ? debits[Random().nextInt(debits.length)] : cashs[0];
@@ -374,7 +387,7 @@ class DemoPanel extends ConsumerWidget {
           final ts = Transaction(
             id: getRandomKey(),
             timestamp: date,
-            amount: date.isAfter(now) ? 0 : randomDate(2, 10) * 100000,
+            amount: randomDate(2, 20) * 10000,
             categoryId: cate.id,
             categoryName: cate.name,
             srcAccId: acc.id,
@@ -382,11 +395,19 @@ class DemoPanel extends ConsumerWidget {
             toAccId: toAcc?.id,
             toAccName: toAcc?.title,
           );
+          try {
+            await accountNoti.transfer(ts.srcAccId!, ts.toAccId, ts.amount);
+          } catch (e) {
+            var newSrcAcc = randomPayable();
+            ts.srcAccId = newSrcAcc.id;
+            ts.srcAccName = newSrcAcc.title;
+            await accountNoti.transfer(ts.srcAccId!, ts.toAccId, ts.amount);
+          }
           await transactController.addTransaction(ts);
-          await accountNoti.transfer(ts.srcAccId!, ts.toAccId, ts.amount);
         }
       }
-      monthRange = monthRange.previous();
+      // monthRange = monthRange.previous();
+      dev.log("> Done datagen for ${monthRange.start.month}/${monthRange.start.year}");
     }
     dev.log("Done generating data");
   }

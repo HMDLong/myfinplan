@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/utils/time/date_time_ext.dart';
 
+enum PaidStatus { upcoming, early, late, lateNotPay }
+
+class PaidState {
+  PaidStatus status;
+  int value;
+
+  PaidState(this.status, this.value);
+}
+
 class StatusBox extends StatelessWidget {
   final Transaction transact;
   const StatusBox({
@@ -28,42 +37,51 @@ class StatusBox extends StatelessWidget {
     );
   }
 
+  PaidState get state {
+    if (transact.paid) {
+      final diff = transact.planDetail!.planTime.difference(transact.timestamp.toDateOnly()).inDays;
+      if (diff > 0) {
+        return PaidState(PaidStatus.early, diff);
+      }
+      return PaidState(PaidStatus.late, diff.abs());
+    } else {
+      final diff = transact.planDetail!.planTime.difference(DateTime.now().toDateOnly()).inDays;
+      if (diff > 0) {
+        return PaidState(PaidStatus.upcoming, diff);
+      }
+      return PaidState(PaidStatus.lateNotPay, diff.abs());
+    }
+  }
+
   String statusText() {
-    final anchor = transact.timestamp.toDateOnly();
-    final diff = transact.planDetail!.planTime.difference(anchor).inDays;
-    if (diff < 0) {
-      return "Trễ ${diff.abs()} ngày";
-    }
-    if (transact.amount != 0) {
-      return "Sớm $diff ngày";
-    }
-    return "Sắp tới $diff ngày";
+    final paidState = state;
+    return switch (paidState.status) {
+      PaidStatus.upcoming => "Sắp tới ${paidState.value} ngày",
+      PaidStatus.early => "Sớm ${paidState.value} ngày",
+      PaidStatus.late => "Trả muộn ${paidState.value} ngày",
+      PaidStatus.lateNotPay => "Trễ ${paidState.value} ngày",
+    };
   }
 
   List<Color> color() {
-    final isEarly = transact.timestamp.isBefore(transact.planDetail!.planTime);
-    final paid = transact.amount != 0;
-    if (!paid && !isEarly) {
-      return [
-        Colors.red.shade50,
-        Colors.red.shade600,
-      ];
-    }
-    if (paid && isEarly) {
-      return [
-        Colors.green.shade50,
-        Colors.green.shade600,
-      ];
-    }
-    if (paid) {
-      return [
-        Colors.amber.shade50,
-        Colors.amber.shade600,
-      ];
-    }
-    return [
-      Colors.blue.shade50,
-      Colors.blue.shade600,
-    ];
+    final paidState = state;
+    return switch (paidState.status) {
+      PaidStatus.upcoming => [
+          Colors.blue.shade50,
+          Colors.blue.shade600,
+        ],
+      PaidStatus.early => [
+          Colors.green.shade50,
+          Colors.green.shade600,
+        ],
+      PaidStatus.late => [
+          Colors.amber.shade50,
+          Colors.amber.shade600,
+        ],
+      PaidStatus.lateNotPay => [
+          Colors.red.shade50,
+          Colors.red.shade600,
+        ],
+    };
   }
 }

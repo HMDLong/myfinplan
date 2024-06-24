@@ -1,6 +1,7 @@
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
+import 'package:myfinplan/utils/exceptions/account_exceptions.dart';
 
 class Loan extends Account {
   late Payment payment;
@@ -30,6 +31,18 @@ class Loan extends Account {
 
   @override
   AccountType get accountType => AccountType.loan;
+
+  @override
+  void moneyOut(int outAmount) {
+    throw WithdrawFromLoanException();
+  }
+
+  @override
+  void moneyIn(int inAmount) {
+    if (inAmount > amount.abs()) {
+      throw OverflowLoanPaymentException();
+    }
+  }
 
   int get balance => amount.abs();
   double get interest => payment.getInterest(balance);

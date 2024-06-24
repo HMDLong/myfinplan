@@ -63,13 +63,12 @@ class _ScheduleListTabState extends ConsumerState<ScheduleListTab> {
         data: (data) {
           if (data.isEmpty) {
             return const SizedBox.expand(
-              child: Center(
-                child: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    Text("Khong co lich trinh"),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 10),
+                  Text("Khong co lich trinh"),
+                ],
               ),
             );
           }

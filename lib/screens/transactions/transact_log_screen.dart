@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_form_vm.dart';
 import 'package:myfinplan/shared_widgets/pickers/timerange_picker/timerange_picker.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_list.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
@@ -108,6 +109,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          ref.read(addTransactFormVMProvider.notifier).reset();
           pushNewScreen(context, screen: const AddOrEditTransactScreen());
         },
         child: const Icon(Icons.add),
