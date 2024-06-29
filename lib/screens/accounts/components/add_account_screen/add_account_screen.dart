@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myfinplan/data/models/account/account.dart';
@@ -30,6 +32,7 @@ class _AddOrEditAccountScreenState extends State<AddOrEditAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log("${widget.prefill != null}");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -54,6 +57,7 @@ class _AddOrEditAccountScreenState extends State<AddOrEditAccountScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: CustomMenu<AccountType>(
               initValue: widget.initType,
+              locked: widget.prefill != null,
               items: const [
                 DropdownMenuEntry(value: AccountType.debit, label: "Ví"),
                 DropdownMenuEntry(value: AccountType.credit, label: "Tín dụng"),

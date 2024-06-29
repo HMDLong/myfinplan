@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +42,7 @@ class ScheduleCard extends StatelessWidget {
 
   Widget _mainCard({bool isOpened = false, bool important = false}) {
     return SizedBox(
-      height: 60,
+      height: 80,
       child: Card(
         elevation: isOpened ? 6 : 0,
         clipBehavior: Clip.antiAlias,
@@ -70,22 +68,24 @@ class ScheduleCard extends StatelessWidget {
                   children: [
                     Text(schedule.categoryName),
                     Text(Formatter.amountToDecimal(schedule.planDetail!.planAmount)),
-                    Row(
-                      children: [
-                        Text(
-                          schedule.srcAccName ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const Icon(
-                          Icons.keyboard_double_arrow_right_rounded,
-                          color: Colors.grey,
-                        ),
-                        Text(
-                          schedule.toAccName ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
+                    if (schedule.srcAccId != null || schedule.toAccId != null)
+                      Row(
+                        children: [
+                          Text(
+                            schedule.srcAccName ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                          ),
+                          const Icon(
+                            Icons.keyboard_double_arrow_right_rounded,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
+                          Text(
+                            schedule.toAccName ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
@@ -146,70 +146,73 @@ class ScheduleCard extends StatelessWidget {
                 ),
                 color: Colors.blue.shade50,
               ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 38),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      RoundedIconButton(
-                        gradient: LinearGradient(
-                          colors: important
-                              ? [
-                                  Colors.yellow,
-                                  Colors.amber,
-                                  Colors.deepOrange,
-                                ]
-                              : [
-                                  Colors.white,
-                                  Colors.grey,
-                                  Colors.grey.shade600,
-                                ],
-                          stops: const [.4, .8, 1],
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        RoundedIconButton(
+                          gradient: LinearGradient(
+                            colors: important
+                                ? [
+                                    Colors.yellow,
+                                    Colors.amber,
+                                    Colors.deepOrange,
+                                  ]
+                                : [
+                                    Colors.white,
+                                    Colors.grey,
+                                    Colors.grey.shade600,
+                                  ],
+                            stops: const [.4, .8, 1],
+                          ),
+                          backgroundColor: CupertinoColors.activeBlue,
+                          icon: const Icon(Icons.star, size: 16),
+                          onPressed: () {},
                         ),
-                        backgroundColor: CupertinoColors.activeBlue,
-                        icon: const Icon(Icons.star, size: 16),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(width: 8),
-                      Consumer(
-                        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                          return RoundedIconButton(
-                            icon: const Icon(Icons.edit_calendar_outlined, size: 16),
-                            backgroundColor: CupertinoColors.activeBlue,
-                            onPressed: () {
-                              if (schedule.paid) {
-                                ref.read(selectedTransactionProvider.notifier).setTransact(schedule);
-                              } else {
-                                ref.read(selectedTransactionProvider.notifier).setPlanTransact(schedule);
-                              }
-                              pushNewScreen(context, screen: AddOrEditTransactScreen(prefill: schedule));
-                            },
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      RoundedIconButton(
-                        icon: const Icon(Icons.playlist_remove_sharp, size: 16),
-                        backgroundColor: CupertinoColors.activeBlue,
-                        onPressed: () {},
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  _row("", "Dự kiến", "Thực tế"),
-                  _row(
-                    "Số tiền",
-                    Formatter.amountToDecimal(schedule.planDetail!.planAmount, currency: null),
-                    Formatter.amountToDecimal(schedule.amount.abs(), currency: null),
-                  ),
-                  _row(
-                    "Thời gian",
-                    Formatter.toStandartDate(schedule.planDetail!.planTime),
-                    Formatter.toStandartDate(schedule.planDetail!.planTime),
-                  ),
-                ],
+                        const SizedBox(width: 8),
+                        Consumer(
+                          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                            return RoundedIconButton(
+                              icon: const Icon(Icons.edit_calendar_outlined, size: 16),
+                              backgroundColor: CupertinoColors.activeBlue,
+                              onPressed: () {
+                                if (schedule.paid) {
+                                  ref.read(selectedTransactionProvider.notifier).setTransact(schedule);
+                                } else {
+                                  ref.read(selectedTransactionProvider.notifier).setPlanTransact(schedule);
+                                }
+                                pushNewScreen(context, screen: AddOrEditTransactScreen(prefill: schedule));
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        RoundedIconButton(
+                          icon: const Icon(Icons.playlist_remove_sharp, size: 16),
+                          backgroundColor: CupertinoColors.activeBlue,
+                          onPressed: () {},
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    _row("", "Dự kiến", "Thực tế"),
+                    _row(
+                      "Số tiền",
+                      Formatter.amountToDecimal(schedule.planDetail!.planAmount, currency: null),
+                      Formatter.amountToDecimal(schedule.amount.abs(), currency: null),
+                    ),
+                    _row(
+                      "Thời gian",
+                      Formatter.toStandartDate(schedule.planDetail!.planTime),
+                      Formatter.toStandartDate(schedule.planDetail!.planTime),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

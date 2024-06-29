@@ -35,11 +35,13 @@ class AmortizingFixedTermPayment extends Payment {
   int term;
   double interestRate;
   DateTime? monthlyPayDate;
+  DateTime? termDate;
 
   AmortizingFixedTermPayment({
     required this.term,
     required this.interestRate,
     this.monthlyPayDate,
+    this.termDate,
   });
 
   @override
@@ -47,13 +49,15 @@ class AmortizingFixedTermPayment extends Payment {
         "type": type,
         "period": term,
         "interest": interestRate,
-        "duedate": monthlyPayDate!.toIso8601String(),
+        "duedate": monthlyPayDate?.toIso8601String(),
+        "termdate": termDate?.toIso8601String(),
       };
 
   AmortizingFixedTermPayment.fromJson(Map<String, dynamic> json)
       : term = json["period"] as int,
         interestRate = json["interest"] as double,
-        monthlyPayDate = DateTime.parse(json["duedate"] as String);
+        monthlyPayDate = DateTime.tryParse((json["duedate"] as String?) ?? ""),
+        termDate = DateTime.tryParse((json["termdate"] as String?) ?? "");
 
   @override
   DateTime get payDate => monthlyPayDate!;
@@ -110,7 +114,7 @@ class Infull extends Payment {
         "type": type,
         "interest": lateInterest,
         "min": minPayment ?? 0,
-        "duedate": duedate!.toIso8601String(),
+        "duedate": duedate?.toIso8601String(),
       };
 
   Infull.fromJson(Map<String, dynamic> json) {

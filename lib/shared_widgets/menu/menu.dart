@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -6,12 +8,14 @@ class CustomMenu<T> extends StatefulWidget {
   final List<DropdownMenuEntry<T>> items;
   final void Function(T newValue) onChanged;
   final bool isScrollable;
+  final bool locked;
   const CustomMenu({
     super.key,
     required this.items,
     this.initValue,
     required this.onChanged,
     this.isScrollable = false,
+    this.locked = false,
   });
 
   @override
@@ -38,6 +42,9 @@ class _CustomMenuState<T> extends State<CustomMenu<T>> {
           final item = widget.items[index];
           return GestureDetector(
             onTap: () {
+              if (widget.locked) {
+                return;
+              }
               setState(() {
                 currentValue = item.value;
                 widget.onChanged(item.value);
@@ -79,6 +86,9 @@ class _CustomMenuState<T> extends State<CustomMenu<T>> {
           return Expanded(
             child: GestureDetector(
               onTap: () {
+                if (widget.locked) {
+                  return;
+                }
                 setState(() {
                   currentValue = e.value;
                   widget.onChanged(e.value);

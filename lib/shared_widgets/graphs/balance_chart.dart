@@ -114,11 +114,18 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
                   labelAlignment: LabelAlignment.center,
                 ),
                 primaryYAxis: NumericAxis(
-                  plotOffset: 5.0,
+                  axisLine: const AxisLine(width: 0),
+                  plotOffset: 4.0,
                   majorGridLines: const MajorGridLines(),
                   numberFormat: NumberFormat.compact(),
                 ),
-                tooltipBehavior: TooltipBehavior(enable: true),
+                trackballBehavior: TrackballBehavior(
+                  enable: true,
+                  shouldAlwaysShow: true,
+                  lineDashArray: const [10, 10],
+                  activationMode: ActivationMode.singleTap,
+                  tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+                ),
                 zoomPanBehavior: ZoomPanBehavior(
                   enablePinching: true,
                   enablePanning: true,
@@ -127,16 +134,14 @@ class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> 
                 series: [
                   AreaSeries<BalanceChartData<DateTime, int>, String>(
                     dataSource: data,
-                    xValueMapper: (BalanceChartData<DateTime, int> data, _) {
-                      return Formatter.toMonthDate(data.x);
-                      //data.x;
-                    },
+                    xValueMapper: (BalanceChartData<DateTime, int> data, _) => Formatter.toMonthDate(data.x),
                     yValueMapper: (BalanceChartData<DateTime, int> data, _) => data.y,
                     borderColor: CupertinoColors.activeBlue,
                     borderWidth: 1,
+                    enableTooltip: true,
                     gradient: LinearGradient(
                       colors: [Colors.blue.shade50, Colors.blue.shade200, Colors.blue],
-                      stops: const [0.0, 0.5, 1.0],
+                      stops: const [0.3, 0.7, 1.0],
                       transform: const GradientRotation(3 * math.pi / 2),
                     ),
                   ),

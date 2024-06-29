@@ -48,7 +48,7 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: defaultStyledAppBar(
-        title: "",
+        title: widget.detail.category.name,
         onBackPressed: () => Navigator.of(context).pop(),
       ),
       body: ref.watch(planTransactsForDetailProvider).when(
@@ -125,11 +125,13 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                     : Column(
                         children: planned.values.map((e) {
                           return Slidable(
-                            startActionPane: ActionPane(
+                            endActionPane: ActionPane(
                               motion: const DrawerMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (context) {},
+                                  onPressed: (context) {
+                                    pushNewScreen(context, screen: NewPlanTransactScreen(prefill: e));
+                                  },
                                   icon: Icons.edit_document,
                                   backgroundColor: CupertinoColors.activeBlue,
                                 ),
@@ -147,7 +149,6 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Expanded(
                                       child: Align(
@@ -161,7 +162,7 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(e.categoryName),
-                                          Text(e.description ?? ""),
+                                          const SizedBox(height: 6),
                                           Text(Recurrence.parse(e.planDetail!.planId).toString()),
                                         ],
                                       ),
@@ -279,6 +280,9 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
   }
 
   void budgetDelete() {
+    if (widget.detail.category.budget == null) {
+      return;
+    }
     ref.read(categoryNotifierProvider.notifier).deleteBudget(widget.detail.category.id);
   }
 

@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:myfinplan/data/models/schedule_notification.dart';
+import 'package:myfinplan/utils/format.dart';
+import 'package:myfinplan/utils/time/date_time_ext.dart';
 import 'dart:developer' as dev;
 
 import 'package:myfinplan/utils/time/recurrence.dart';
@@ -37,6 +41,7 @@ class NotificationService {
     );
   }
 
+  /// Entry point when app is launched by user tap a notification
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
     // receivedAction.actionType;
@@ -57,7 +62,7 @@ class NotificationService {
   void scheduleNotification(ScheduledNotification noti, {bool demo = true}) {
     AwesomeNotifications().createNotification(
       schedule: demo
-          ? NotificationInterval(interval: 30)
+          ? NotificationInterval(interval: 120)
           : switch (noti.type) {
               Periodic.daily => NotificationAndroidCrontab.daily(referenceDateTime: noti.referenceDate),
               Periodic.weekly => NotificationAndroidCrontab.weekly(referenceDateTime: noti.referenceDate),
@@ -67,7 +72,7 @@ class NotificationService {
               Periodic.custom => null,
             },
       content: NotificationContent(
-        id: noti.notiId,
+        id: 1,
         channelKey: channels[0].channelKey!,
         notificationLayout: NotificationLayout.BigText,
         title: noti.title,
@@ -77,21 +82,67 @@ class NotificationService {
     );
   }
 
-  void scheduleNotisAtDate(List<ScheduledNotification> notis) {
+  // Schedule a list of notifications at the designated date
+  Future<void> scheduleNotifications(List<ScheduledNotification> notis) async {
     final notiEngine = AwesomeNotifications();
+    final activeNotifis = await notiEngine.listScheduledNotifications();
     for (var noti in notis) {
-      notiEngine
-          .createNotification(
-            content: NotificationContent(
-              id: noti.notiId,
-              channelKey: channels[0].channelKey!,
-            ),
-          )
-          .then((value) => dev.log("noti{${noti.referenceDate}-$value}"));
+      try {
+        // find the matching scheduled notification at date
+        final matchNoti = activeNotifis.firstWhere((notifi) => notifi.content!.id == noti.referenceDate.toIso8601String().hashCode);
+        // if there is previously scheduled noti, update then override with new noti
+        final scheduleNum = int.parse(matchNoti.content!.payload!["schedule_num"]!);
+        notiEngine.createNotification(
+          content: NotificationContent(
+            id: matchNoti.content!.id!,
+            channelKey: channels[0].channelKey!,
+            title: matchNoti.content!.title,
+            body: "Bạn có ${scheduleNum + 1} khoản thu chi cần thực hiện trong hôm nay",
+            payload: {
+              "schedule_num": "${scheduleNum + 1}",
+            },
+          ),
+        );
+      } on StateError {
+        // if not, create new noti
+        notiEngine.createNotification(
+          schedule: NotificationCalendar.fromDate(date: noti.referenceDate.to9AM(), allowWhileIdle: true),
+          content: NotificationContent(
+            id: noti.referenceDate.toIso8601String().hashCode,
+            channelKey: channels[0].channelKey!,
+            title: "Nhắc nhở thu chi (${Formatter.toMonthDate(noti.referenceDate)})",
+            body: "Bạn có 1 khoản thu chi cần thực hiện trong hôm nay",
+            payload: {
+              "schedule_num": "1",
+            },
+          ),
+        );
+      }
     }
   }
 
+  /// Immediately trigger an active notification. For debug and demo purpose only
+  void triggerRandomNotification() async {
+    final notiController = AwesomeNotifications();
+    final notifys = await notiController.listScheduledNotifications();
+    final contentToTrigger = notifys[Random().nextInt(notifys.length)].content!;
+    notiController.createNotification(
+      content: NotificationContent(
+        id: 1,
+        channelKey: contentToTrigger.channelKey!,
+        title: contentToTrigger.title,
+        body: contentToTrigger.body,
+      ),
+    );
+  }
+
+  // cancel a notification
   void cancelNotification(int notiId) {
     AwesomeNotifications().cancelSchedule(notiId);
+  }
+
+  // cancel all notifications
+  void cancelAll() {
+    AwesomeNotifications().cancelAll();
   }
 }

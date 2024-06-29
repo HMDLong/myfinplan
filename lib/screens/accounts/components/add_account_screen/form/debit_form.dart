@@ -81,7 +81,16 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              child: const Text("Xác nhận"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CupertinoColors.activeBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: Text("Xác nhận"),
+              ),
               onPressed: () {
                 _onSubmit().then((value) {
                   if (!value) {

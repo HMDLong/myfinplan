@@ -61,7 +61,6 @@ class Loan extends Account {
   }
 
   Loan? monthlyUpdate() {
-    return null;
     final newBalance = payment.nextMonthBalance(amount);
     return Loan(
       id: id,

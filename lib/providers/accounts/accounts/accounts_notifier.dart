@@ -6,7 +6,6 @@ import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/repositories/account/account_repo.dart';
 import 'package:myfinplan/data/repositories/account/account_repo_impl.dart';
-import 'package:myfinplan/utils/exceptions/account_exceptions.dart';
 
 final accountsProvider = ChangeNotifierProvider((ref) {
   return AccountsNotifier(repo: ref.watch(accountRepoProvider));
@@ -45,12 +44,13 @@ class AccountsNotifier extends ChangeNotifier {
 
   Future<void> transfer(String? fromId, String? toId, int amount) async {
     Account? from;
+    final absAmount = amount.abs();
     if (fromId != null) {
       from = await getAccountById(fromId);
       if (from != null) {
         // from.amount = from.amount - amount.abs();
         try {
-          from.moneyOut(amount);
+          from.moneyOut(absAmount);
           await repo.update(from);
         } catch (e) {
           rethrow;
@@ -62,13 +62,13 @@ class AccountsNotifier extends ChangeNotifier {
       if (to != null) {
         // to.amount = to.amount + amount.abs();
         try {
-          to.moneyIn(amount);
+          to.moneyIn(absAmount);
           await repo.update(to);
         } catch (e) {
           // if error occurred, first rollback the withdrawal;
           if (from != null) {
             try {
-              from.moneyIn(amount);
+              from.moneyIn(absAmount);
               await repo.update(from);
             } catch (e) {
               rethrow;
@@ -83,7 +83,7 @@ class AccountsNotifier extends ChangeNotifier {
   }
 
   Future<void> rollbackTransfer(String? from, String? to, int amount) async {
-    await transfer(to, from, amount.abs());
+    await transfer(to, from, amount);
   }
 
   Future<void> updateAccount(Account account) async {

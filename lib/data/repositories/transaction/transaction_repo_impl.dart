@@ -43,6 +43,7 @@ class TransactionRepositoryImpl extends TransactionRepository {
 
   @override
   Future<void> update(Transaction updatedItem) {
-    return updatedItem.save();
+    return add(updatedItem);
+    // return updatedItem.save();
   }
 }

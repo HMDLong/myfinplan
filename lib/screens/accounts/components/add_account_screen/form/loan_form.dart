@@ -11,7 +11,8 @@ import 'package:myfinplan/utils/styles.dart';
 import 'infull_form.dart';
 
 class NewLoanForm extends ConsumerStatefulWidget {
-  const NewLoanForm({super.key});
+  final Loan? prefill;
+  const NewLoanForm({super.key, this.prefill});
 
   @override
   ConsumerState<NewLoanForm> createState() => _NewLoanFormState();
@@ -21,6 +22,11 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
   final _formKey = GlobalKey<FormState>();
   final _formData = <String, dynamic>{};
   var _paymentType = PaymentType.infull;
+  String? title;
+  int? amount;
+  DateTime? duedate;
+  double? interest;
+  bool? notified;
 
   String? numericValidator(String? value, String formKey) {
     if (value == null || value.isEmpty) {
@@ -37,35 +43,42 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
     return null;
   }
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       final newDebt = Loan(
-        id: getRandomKey(),
-        title: _formData["title"],
-        amount: (_formData["amount"] ?? 0) * -1,
+        id: widget.prefill?.id ?? getRandomKey(),
+        title: title!,
+        amount: (amount ?? 0) * -1,
         payment: switch (_paymentType) {
           PaymentType.infull => Infull(
-              duedate: _formData["duedate"],
-              lateInterest: _formData["interest"],
+              duedate: duedate,
+              lateInterest: interest,
               minPayment: (_formData["amount"] ?? 0) * -1,
             ),
           PaymentType.installment => AmortizingFixedTermPayment(
               term: _formData["term"],
-              interestRate: _formData["interest"] / 100,
-              monthlyPayDate: _formData["duedate"],
+              interestRate: interest! / 100,
+              monthlyPayDate: duedate,
             ),
         },
       );
-      ref.read(accountsProvider).addAccount(newDebt).then((value) {
-        Navigator.of(context).pop();
-      });
+      if (widget.prefill != null) {
+        ref.read(accountsProvider.notifier).updateAccount(newDebt);
+      } else {
+        ref.read(accountsProvider.notifier).addAccount(newDebt);
+      }
     }
   }
 
   @override
   void initState() {
-    _formData["isNotified"] = true;
+    notified = true;
+    final prefill = widget.prefill;
+    if (prefill != null) {
+      title = prefill.title;
+      amount = prefill.amount.abs();
+    }
     super.initState();
   }
 
@@ -83,21 +96,22 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 icon: const Icon(Icons.title),
                 label: const Text("Tiêu đề"),
               ),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
+              initialValue: title,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Hãy nhập tiêu đề";
                 }
-                _formData["title"] = value;
+                title = value;
                 return null;
               },
             ),
             const SizedBox(height: 15.0),
             AmountFormField(
               label: "Số tiền",
+              initValue: amount,
               onChanged: (value) {
                 if (value == null) return;
-                _formData["amount"] = value;
+                amount = value;
               },
             ),
             const SizedBox(height: 15.0),
@@ -135,14 +149,14 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
             ),
             (switch (_paymentType) {
               PaymentType.infull => InfullForm(onDataChanged: (duedate, interest) {
-                  if (duedate != null) _formData["duedate"] = duedate;
-                  if (interest != null) _formData["interest"] = interest;
+                  if (duedate != null) this.duedate = duedate;
+                  if (interest != null) this.interest = interest;
                 }),
               PaymentType.installment => InstallmentForm(
                   formData: _formData,
                   onDataChanged: (term, duedate, interest) {
-                    if (duedate != null) _formData["duedate"] = duedate;
-                    if (interest != null) _formData["interest"] = interest;
+                    if (duedate != null) this.duedate = duedate;
+                    if (interest != null) this.interest = interest;
                     if (term != null) _formData["term"] = term;
                   }),
             }),
@@ -155,22 +169,35 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 Expanded(
                   flex: 2,
                   child: Switch(
-                    value: _formData["isNotified"],
+                    value: notified!,
                     onChanged: (value) {
-                      _formData["isNotified"] = value;
+                      notified = value;
                     },
                   ),
                 )
               ],
             ),
-            Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: ElevatedButton(
-                child: const Text("Xác nhận"),
-                onPressed: () {
-                  _onSubmit();
-                },
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CupertinoColors.activeBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text("Xác nhận"),
+                ),
+              ),
+              onPressed: () {
+                _onSubmit().then((value) {
+                  Navigator.of(context).pop();
+                }).onError((error, stackTrace) {
+                  ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.failure(error.toString()));
+                });
+              },
             ),
           ],
         ),

@@ -32,4 +32,9 @@ class TransactPlanDetail with HiveObjectMixin {
       cancelled: cancelled ?? this.cancelled,
     );
   }
+
+  @override
+  String toString() {
+    return "Schedule{id:$planId}";
+  }
 }

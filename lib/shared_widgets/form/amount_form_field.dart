@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/styles.dart';
 
 class AmountFormField extends StatefulWidget {
@@ -46,7 +47,7 @@ class _AmountFormFieldState extends State<AmountFormField> {
         icon: const Icon(CupertinoIcons.money_dollar),
         label: Text(widget.label),
       ),
-      initialValue: widget.initValue?.toString(),
+      initialValue: widget.initValue == null ? null : Formatter.amountToDecimal(widget.initValue!, currency: null),
       keyboardType: TextInputType.number,
       validator: widget.validator ?? defaultValidator,
       onChanged: (value) {

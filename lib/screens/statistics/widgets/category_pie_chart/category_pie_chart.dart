@@ -26,75 +26,81 @@ class CategoryPieChart extends ConsumerStatefulWidget {
 class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
   @override
   Widget build(BuildContext context) {
-    final filterState = ref.watch(chartFilterStateProvider);
-    return ref.watch(categoryChartDataProvider(widget.timeRange)).when(
-      data: (chartState) {
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Thành phần thu chi",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Text(
-                  "Thu chi của tôi cho những gì?",
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
-                ),
-                const SizedBox(height: 10),
-                CustomMenu(
-                  items: const [
-                    DropdownMenuEntry(value: TransactionType.expense, label: "Chi phí"),
-                    DropdownMenuEntry(value: TransactionType.income, label: "Thu nhập"),
-                  ],
-                  onChanged: (newValue) {
-                    ref.read(chartFilterStateProvider.notifier).state = filterState.copyWith(
-                      type: newValue,
-                      categoryId: null,
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                _buildRowLabel(chartState, filterState),
-                _buildChart(chartState, filterState),
-              ],
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Thành phần thu chi",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        );
-      },
-      error: (error, _) {
-        return const Card(
-          child: SizedBox(
-            height: 300,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(widgetErrorMessage),
-              ],
+            const Text(
+              "Thu chi của tôi cho những gì?",
+              style: TextStyle(fontSize: 12, color: Colors.black54),
             ),
-          ),
-        );
-      },
-      loading: () {
-        return const Card(
-          child: SizedBox(
-            height: 300,
-            width: double.infinity,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        );
-      },
+            const SizedBox(height: 10),
+            Consumer(builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              return CustomMenu<TransactionType>(
+                items: const [
+                  DropdownMenuEntry(value: TransactionType.expense, label: "Chi phí"),
+                  DropdownMenuEntry(value: TransactionType.income, label: "Thu nhập"),
+                ],
+                onChanged: (newValue) {
+                  ref.read(chartFilterStateProvider.notifier).state = CategoryChartFilterState(
+                    type: newValue,
+                    categoryId: null,
+                  );
+                },
+              );
+            }),
+            const SizedBox(height: 10),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                return ref.watch(categoryChartDataProvider(widget.timeRange)).when(data: (chartState) {
+                  final filterState = ref.watch(chartFilterStateProvider);
+                  return Column(
+                    children: [
+                      _buildRowLabel(chartState, filterState),
+                      _buildChart(chartState, filterState),
+                    ],
+                  );
+                }, error: (error, _) {
+                  return const Card(
+                    child: SizedBox(
+                      height: 300,
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(widgetErrorMessage),
+                        ],
+                      ),
+                    ),
+                  );
+                }, loading: () {
+                  return const Card(
+                    child: SizedBox(
+                      height: 300,
+                      width: double.infinity,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  );
+                });
+              },
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -202,7 +208,7 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
               labelPosition: ChartDataLabelPosition.outside,
             ),
             legendIconType: LegendIconType.circle,
-            dataLabelMapper: (datum, index) => "${datum.x} (${(datum.y * 100 / spentAmount).round()}%)",
+            dataLabelMapper: (datum, index) => "${datum.x}\n(${(datum.y * 100 / spentAmount).round()}%)",
           )
         ],
       ),

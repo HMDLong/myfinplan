@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/schedule_notification.dart';
+import 'package:myfinplan/utils/time/date_time_ext.dart';
 import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/data/repositories/transaction/transaction_repo.dart';
@@ -9,6 +10,7 @@ import 'package:myfinplan/data/repositories/transaction/transaction_repo_impl.da
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/services/notification/notification_service.dart';
 import 'package:myfinplan/services/notification/notification_service_provider.dart';
+import 'dart:developer' as dev;
 
 final transactionNotifierProvider = ChangeNotifierProvider((ref) {
   final accountNotifier = ref.read(accountsProvider.notifier);
@@ -33,6 +35,9 @@ class TransactionNotifier extends ChangeNotifier {
   );
 
   Future<void> addTransaction(Transaction newTransaction) async {
+    if (newTransaction.paid) {
+      await accountsNotifier.transfer(newTransaction.srcAccId, newTransaction.toAccId, newTransaction.amount.abs());
+    }
     await repo.add(newTransaction);
     notifyListeners();
   }
@@ -68,21 +73,29 @@ class TransactionNotifier extends ChangeNotifier {
     final occurrences = recurrence.planOccurences();
     example.planDetail!.planId = recurrence.toInfoString;
     final planTransacts = <Transaction>[];
+    final scheduleNotifys = <ScheduledNotification>[];
     for (var occur in occurrences) {
       planTransacts.add(example.copyWith(planTime: occur));
+      scheduleNotifys.add(ScheduledNotification.scheduleTransactNoti(time: occur));
     }
-    notiService.scheduleNotification(ScheduledNotification(
-      title: "Nhắc nhở thu chi",
-      content: "",
-      planId: "",
-      transactId: "",
-      referenceDate: example.planDetail!.planTime,
-    ));
+    notiService.scheduleNotifications(scheduleNotifys);
     await repo.addAll(planTransacts);
     notifyListeners();
   }
 
+  Future<void> updateSchedule(
+      // Transaction schedule,
+      ) async {
+    final transacts = await repo.getAll();
+    final now = DateTime.now().toDateOnly();
+    final schedules = transacts.where((transact) {
+      return !transact.paid && !transact.timestamp.isBefore(now);
+    });
+    dev.log(schedules.toString());
+  }
+
   Future<void> updatePlanTransacts() async {
     final transacts = await repo.getAll();
+    notifyListeners();
   }
 }

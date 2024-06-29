@@ -102,4 +102,9 @@ class Transaction extends HiveObject {
       planDetail: planDetail?.copyWith(planTime: planTime) ?? planDetail,
     );
   }
+
+  @override
+  String toString() {
+    return "Transaction{id:$id, time:$timestamp, amount:$_amount, schedule:$planDetail}";
+  }
 }

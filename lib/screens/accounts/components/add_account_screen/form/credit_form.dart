@@ -1,5 +1,3 @@
-// import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,9 +5,9 @@ import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
 import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
+import 'package:myfinplan/shared_widgets/pickers/date_picker.dart';
 import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/styles.dart';
-import 'infull_form.dart';
 
 class NewCreditForm extends ConsumerStatefulWidget {
   final Credit? prefill;
@@ -21,35 +19,41 @@ class NewCreditForm extends ConsumerStatefulWidget {
 
 class _NewCreditFormState extends ConsumerState<NewCreditForm> {
   final _formKey = GlobalKey<FormState>();
-  final _formData = <String, dynamic>{};
+  String? title;
+  int? amount;
+  int? limit;
+  DateTime? duedate;
+  double? interest;
+  late bool notified;
 
   Future<void> _onSubmit() async {
     _formKey.currentState!.save();
     if (_formKey.currentState!.validate()) {
       final newCredit = Credit(
-        id: getRandomKey(),
-        title: _formData["title"],
-        amount: (_formData["limit"]) * -1 + (_formData["amount"] ?? 0),
-        limit: (_formData["limit"]) * -1,
+        id: widget.prefill?.id ?? getRandomKey(),
+        title: title!,
+        amount: (amount ?? 0) * -1,
+        limit: limit! * -1,
         payment: Infull(
-          duedate: _formData["duedate"],
-          lateInterest: _formData["interest"],
+          duedate: duedate,
+          lateInterest: interest,
         ),
       );
       await ref.read(accountsProvider).addAccount(newCredit);
-      // await ref.read(transactionNotifierProvider.notifier).schedule(
-      //       newCredit.planTransactInfo,
-      //       PeriodicRecurrence(
-      //         periodicType: TimeType.month,
-      //         example: _formData["duedate"],
-      //       ),
-      //     );
     }
   }
 
   @override
   void initState() {
-    _formData["isNotified"] = true;
+    notified = true;
+    final prefill = widget.prefill;
+    if (prefill != null) {
+      title = prefill.title;
+      amount = prefill.amount.abs();
+      limit = prefill.limit.abs();
+      duedate = (prefill.payment as Infull).payDate;
+      interest = (prefill.payment as Infull).lateInterest;
+    }
     super.initState();
   }
 
@@ -64,44 +68,89 @@ class _NewCreditFormState extends ConsumerState<NewCreditForm> {
           children: [
             const SizedBox(height: 10),
             TextFormField(
+              initialValue: title,
               decoration: formFieldDecor(
                 icon: const Icon(Icons.title),
                 label: const Text("Tiêu đề"),
               ),
-              // autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Hãy nhập tiêu đề";
                 }
-                _formData["title"] = value;
+                title = value;
                 return null;
               },
             ),
             const SizedBox(height: 10.0),
             AmountFormField(
               label: "Số tiền đã chi hiện tại",
+              initValue: amount,
               onChanged: (value) {
                 if (value != null) {
-                  _formData["amount"] = value;
+                  amount = value;
                 }
               },
             ),
             const SizedBox(height: 10.0),
             AmountFormField(
               label: "Mức hạn định",
+              initValue: limit,
               onChanged: (value) {
                 if (value != null) {
-                  _formData["limit"] = value;
+                  limit = value;
                 }
               },
             ),
             const SizedBox(height: 10.0),
-            InfullForm(
-              onDataChanged: (duedate, interest) {
-                if (duedate != null) _formData["duedate"] = duedate;
-                if (interest != null) _formData["interest"] = interest;
-              },
+            Row(
+              children: [
+                Expanded(
+                  child: CustomDatePicker(
+                    onDatePicked: (value) {
+                      duedate = value;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        initialValue: interest.toString(),
+                        decoration: formFieldDecor(
+                          icon: const Icon(CupertinoIcons.percent),
+                          label: const Text("Lãi suất"),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Hãy nhập";
+                          }
+                          final parsed = double.tryParse(value);
+                          if (parsed == null) {
+                            return "Cần là số";
+                          }
+                          if (parsed < 0) {
+                            return "Cần lớn hơn 0";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          interest = double.tryParse(value);
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ],
             ),
+            // InfullForm(
+            //   onDataChanged: (duedate, interest) {
+            //     if (duedate != null)  = duedate;
+            //     if (interest != null) _formData["interest"] = interest;
+            //   },
+            // ),
             const SizedBox(height: 15.0),
             Row(
               children: [
@@ -112,9 +161,9 @@ class _NewCreditFormState extends ConsumerState<NewCreditForm> {
                 Expanded(
                   flex: 2,
                   child: Switch(
-                    value: _formData["isNotified"],
+                    value: notified,
                     onChanged: (value) {
-                      _formData["isNotified"] = value;
+                      notified = value;
                     },
                   ),
                 )

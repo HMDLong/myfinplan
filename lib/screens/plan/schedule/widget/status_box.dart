@@ -40,13 +40,13 @@ class StatusBox extends StatelessWidget {
   PaidState get state {
     if (transact.paid) {
       final diff = transact.planDetail!.planTime.difference(transact.timestamp.toDateOnly()).inDays;
-      if (diff > 0) {
+      if (diff >= 0) {
         return PaidState(PaidStatus.early, diff);
       }
       return PaidState(PaidStatus.late, diff.abs());
     } else {
       final diff = transact.planDetail!.planTime.difference(DateTime.now().toDateOnly()).inDays;
-      if (diff > 0) {
+      if (diff >= 0) {
         return PaidState(PaidStatus.upcoming, diff);
       }
       return PaidState(PaidStatus.lateNotPay, diff.abs());
@@ -56,8 +56,8 @@ class StatusBox extends StatelessWidget {
   String statusText() {
     final paidState = state;
     return switch (paidState.status) {
-      PaidStatus.upcoming => "Sắp tới ${paidState.value} ngày",
-      PaidStatus.early => "Sớm ${paidState.value} ngày",
+      PaidStatus.upcoming => "Sắp tới ${paidState.value == 0 ? ",hôm nay" : "${paidState.value} ngày"}",
+      PaidStatus.early => "Đã trả ${paidState.value == 0 ? "" : "sớm ${paidState.value} ngày"}",
       PaidStatus.late => "Trả muộn ${paidState.value} ngày",
       PaidStatus.lateNotPay => "Trễ ${paidState.value} ngày",
     };

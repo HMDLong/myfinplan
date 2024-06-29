@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_form_model.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/selected_transact_provider.dart';
@@ -84,10 +83,6 @@ class AddTransactionFormViewModel extends Notifier<AddTransactionFormModel> {
         categoryId: state.categoryId!,
         categoryName: state.categoryName!,
         amount: state.amount,
-        // srcAccId: state.fromAccountId,
-        // srcAccName: state.fromAccountName,
-        // toAccId: state.toAccountId,
-        // toAccName: state.toAccountName,
         description: state.description,
         planDetail: selectedTransact.type == null ? null : selectedTransact.transact!.planDetail,
       );
@@ -99,14 +94,12 @@ class AddTransactionFormViewModel extends Notifier<AddTransactionFormModel> {
         transact.srcAccId = state.fromAccountId;
         transact.srcAccName = state.fromAccountName;
       }
-      await ref.read(transactionNotifierProvider.notifier).addTransaction(transact);
       if (selectedTransact.transact == null) {
-        await ref.read(accountsProvider.notifier).transfer(transact.srcAccId, transact.toAccId, transact.amount.abs());
+        await ref.read(transactionNotifierProvider.notifier).addTransaction(transact);
       } else {
-        //TODO: rollback transfer
+        await ref.read(transactionNotifierProvider.notifier).updateTransaction(transact);
       }
       ref.read(selectedTransactionProvider.notifier).reset();
-
       state = state.copyWith(
         status: SubmitState.success,
         message: "Đã lưu lại",

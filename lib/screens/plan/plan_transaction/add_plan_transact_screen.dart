@@ -1,36 +1,44 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/shared_widgets/pickers/category_picker/category_picker.dart';
 import 'package:myfinplan/shared_widgets/pickers/recurrence_picker/recurrent_picker.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
-import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/styles.dart';
+import 'package:myfinplan/utils/time/recurrence.dart';
 
 class NewPlanTransactScreen extends ConsumerStatefulWidget {
-  const NewPlanTransactScreen({super.key});
+  final Transaction? prefill;
+  const NewPlanTransactScreen({super.key, this.prefill});
 
   @override
   ConsumerState<NewPlanTransactScreen> createState() => _NewPlanTransactScreenState();
 }
 
-enum PeriodicType {
-  repeat,
-  onetime,
-}
+enum PeriodicType { repeat, onetime }
 
 class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _formData = <String, dynamic>{};
-  late PeriodicType type;
+
+  Recurrence? recur;
+  late bool notified;
+  int? amount;
+  String? categoryId;
+  String? categoryName;
 
   @override
   void initState() {
-    type = PeriodicType.repeat;
-    _formData["isNotified"] = true;
+    notified = true;
+    final prefill = widget.prefill;
+    if (prefill != null) {
+      amount = prefill.amount.abs();
+      categoryId = prefill.categoryId;
+      categoryName = prefill.categoryName;
+    }
     super.initState();
   }
 
@@ -51,22 +59,25 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 AmountFormField(
+                  initValue: amount,
                   label: "Số tiền",
                   onChanged: (value) {
-                    _formData["amount"] = value;
+                    amount = value;
                   },
                 ),
                 const SizedBox(height: 14),
                 CategoryPicker(
+                  initialCategoryName: categoryName,
                   icon: const Icon(Icons.category_rounded),
                   onCategoryChanged: (value) {
-                    _formData["category"] = value;
+                    categoryId = value.id;
+                    categoryName = value.name;
                   },
                 ),
                 const SizedBox(height: 14),
                 RecurPicker(
                   onChanged: (recur) {
-                    _formData["period"] = recur;
+                    this.recur = recur;
                   },
                 ),
                 const SizedBox(height: 14),
@@ -79,10 +90,10 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
                     Expanded(
                       flex: 2,
                       child: Switch(
-                        value: _formData["isNotified"],
+                        value: notified,
                         onChanged: (value) {
                           setState(() {
-                            _formData["isNotified"] = value;
+                            notified = value;
                           });
                         },
                       ),
@@ -128,14 +139,17 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       final newPlanTransact = Transaction.planTransact(
-        planId: getRandomKey(),
+        planId: recur!.toInfoString,
         planTimestamp: DateTime.now(),
-        categoryId: _formData["category"].id,
-        categoryName: _formData["category"].name,
-        planAmount: _formData["amount"],
+        categoryId: categoryId!,
+        categoryName: categoryName!,
+        planAmount: amount!,
       );
-      // await ref.read(transactionNotifierProvider.notifier).scheduleTransaction(newPlanTransact, _formData["period"]);
-      await ref.read(transactionNotifierProvider.notifier).schedule(newPlanTransact, _formData["period"]);
+      if (widget.prefill == null) {
+        await ref.read(transactionNotifierProvider.notifier).schedule(newPlanTransact, recur!);
+      } else {
+        await ref.read(transactionNotifierProvider.notifier).updateSchedule();
+      }
     }
   }
 }
