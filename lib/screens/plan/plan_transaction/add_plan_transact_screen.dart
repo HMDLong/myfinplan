@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/shared_widgets/pickers/category_picker/category_picker.dart';
 import 'package:myfinplan/shared_widgets/pickers/recurrence_picker/recurrent_picker.dart';
@@ -148,7 +148,7 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
       if (widget.prefill == null) {
         await ref.read(transactionNotifierProvider.notifier).schedule(newPlanTransact, recur!);
       } else {
-        await ref.read(transactionNotifierProvider.notifier).updateSchedule();
+        await ref.read(transactionNotifierProvider.notifier).updateSchedule(newPlanTransact);
       }
     }
   }

@@ -37,10 +37,7 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
           children: [
             const Text(
               "Thành phần thu chi",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const Text(
               "Thu chi của tôi cho những gì?",
@@ -64,38 +61,42 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
             const SizedBox(height: 10),
             Consumer(
               builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                return ref.watch(categoryChartDataProvider(widget.timeRange)).when(data: (chartState) {
-                  final filterState = ref.watch(chartFilterStateProvider);
-                  return Column(
-                    children: [
-                      _buildRowLabel(chartState, filterState),
-                      _buildChart(chartState, filterState),
-                    ],
-                  );
-                }, error: (error, _) {
-                  return const Card(
-                    child: SizedBox(
-                      height: 300,
-                      width: double.infinity,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(widgetErrorMessage),
-                        ],
+                return ref.watch(categoryChartDataProvider(widget.timeRange)).when(
+                  data: (chartState) {
+                    final filterState = ref.watch(chartFilterStateProvider);
+                    return Column(
+                      children: [
+                        _buildRowLabel(chartState, filterState),
+                        _buildChart(chartState, filterState),
+                      ],
+                    );
+                  },
+                  error: (error, _) {
+                    return const Card(
+                      child: SizedBox(
+                        height: 300,
+                        width: double.infinity,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(widgetErrorMessage),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }, loading: () {
-                  return const Card(
-                    child: SizedBox(
-                      height: 300,
-                      width: double.infinity,
-                      child: Center(
-                        child: CircularProgressIndicator(),
+                    );
+                  },
+                  loading: () {
+                    return const Card(
+                      child: SizedBox(
+                        height: 300,
+                        width: double.infinity,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
-                    ),
-                  );
-                });
+                    );
+                  },
+                );
               },
             )
           ],

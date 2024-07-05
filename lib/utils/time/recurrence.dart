@@ -95,19 +95,19 @@ class PeriodicRecurrence extends Recurrence {
       };
 
   @override
-  List<DateTime> planOccurences() {
-    final range = TimeRange.nextNofTimeType(TimeType.month, 3);
+  List<DateTime> planOccurences({TimeRange? range}) {
+    final trange = range ?? TimeRange.nextNofTimeType(TimeType.month, 3);
     switch (periodicType) {
       case TimeType.day:
-        return range.getRangeDates().where((date) => true).toList();
+        return trange.getRangeDates().where((date) => true).toList();
       case TimeType.week:
-        return range.getRangeDates().where((date) => example.weekday == date.weekday).toList();
+        return trange.getRangeDates().where((date) => example.weekday == date.weekday).toList();
       case TimeType.month:
-        return range.getRangeDates().where((date) => example.day == date.day).toList();
+        return trange.getRangeDates().where((date) => example.day == date.day).toList();
       case TimeType.year:
-        return range.getRangeDates().where((date) => example.day == date.day && example.month == date.month).toList();
+        return trange.getRangeDates().where((date) => example.day == date.day && example.month == date.month).toList();
       case TimeType.custom:
-        return range.getRangeDates().where((date) => false).toList();
+        return trange.getRangeDates().where((date) => false).toList();
     }
   }
 }

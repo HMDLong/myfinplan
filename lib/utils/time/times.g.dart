@@ -39,5 +39,9 @@ class TimeRangeAdapter extends TypeAdapter<TimeRange> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is TimeRangeAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimeRangeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

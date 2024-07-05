@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_form_model.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/selected_transact_provider.dart';
 import 'package:myfinplan/utils/random.dart';

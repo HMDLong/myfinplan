@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/debit.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
 import 'package:myfinplan/screens/accounts/widgets/account_card.dart';
 import 'package:myfinplan/utils/format.dart';

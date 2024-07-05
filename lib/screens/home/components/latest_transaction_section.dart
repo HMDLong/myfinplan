@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_card.dart';
 
 class LatestTransactionsSection extends ConsumerStatefulWidget {

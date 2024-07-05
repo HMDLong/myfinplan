@@ -7,26 +7,6 @@ final planDistProvider = StateNotifierProvider<PlanDistNotifier, PlanDistributio
   return PlanDistNotifier(ref.watch(planDistRepoProvider));
 });
 
-// class PlanDistNotifier extends ChangeNotifier {
-//   final PlanDistRepository repo;
-
-//   PlanDistNotifier(this.repo);
-
-//   Future<void> init() async {
-//     await repo.setCurrentDist(DistType.d532);
-//   }
-
-//   Future<bool> setCurrentDist(DistType dist) async {
-//     final res = await repo.setCurrentDist(dist);
-//     notifyListeners();
-//     return res;
-//   }
-
-//   Future<PlanDistribution> getCurrentDist() {
-//     return repo.getCurrentDist();
-//   }
-// }
-
 class PlanDistNotifier extends StateNotifier<PlanDistribution> {
   final PlanDistRepository repo;
   PlanDistNotifier(this.repo) : super(Distribution532()) {

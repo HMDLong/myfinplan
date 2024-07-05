@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/debit.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/utils/random.dart';
 import 'package:myfinplan/utils/styles.dart';
@@ -87,9 +87,11 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: SizedBox(
+              child: const SizedBox(
                 width: double.infinity,
-                child: Text("Xác nhận"),
+                child: Center(
+                  child: Text("Xác nhận"),
+                ),
               ),
               onPressed: () {
                 _onSubmit().then((value) {

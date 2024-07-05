@@ -5,6 +5,22 @@ import 'transaction_type.dart';
 
 part 'category.g.dart';
 
+enum Level {
+  must,
+  may,
+  saving,
+  income;
+
+  static Level fromString(String str) {
+    for (var val in Level.values) {
+      if (val.toString() == str) {
+        return val;
+      }
+    }
+    throw Exception("Unrecognized level");
+  }
+}
+
 @HiveType(typeId: 2)
 class Category extends BaseCategory with HiveObjectMixin {
   @HiveField(0)
@@ -22,14 +38,24 @@ class Category extends BaseCategory with HiveObjectMixin {
   @HiveField(3)
   Budget? budget;
 
+  @HiveField(4)
+  String _level;
+
   Category({
     required this.id,
     required this.name,
     required this.icon,
     this.budget,
-  });
+    Level level = Level.may,
+  }) : _level = level.toString();
 
   String get parentId => id.split(".").first;
+
+  Level get level => Level.fromString(_level);
+
+  set level(Level newLevel) {
+    _level = level.toString();
+  }
 
   static TransactionType getType(String categoryId) => switch (categoryId[0]) {
         'e' => TransactionType.expense,
@@ -63,5 +89,5 @@ class Budget {
   });
 
   // Budget.fromJson(Map<String, dynamic> json)
-  // : amount = json['amount'], period = TimeRange.fronJson(json['period']), isRecurrance = json['is_recurrance'];
+  // : amount = json['amount'], period = TimeRange.fromJson(json['period']), isRecurrance = json['is_recurrance'];
 }

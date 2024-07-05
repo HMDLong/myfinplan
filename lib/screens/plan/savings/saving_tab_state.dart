@@ -5,9 +5,9 @@ import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/plan/plan_distribution.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
-import 'package:myfinplan/providers/plan/distributor.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/plan/distributor.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/plan_screen.dart';
 
 class SavingTabStateModel {

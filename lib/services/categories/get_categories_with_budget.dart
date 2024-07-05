@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/base_category.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/category_group.dart';
-import 'package:myfinplan/providers/categories/category_notifier.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/categories/category_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 final getCategoriesWithBudget = FutureProvider((ref) async {

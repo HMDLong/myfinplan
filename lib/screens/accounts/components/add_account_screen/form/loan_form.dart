@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/form/installment_form.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/utils/random.dart';
@@ -105,7 +105,7 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 return null;
               },
             ),
-            const SizedBox(height: 15.0),
+            const SizedBox(height: 10.0),
             AmountFormField(
               label: "Số tiền",
               initValue: amount,
@@ -114,7 +114,7 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 amount = value;
               },
             ),
-            const SizedBox(height: 15.0),
+            const SizedBox(height: 10.0),
             Row(
               children: [
                 const SizedBox(width: 10, height: 20),
@@ -147,6 +147,7 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 const Text("Trả đủ", style: TextStyle(fontSize: 14.0)),
               ],
             ),
+            const SizedBox(height: 10.0),
             (switch (_paymentType) {
               PaymentType.infull => InfullForm(onDataChanged: (duedate, interest) {
                   if (duedate != null) this.duedate = duedate;
@@ -160,6 +161,7 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                     if (term != null) _formData["term"] = term;
                   }),
             }),
+            const SizedBox(height: 10.0),
             Row(
               children: [
                 const Expanded(
@@ -177,6 +179,7 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                 )
               ],
             ),
+            const SizedBox(height: 10.0),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: CupertinoColors.activeBlue,
@@ -184,12 +187,9 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Text("Xác nhận"),
-                ),
+              child: const SizedBox(
+                width: double.infinity,
+                child: Center(child: Text("Xác nhận")),
               ),
               onPressed: () {
                 _onSubmit().then((value) {

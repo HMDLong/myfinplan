@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category_group.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/providers/categories/category_notifier.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/categories/category_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/time/times.dart';
 

@@ -1,9 +1,9 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/transaction/transaction.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/statistics/stat_timerange_provider.dart';
 import 'package:myfinplan/shared_widgets/menu/menu.dart';
 import 'package:myfinplan/utils/format.dart';
@@ -36,7 +36,7 @@ final getTransactionDataProvider = FutureProvider<List<InOutChartData<DateTime, 
   final statTimeRange = ref.watch(statTimeRangeProvider);
   final content = ref.watch(inOutChartContentTypeProvider);
   var transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) {
-    return e.paid && e.transactType == content && statTimeRange.contain(e.timestamp!);
+    return e.paid && e.transactType == content && statTimeRange.contain(e.timestamp);
   }).toList();
   if (transacts.isEmpty) {
     return statTimeRange.getRangeDates().map((e) {
@@ -44,7 +44,7 @@ final getTransactionDataProvider = FutureProvider<List<InOutChartData<DateTime, 
     }).toList();
   }
   final groupByDateData = transacts.fold(<DateTime, int>{}, (previousValue, transact) {
-    final dateOnly = transact.timestamp!.toDateOnly();
+    final dateOnly = transact.timestamp.toDateOnly();
     previousValue[dateOnly] = (previousValue[dateOnly] ?? 0) + transact.amount.abs();
     return previousValue;
   });
@@ -99,49 +99,109 @@ class _MoneyInOutChartState<T extends Account> extends ConsumerState<MoneyInOutC
             },
           ),
           const SizedBox(height: 8),
-          SizedBox(
-            height: widget.chartHeight,
-            child: ref.watch(getTransactionDataProvider).when(
-                  data: (data) {
-                    final content = ref.watch(inOutChartContentTypeProvider);
-                    return SfCartesianChart(
-                      primaryXAxis: CategoryAxis(
-                        plotOffset: 10.0,
-                        labelPlacement: LabelPlacement.onTicks,
-                        labelAlignment: LabelAlignment.center,
-                        interactiveTooltip: const InteractiveTooltip(enable: true),
+          ref.watch(getTransactionDataProvider).when(
+                data: (data) {
+                  if (data.isEmpty) {
+                    return const Center(child: Text(""));
+                  }
+                  final content = ref.watch(inOutChartContentTypeProvider);
+                  final sortedByAmount = List<InOutChartData<DateTime, int>>.from(data)..sort((a, b) => b.y.abs().compareTo(a.y.abs()));
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: widget.chartHeight,
+                        child: SfCartesianChart(
+                          primaryXAxis: CategoryAxis(
+                            plotOffset: 10.0,
+                            labelPlacement: LabelPlacement.onTicks,
+                            labelAlignment: LabelAlignment.center,
+                            interactiveTooltip: const InteractiveTooltip(enable: true),
+                          ),
+                          primaryYAxis: NumericAxis(
+                            numberFormat: NumberFormat.compact(),
+                          ),
+                          tooltipBehavior: TooltipBehavior(enable: true),
+                          zoomPanBehavior: ZoomPanBehavior(
+                            enablePinching: true,
+                            enablePanning: true,
+                            zoomMode: ZoomMode.x,
+                          ),
+                          series: [
+                            ColumnSeries<InOutChartData<DateTime, int>, String>(
+                              name: "Thu chi",
+                              dataSource: data,
+                              xValueMapper: (InOutChartData<DateTime, int> data, _) => Formatter.toMonthDate(data.x),
+                              yValueMapper: (InOutChartData<DateTime, int> data, _) => data.y,
+                              color: _getColor(content),
+                              enableTooltip: true,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(4),
+                                topRight: Radius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      primaryYAxis: NumericAxis(
-                        isVisible: false,
-                        // plotOffset: 5.0,
-                        // majorGridLines: const MajorGridLines(),
-                        // numberFormat: NumberFormat.compact(),
-                      ),
-                      tooltipBehavior: TooltipBehavior(enable: true),
-                      zoomPanBehavior: ZoomPanBehavior(
-                        enablePinching: true,
-                        enablePanning: true,
-                        zoomMode: ZoomMode.x,
-                      ),
-                      series: [
-                        ColumnSeries<InOutChartData<DateTime, int>, String>(
-                          name: "Thu chi",
-                          dataSource: data,
-                          xValueMapper: (InOutChartData<DateTime, int> data, _) => Formatter.toMonthDate(data.x),
-                          yValueMapper: (InOutChartData<DateTime, int> data, _) => data.y,
-                          color: _getColor(content),
-                          enableTooltip: true,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(4),
-                            topRight: Radius.circular(4),
+                      ExpandableNotifier(
+                        child: ScrollOnExpand(
+                          child: Expandable(
+                            collapsed: ExpandableButton(
+                              child: const SizedBox(
+                                child: Icon(
+                                  Icons.arrow_drop_down_sharp,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            expanded: Column(
+                              children: [
+                                _row("Cao nhất", "${Formatter.amountToDecimal(sortedByAmount.first.y)} (${Formatter.toStandartDate(sortedByAmount.first.x)})"),
+                                _row("Thấp nhất", "${Formatter.amountToDecimal(sortedByAmount.last.y)} (${Formatter.toStandartDate(sortedByAmount.last.x)})"),
+                                _row("Trung bình", Formatter.amountToDecimal((sortedByAmount[sortedByAmount.length ~/ 2].y))),
+                                ExpandableButton(
+                                  child: const SizedBox(
+                                    child: Icon(
+                                      Icons.arrow_drop_up_sharp,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                            ),
                           ),
                         ),
-                      ],
-                    );
-                  },
-                  error: (error, _) => Text("$error"),
-                  loading: () => const CircularProgressIndicator(),
-                ),
+                      )
+                    ],
+                  );
+                },
+                error: (error, _) => Text("$error"),
+                loading: () => const CircularProgressIndicator(),
+              ),
+        ],
+      ),
+    );
+  }
+
+  _row(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
           ),
         ],
       ),

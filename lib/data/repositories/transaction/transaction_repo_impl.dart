@@ -3,7 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/data/repositories/transaction/transaction_repo.dart';
-import 'package:myfinplan/services/storage/hive/box_names.dart';
+import 'package:myfinplan/external/storage/hive/box_names.dart';
 
 final transactionRepoProvider = Provider((ref) => TransactionRepositoryImpl());
 

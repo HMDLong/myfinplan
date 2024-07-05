@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/providers/accounts/accounts/account_usecases.dart';
+import 'package:myfinplan/services/accounts/accounts/account_usecases.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
 import 'package:myfinplan/screens/accounts/components/cash_tab/cash_tab.dart';
 import 'package:myfinplan/screens/accounts/components/credit_tab/credit_tab.dart';

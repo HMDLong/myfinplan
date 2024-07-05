@@ -56,7 +56,7 @@ class StatusBox extends StatelessWidget {
   String statusText() {
     final paidState = state;
     return switch (paidState.status) {
-      PaidStatus.upcoming => "Sắp tới ${paidState.value == 0 ? ",hôm nay" : "${paidState.value} ngày"}",
+      PaidStatus.upcoming => "Sắp tới${paidState.value == 0 ? ", hôm nay" : " ${paidState.value} ngày"}",
       PaidStatus.early => "Đã trả ${paidState.value == 0 ? "" : "sớm ${paidState.value} ngày"}",
       PaidStatus.late => "Trả muộn ${paidState.value} ngày",
       PaidStatus.lateNotPay => "Trễ ${paidState.value} ngày",

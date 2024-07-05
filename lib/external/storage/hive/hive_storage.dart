@@ -1,5 +1,5 @@
 import 'package:hive_flutter/adapters.dart';
-import 'package:myfinplan/services/storage/hive/custom_adapters.dart';
+import 'package:myfinplan/external/storage/hive/custom_adapters.dart';
 
 class HiveStorageService {
   Future<void> initialize() async {

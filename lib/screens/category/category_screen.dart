@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
 import 'package:myfinplan/data/models/category/category_group.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/providers/categories/category_notifier.dart';
+import 'package:myfinplan/services/categories/category_notifier.dart';
 import 'package:myfinplan/screens/category/add_category_screen.dart';
 import 'package:myfinplan/utils/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/styles.dart';

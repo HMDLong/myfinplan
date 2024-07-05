@@ -1,17 +1,13 @@
 import 'dart:developer';
-import 'dart:ffi';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/amortizing_info.dart';
-import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
 import 'package:myfinplan/screens/plan/debts/components/provider/providers.dart';
 import 'package:myfinplan/screens/plan/debts/components/strat_picker.dart';
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/recap_screen_components/goals_section.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/format.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class DebtManageTab extends ConsumerStatefulWidget {
   const DebtManageTab({super.key});
@@ -106,7 +102,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text("Tổng số dư"),
+                                    const Text("Tổng dư nợ"),
                                     Text(Formatter.amountToDecimal(info.totalBalance.toInt())),
                                   ],
                                 ),

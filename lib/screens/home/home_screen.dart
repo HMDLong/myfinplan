@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/providers/accounts/accounts/account_usecases.dart';
+import 'package:myfinplan/services/accounts/accounts/account_usecases.dart';
 import 'package:myfinplan/screens/home/components/account_summary_section.dart';
 import 'package:myfinplan/screens/home/components/budget_carousel.dart';
 import 'package:myfinplan/screens/home/components/latest_transaction_section.dart';

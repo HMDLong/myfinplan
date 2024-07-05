@@ -40,7 +40,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
   @override
   Widget build(BuildContext context) {
     ref.listen(addTransactFormVMProvider, (prevState, newState) {
-      if(prevState != null && prevState.submitState == newState.submitState) {
+      if (prevState != null && prevState.submitState == newState.submitState) {
         return;
       }
       switch (newState.submitState) {

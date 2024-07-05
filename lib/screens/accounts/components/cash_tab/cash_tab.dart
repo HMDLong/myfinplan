@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/cash.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/screens/accounts/components/cash_tab/cash_card.dart';
 import 'package:myfinplan/shared_widgets/graphs/balance_chart.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_list.dart';

@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/schedule_notification.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/personalize/components/gen_data.dart';
-import 'package:myfinplan/services/notification/notification_service_provider.dart';
+import 'package:myfinplan/external/notification/notification_service_provider.dart';
 import 'package:myfinplan/utils/styles.dart';
 
 class DemoPanel extends ConsumerWidget {
@@ -109,7 +109,7 @@ class DemoPanel extends ConsumerWidget {
     // final notiService = ref.read(notificationServiceProvider);
 
     // notiService.triggerRandomNotification();
-    ref.read(transactionNotifierProvider).updateSchedule();
+    // ref.read(transactionNotifierProvider).updateSchedule();
   }
 
   void cancelAll(WidgetRef ref) {

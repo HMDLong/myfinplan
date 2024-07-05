@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/providers/plan/distributor.dart';
+import 'package:myfinplan/services/plan/distributor.dart';
 import 'package:myfinplan/screens/plan/summary/components/plan_picking/plan_picker_screen.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 
 final totalBalanceProvider = FutureProvider((ref) async {
   final accounts = await ref.watch(accountsProvider).getAllAccount();

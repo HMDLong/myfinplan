@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/credit.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/shared_widgets/pickers/date_picker.dart';
 import 'package:myfinplan/utils/random.dart';
@@ -172,7 +172,16 @@ class _NewCreditFormState extends ConsumerState<NewCreditForm> {
             Align(
               alignment: FractionalOffset.bottomCenter,
               child: ElevatedButton(
-                child: const Text("Xác nhận"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CupertinoColors.activeBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const SizedBox(
+                  width: double.infinity,
+                  child: Center(child: Text("Xác nhận")),
+                ),
                 onPressed: () {
                   _onSubmit().then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(CustomSnackbar.success("Thêm thành công"));

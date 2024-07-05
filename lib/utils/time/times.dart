@@ -41,7 +41,7 @@ class TimeRange extends Equatable {
     return getNDaysBefore(DateTime.now(), n);
   }
 
-  /// create a custom type [TimeRange] that span [n] instance of [TimeType]
+  /// create a custom type [TimeRange] that span the [n] next instance of [TimeType]
   /// E.g: A range of "next 6 months" => [type]=[TimeType.month] and [n]=6
   factory TimeRange.nextNofTimeType(TimeType type, int n, {bool includeCurrent = true}) {
     assert(n > 0);
@@ -52,6 +52,21 @@ class TimeRange extends Equatable {
     var last = begin;
     for (var i = 1; i <= n; i++) {
       last = last.next();
+    }
+    return TimeRange(start: begin.start, end: last.end, timeType: TimeType.custom);
+  }
+
+  /// create a custom type [TimeRange] that span the [n] previous instance of [TimeType]
+  /// E.g: A range of "last 6 months" => [type]=[TimeType.month] and [n]=6
+  factory TimeRange.lastNofTimeType(TimeType type, int n, {bool includeCurrent = true}) {
+    assert(n > 0);
+    var last = TimeRange.rangeByType(type);
+    if (!includeCurrent) {
+      last = last.previous();
+    }
+    var begin = last;
+    for (var i = 1; i <= n; i++) {
+      begin = begin.previous();
     }
     return TimeRange(start: begin.start, end: last.end, timeType: TimeType.custom);
   }
@@ -73,6 +88,12 @@ class TimeRange extends Equatable {
         return "${Formatter.toFullVnDate(start)}  ~  ${Formatter.toFullVnDate(end)}";
     }
   }
+
+  @override
+  List<Object?> get props => [start, end, timeType];
+
+  @override
+  bool? get stringify => true;
 
   /// Check if a [date] is between this range
   bool contain(DateTime date) {
@@ -110,6 +131,7 @@ class TimeRange extends Equatable {
     return List<DateTime>.generate(rangeDuration + 1, (index) => start.add(Duration(days: index)));
   }
 
+  /// Return a random day with this range
   DateTime randomDay() {
     final rangeDates = getRangeDates();
     return rangeDates[Random().nextInt(rangeDates.length)];
@@ -164,10 +186,4 @@ class TimeRange extends Equatable {
     }
     throw UnimplementedError("Currently only usable for type=[TimeType.month, TimeType.week]");
   }
-
-  @override
-  List<Object?> get props => [start, end, timeType];
-
-  @override
-  bool? get stringify => true;
 }

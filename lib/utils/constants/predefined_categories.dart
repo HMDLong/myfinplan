@@ -17,6 +17,11 @@ final categoryGroups = <String, ParentCategory>{
   "t1": ParentCategory(id: "t1", name: "Chuyển khoản", icon: CustomIconData.fromMaterialIconData(Icons.currency_pound_sharp)),
 };
 
+class SpecialCategory {
+  static String get saving => "t1.3";
+  static String get loanPayment => "t1.1";
+}
+
 final predefinedCategories = <List<dynamic>>[
   //
   ["e1.1", "Tiền thuê", Icons.house],
@@ -81,8 +86,8 @@ final predefinedCategories = <List<dynamic>>[
   ["i1.3", "Cho thuê", Icons.currency_pound_sharp],
   ["i1.4", "Thu nhập khác", Icons.currency_pound_sharp],
   //
-  ["t1.1", "Trả nợ", Icons.currency_pound_sharp],
+  [SpecialCategory.loanPayment, "Trả nợ", Icons.currency_pound_sharp],
   ["t1.2", "Rút tiền mặt", Icons.currency_pound_sharp],
-  ["t1.3", "Tiết kiệm", Icons.currency_pound_sharp],
+  [SpecialCategory.saving, "Tiết kiệm", Icons.currency_pound_sharp],
   ["t1.4", "Chuyển khoản khác", Icons.currency_pound_sharp],
 ];

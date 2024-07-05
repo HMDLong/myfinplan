@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/plan/plan_distribution.dart';
-import 'package:myfinplan/providers/plan/distributor.dart';
+import 'package:myfinplan/services/plan/distributor.dart';
 import 'package:myfinplan/utils/constants/strings.dart';
 import 'package:myfinplan/utils/styles.dart';
 

@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/shared_widgets/pickers/timestamp_picker.dart';
 import 'package:myfinplan/utils/random.dart';
@@ -270,10 +270,20 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                 deadline = value;
               },
             ),
+            const SizedBox(height: 16),
             Align(
               alignment: FractionalOffset.bottomCenter,
               child: ElevatedButton(
-                child: const Text("Xác nhận"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CupertinoColors.activeBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const SizedBox(
+                  width: double.infinity,
+                  child: Center(child: Text("Xác nhận")),
+                ),
                 onPressed: () {
                   _onSubmit().then((done) {
                     if (!done) {

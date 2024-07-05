@@ -1,15 +1,17 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/providers/accounts/accounts/account_usecases.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/account_usecases.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/time/times.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -98,59 +100,122 @@ final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<D
 class _BalanceChartState<T extends Account> extends ConsumerState<BalanceChart> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.chartHeight,
-      child: ref
-          .watch(getTransactionDataProvider(BalanceChartInfo(
+    return ref
+        .watch(getTransactionDataProvider(
+          BalanceChartInfo(
             timeRange: widget.timeRange,
             accountId: widget.account?.id,
-          )))
-          .when(
-            data: (data) {
-              return SfCartesianChart(
-                primaryXAxis: CategoryAxis(
-                  plotOffset: 10.0,
-                  labelPlacement: LabelPlacement.onTicks,
-                  labelAlignment: LabelAlignment.center,
+          ),
+        ))
+        .when(
+          data: (data) {
+            final sortedByAmount = List<BalanceChartData<DateTime, int>>.from(data)..sort((a, b) => b.y.compareTo(a.y));
+            final sortedByTime = List<BalanceChartData<DateTime, int>>.from(data)..sort((a, b) => a.x.compareTo(b.x));
+            return Column(
+              children: [
+                SizedBox(
+                  height: widget.chartHeight,
+                  child: SfCartesianChart(
+                    primaryXAxis: CategoryAxis(
+                      plotOffset: 10.0,
+                      labelPlacement: LabelPlacement.onTicks,
+                      labelAlignment: LabelAlignment.center,
+                    ),
+                    primaryYAxis: NumericAxis(
+                      axisLine: const AxisLine(width: 0),
+                      plotOffset: 4.0,
+                      majorGridLines: const MajorGridLines(),
+                      numberFormat: NumberFormat.compact(),
+                    ),
+                    trackballBehavior: TrackballBehavior(
+                      enable: true,
+                      shouldAlwaysShow: true,
+                      lineDashArray: const [10, 10],
+                      activationMode: ActivationMode.singleTap,
+                      tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+                    ),
+                    zoomPanBehavior: ZoomPanBehavior(
+                      enablePinching: true,
+                      enablePanning: true,
+                      zoomMode: ZoomMode.x,
+                    ),
+                    series: [
+                      AreaSeries<BalanceChartData<DateTime, int>, String>(
+                        dataSource: data,
+                        xValueMapper: (BalanceChartData<DateTime, int> data, _) => Formatter.toMonthDate(data.x),
+                        yValueMapper: (BalanceChartData<DateTime, int> data, _) => data.y,
+                        borderColor: CupertinoColors.activeBlue,
+                        borderWidth: 1,
+                        enableTooltip: true,
+                        gradient: LinearGradient(
+                          colors: [Colors.blue.shade50, Colors.blue.shade200, Colors.blue],
+                          stops: const [0.3, 0.7, 1.0],
+                          transform: const GradientRotation(3 * math.pi / 2),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                primaryYAxis: NumericAxis(
-                  axisLine: const AxisLine(width: 0),
-                  plotOffset: 4.0,
-                  majorGridLines: const MajorGridLines(),
-                  numberFormat: NumberFormat.compact(),
-                ),
-                trackballBehavior: TrackballBehavior(
-                  enable: true,
-                  shouldAlwaysShow: true,
-                  lineDashArray: const [10, 10],
-                  activationMode: ActivationMode.singleTap,
-                  tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
-                ),
-                zoomPanBehavior: ZoomPanBehavior(
-                  enablePinching: true,
-                  enablePanning: true,
-                  zoomMode: ZoomMode.x,
-                ),
-                series: [
-                  AreaSeries<BalanceChartData<DateTime, int>, String>(
-                    dataSource: data,
-                    xValueMapper: (BalanceChartData<DateTime, int> data, _) => Formatter.toMonthDate(data.x),
-                    yValueMapper: (BalanceChartData<DateTime, int> data, _) => data.y,
-                    borderColor: CupertinoColors.activeBlue,
-                    borderWidth: 1,
-                    enableTooltip: true,
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade50, Colors.blue.shade200, Colors.blue],
-                      stops: const [0.3, 0.7, 1.0],
-                      transform: const GradientRotation(3 * math.pi / 2),
+                ExpandableNotifier(
+                  child: ScrollOnExpand(
+                    child: Expandable(
+                      collapsed: ExpandableButton(
+                        child: const SizedBox(
+                          child: Icon(
+                            Icons.arrow_drop_down_sharp,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      expanded: Column(
+                        children: [
+                          _row("Cao nhất", "${Formatter.amountToDecimal(sortedByAmount.first.y)} (${Formatter.toStandartDate(sortedByAmount.first.x)})"),
+                          _row("Thấp nhất", "${Formatter.amountToDecimal(sortedByAmount.last.y)} (${Formatter.toStandartDate(sortedByAmount.last.x)})"),
+                          _row("Trung bình", Formatter.amountToDecimal((sortedByTime.last.y - sortedByTime.first.y) ~/ sortedByTime.length)),
+                          ExpandableButton(
+                            child: const SizedBox(
+                              child: Icon(
+                                Icons.arrow_drop_up_sharp,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              );
-            },
-            error: (error, _) => Text("$error"),
-            loading: () => const CircularProgressIndicator(),
+                )
+              ],
+            );
+          },
+          error: (error, _) => Text("$error"),
+          loading: () => const CircularProgressIndicator(),
+        );
+  }
+
+  _row(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            ),
           ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

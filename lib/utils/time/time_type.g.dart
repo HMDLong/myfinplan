@@ -1,4 +1,10 @@
-part of "time_type.dart";
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'time_type.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
 
 class TimeTypeAdapter extends TypeAdapter<TimeType> {
   @override
@@ -47,5 +53,9 @@ class TimeTypeAdapter extends TypeAdapter<TimeType> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is TimeTypeAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimeTypeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

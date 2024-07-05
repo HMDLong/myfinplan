@@ -6,7 +6,7 @@ import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/time/date_time_ext.dart';
 import 'dart:developer' as dev;
 
-import 'package:myfinplan/utils/time/recurrence.dart';
+// import 'package:myfinplan/utils/time/recurrence.dart';
 
 List<NotificationChannel> channels = [
   NotificationChannel(
@@ -59,28 +59,28 @@ class NotificationService {
   @pragma("vm:entry-point")
   static Future<void> onDismissActionReceivedMethod(ReceivedAction receivedAction) async {}
 
-  void scheduleNotification(ScheduledNotification noti, {bool demo = true}) {
-    AwesomeNotifications().createNotification(
-      schedule: demo
-          ? NotificationInterval(interval: 120)
-          : switch (noti.type) {
-              Periodic.daily => NotificationAndroidCrontab.daily(referenceDateTime: noti.referenceDate),
-              Periodic.weekly => NotificationAndroidCrontab.weekly(referenceDateTime: noti.referenceDate),
-              Periodic.monthly => NotificationAndroidCrontab.monthly(referenceDateTime: noti.referenceDate),
-              Periodic.yearly => NotificationAndroidCrontab.yearly(referenceDateTime: noti.referenceDate),
-              Periodic.onetime => NotificationAndroidCrontab.fromDate(date: noti.referenceDate),
-              Periodic.custom => null,
-            },
-      content: NotificationContent(
-        id: 1,
-        channelKey: channels[0].channelKey!,
-        notificationLayout: NotificationLayout.BigText,
-        title: noti.title,
-        body: noti.content,
-        payload: noti.payload,
-      ),
-    );
-  }
+  // void scheduleNotification(ScheduledNotification noti, {bool demo = true}) {
+  //   AwesomeNotifications().createNotification(
+  //     schedule: demo
+  //         ? NotificationInterval(interval: 120)
+  //         : switch (noti.type) {
+  //             Periodic.daily => NotificationAndroidCrontab.daily(referenceDateTime: noti.referenceDate),
+  //             Periodic.weekly => NotificationAndroidCrontab.weekly(referenceDateTime: noti.referenceDate),
+  //             Periodic.monthly => NotificationAndroidCrontab.monthly(referenceDateTime: noti.referenceDate),
+  //             Periodic.yearly => NotificationAndroidCrontab.yearly(referenceDateTime: noti.referenceDate),
+  //             Periodic.onetime => NotificationAndroidCrontab.fromDate(date: noti.referenceDate),
+  //             Periodic.custom => null,
+  //           },
+  //     content: NotificationContent(
+  //       id: 1,
+  //       channelKey: channels[0].channelKey!,
+  //       notificationLayout: NotificationLayout.BigText,
+  //       title: noti.title,
+  //       body: noti.content,
+  //       payload: noti.payload,
+  //     ),
+  //   );
+  // }
 
   // Schedule a list of notifications at the designated date
   Future<void> scheduleNotifications(List<ScheduledNotification> notis) async {

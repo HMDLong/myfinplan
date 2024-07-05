@@ -6,10 +6,10 @@ import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/models/category/transaction_type.dart';
 import 'package:myfinplan/data/models/plan/plan_distribution.dart';
-import 'package:myfinplan/providers/accounts/accounts/accounts_notifier.dart';
-import 'package:myfinplan/providers/plan/debt_strat.dart';
-import 'package:myfinplan/providers/plan/distributor.dart';
-import 'package:myfinplan/providers/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/plan/debt_strat.dart';
+import 'package:myfinplan/services/plan/distributor.dart';
+import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/providers/categories/get_categories_with_budget.dart';
+import 'package:myfinplan/services/categories/get_categories_with_budget.dart';
 import 'package:myfinplan/shared_widgets/cards/budget_card.dart';
 
 class BudgetsCarousel extends ConsumerStatefulWidget {
