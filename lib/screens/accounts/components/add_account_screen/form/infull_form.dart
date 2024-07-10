@@ -36,7 +36,7 @@ class _InfullFormState extends State<InfullForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                decoration: formFieldDecor(
+                decoration: StyleRes.formFieldDecor(
                   icon: const Icon(CupertinoIcons.percent),
                   label: const Text("Lãi suất"),
                 ),

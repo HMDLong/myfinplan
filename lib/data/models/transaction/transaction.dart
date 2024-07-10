@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
 import 'package:myfinplan/utils/random.dart';
@@ -16,20 +16,14 @@ class Transaction extends HiveObject {
   @HiveField(2)
   String categoryId;
   @HiveField(3)
-  String categoryName;
-  @HiveField(4)
   int _amount;
+  @HiveField(4)
+  String? from;
   @HiveField(5)
-  String? srcAccId;
+  String? to;
   @HiveField(6)
-  String? srcAccName;
-  @HiveField(7)
-  String? toAccId;
-  @HiveField(8)
-  String? toAccName;
-  @HiveField(9)
   TransactPlanDetail? planDetail;
-  @HiveField(11)
+  @HiveField(7)
   String? description;
 
   Transaction({
@@ -37,11 +31,13 @@ class Transaction extends HiveObject {
     required this.timestamp,
     int amount = 0,
     required this.categoryId,
-    required this.categoryName,
-    this.srcAccId,
-    this.srcAccName,
-    this.toAccId,
-    this.toAccName,
+    this.from,
+    this.to,
+    // required this.categoryName,
+    // this.srcAccId,
+    // this.srcAccName,
+    // this.toAccId,
+    // this.toAccName,
     this.description,
     this.planDetail,
   }) : _amount = amount.abs();
@@ -73,11 +69,13 @@ class Transaction extends HiveObject {
       amount: 0,
       timestamp: planTimestamp,
       categoryId: categoryId,
-      categoryName: categoryName,
-      srcAccId: transactAccId,
-      srcAccName: transactAccName,
-      toAccId: targetAccId,
-      toAccName: targetAccName,
+      // categoryName: categoryName,
+      // srcAccId: transactAccId,
+      // srcAccName: transactAccName,
+      // toAccId: targetAccId,
+      // toAccName: targetAccName,
+      from: transactAccId,
+      to: targetAccId,
       planDetail: TransactPlanDetail(
         id: planId,
         planAmount: planAmount,
@@ -88,17 +86,20 @@ class Transaction extends HiveObject {
 
   Transaction copyWith({
     DateTime? planTime,
+    String? id,
   }) {
     return Transaction(
-      id: getRandomKey(),
+      id: id ?? getRandomKey(),
       timestamp: timestamp,
       amount: amount,
       categoryId: categoryId,
-      categoryName: categoryName,
-      srcAccId: srcAccId,
-      srcAccName: srcAccName,
-      toAccId: srcAccId,
-      toAccName: toAccName,
+      from: from,
+      to: to,
+      // categoryName: categoryName,
+      // srcAccId: srcAccId,
+      // srcAccName: srcAccName,
+      // toAccId: srcAccId,
+      // toAccName: toAccName,
       planDetail: planDetail?.copyWith(planTime: planTime) ?? planDetail,
     );
   }

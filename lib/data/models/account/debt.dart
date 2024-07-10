@@ -42,6 +42,7 @@ class Loan extends Account {
     if (inAmount > amount.abs()) {
       throw OverflowLoanPaymentException();
     }
+    amount += inAmount;
   }
 
   int get balance => amount.abs();

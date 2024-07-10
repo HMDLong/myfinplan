@@ -3,16 +3,17 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/plan/plan_distribution.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
+// import 'package:myfinplan/data/models/plan/plan_distribution.dart';
 import 'package:myfinplan/data/models/plan/plan_transact_detail.dart';
 import 'package:myfinplan/data/models/plan/saving_info.dart';
 import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
-import 'package:myfinplan/services/plan/distributor.dart';
+import 'package:myfinplan/services/plan/distributor/distributor.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/recap_screen_components/distribution_section.dart';
-import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
@@ -90,13 +91,13 @@ final goalsDetailProvider = FutureProvider((ref) async {
   final totalIncome = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income)).where((e) => selectedTimeRange.contain(e.timestamp ?? e.planDetail!.planTime));
   final actualIncome = totalIncome.where((element) => element.paid).fold(0, (prev, e) => prev + e.amount);
   final planIncome = totalIncome.where((element) => element.planDetail != null).fold(0, (prev, e) => prev + e.amount);
-  final planSaving = max(planIncome, actualIncome) * dist.dist[ExpenseLevel.saving]!;
+  final planSaving = max(planIncome, actualIncome) * dist.dist[Level.saving]!;
   return SavingsInfo(
     entries: savings.map((e) {
       return SavingEntry(
         account: e,
         thisMonthActualSaving: savingTransacts.where((transact) {
-          return transact.paid && transact.toAccId == e.id;
+          return transact.paid && transact.to == e.id;
         }).fold(0, (prev, transact) => prev + transact.amount),
       );
     }).toList(),

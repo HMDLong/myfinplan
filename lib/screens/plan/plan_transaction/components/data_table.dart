@@ -2,12 +2,12 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/plan/plan_transact_detail.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/components/data_table_filter.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/plan_transact_detail_screen.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/providers/plan_transact_detail_provider.dart';
-import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 

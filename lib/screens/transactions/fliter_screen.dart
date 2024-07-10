@@ -31,7 +31,7 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultStyledAppBar(
+      appBar: StyleRes.defaultStyledAppBar(
         title: "Bộ lọc",
         onBackPressed: () => Navigator.of(context).pop(),
       ),

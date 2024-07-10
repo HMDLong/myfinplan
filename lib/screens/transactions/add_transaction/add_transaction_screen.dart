@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_form_model.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_form_vm.dart';
@@ -39,6 +39,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
 
   @override
   Widget build(BuildContext context) {
+    // React to form submit state
     ref.listen(addTransactFormVMProvider, (prevState, newState) {
       if (prevState != null && prevState.submitState == newState.submitState) {
         return;
@@ -66,12 +67,13 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
             },
           ).then((success) {
             if (success) {
+              log("done pop");
               Navigator.of(context).pop();
             }
           });
           break;
         case SubmitState.success:
-          log("pop");
+          log("success pop");
           Navigator.of(context).pop(true);
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
@@ -85,8 +87,9 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
           break;
       }
     });
+    // Build
     return Scaffold(
-      appBar: defaultStyledAppBar(
+      appBar: StyleRes.defaultStyledAppBar(
         title: "Thông tin bản ghi",
         onBackPressed: () {
           ref.read(selectedTransactionProvider.notifier).reset();
@@ -124,15 +127,8 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                   ),
                   const SizedBox(height: 15),
                   CategoryPicker(
-                    // initialCategoryName: widget.prefill?.categoryName,
-                    initialCategoryName: prefill.categoryName,
+                    initialCategory: prefill.categoryId,
                     onCategoryChanged: (value) {
-                      // setState(() {
-                      //   categoryId = value.id;
-                      //   categoryName = value.name;
-                      //   transactionType = value.type;
-                      // });
-                      log("${value.id},${value.name}");
                       ref.read(addTransactFormVMProvider.notifier).setFormData(
                             categoryId: value.id,
                             categoryName: value.name,
@@ -147,7 +143,6 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                     icon: const Icon(CupertinoIcons.circle_grid_hex),
                   ),
                   const SizedBox(height: 15),
-                  // ..._accountPicker(),
                   Consumer(
                     builder: (BuildContext context, WidgetRef ref, Widget? child) {
                       final model = ref.watch(addTransactFormVMProvider);
@@ -158,7 +153,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                                 label: "Tài khoản nguồn",
                                 payableOnly: true,
                                 // initAccountName: widget.prefill?.srcAccName,
-                                initAccountName: prefill.fromAccountName,
+                                initialAccount: prefill.fromAccountId,
                                 onAccountChanged: (Account value) {
                                   // fromAccountId = value.id;
                                   // fromAccountName = value.title;
@@ -168,9 +163,10 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                                       );
                                 },
                               ),
+                              const SizedBox(height: 15),
                               AccountPicker(
                                 label: "Tài khoản đích",
-                                initAccountName: prefill.toAccountName,
+                                initialAccount: prefill.toAccountId,
                                 // initAccountName: widget.prefill?.toAccName,
                                 onAccountChanged: (Account value) {
                                   // toAccountId = value.id;
@@ -187,7 +183,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                             payableOnly: true,
                             label: "Tài khoản đích",
                             // initAccountName: widget.prefill?.srcAccName,
-                            initAccountName: prefill.toAccountName,
+                            initialAccount: prefill.toAccountId,
                             onAccountChanged: (Account value) {
                               // toAccountId = value.id;
                               // toAccountName = value.title;
@@ -201,7 +197,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                             payableOnly: true,
                             label: "Tài khoản nguồn",
                             // initAccountName: widget.prefill?.srcAccName,
-                            initAccountName: prefill.fromAccountName,
+                            initialAccount: prefill.fromAccountId,
                             onAccountChanged: (Account value) {
                               // fromAccountId = value.id;
                               // fromAccountName = value.title;
@@ -219,7 +215,7 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
                   TextFormField(
                     initialValue: prefill.description,
                     keyboardType: TextInputType.text,
-                    decoration: formFieldDecor(
+                    decoration: StyleRes.formFieldDecor(
                       icon: const Icon(Icons.textsms_outlined),
                       label: const Text("Mô tả"),
                     ),
@@ -239,6 +235,12 @@ class _AddOrEditTransactScreenState extends ConsumerState<AddOrEditTransactScree
           children: [
             Expanded(
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CupertinoColors.activeBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 child: const Text("Xác nhận"),
                 onPressed: () {
                   _formKey.currentState!.save();

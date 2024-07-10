@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/repositories/category/category_repo.dart';
 
 final categoryRepoProvider = Provider((_) => CategoryRepositoryImpl());

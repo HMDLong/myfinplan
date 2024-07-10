@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/base_category.dart';
-import 'package:myfinplan/data/models/category/category.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
+import 'package:myfinplan/data/models/category/base/base_category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
 import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
-import 'package:myfinplan/services/plan/distributor.dart';
-import 'package:myfinplan/services/transactions/transaction_notifier.dart';
+import 'package:myfinplan/services/plan/distributor/distributor.dart';
 import 'package:myfinplan/screens/accounts/accounts_screen.dart';
 import 'package:myfinplan/screens/home/home_screen.dart';
 import 'package:myfinplan/screens/personalize/personal_screen.dart';
@@ -15,7 +15,7 @@ import 'package:myfinplan/screens/plan/plan_screen.dart';
 import 'package:myfinplan/screens/statistics/stats_screen.dart';
 import 'package:myfinplan/external/notification/notification_service.dart';
 import 'package:myfinplan/external/storage/hive/hive_storage.dart';
-import 'package:myfinplan/utils/constants/predefined_categories.dart';
+// import 'package:myfinplan/constants/predefined_categories.dart';
 import "package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart";
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as dev;
@@ -81,7 +81,12 @@ class _MyAppState extends ConsumerState<MyApp> {
     // 1. save pre defined categories
     dev.log("Start init...");
     for (var cateData in predefinedCategories) {
-      final cate = Category(id: cateData[0], name: cateData[1], icon: CustomIconData.fromMaterialIconData(cateData[2]));
+      final cate = Category(
+        id: cateData[0],
+        name: cateData[1],
+        icon: CustomIconData.fromMaterialIconData(cateData[2]),
+        level: cateData[3],
+      );
       ref.read(categoryNotifierProvider.notifier).addCategory(cate);
     }
     // 2. init accounts with 1 cash account
@@ -109,7 +114,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     dev.log("Should update. Updating...");
     // If at the end of month, update infos
     // 1. Create new plan-transactions
-    ref.read(transactionNotifierProvider.notifier).updatePlanTransacts();
+    // ref.read(transactionNotifierProvider.notifier).updatePlanTransacts();
     // 2. Update loans infos
     ref.read(accountsProvider.notifier).updateAccountsStatus();
     // Lastly, update new last_update date.

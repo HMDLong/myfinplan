@@ -1,5 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_form_model.dart';
@@ -81,22 +83,24 @@ class AddTransactionFormViewModel extends Notifier<AddTransactionFormModel> {
         id: state.recordId ?? getRandomKey(),
         timestamp: state.timestamp!,
         categoryId: state.categoryId!,
-        categoryName: state.categoryName!,
+        // categoryName: state.categoryName!,
         amount: state.amount,
         description: state.description,
         planDetail: selectedTransact.type == null ? null : selectedTransact.transact!.planDetail,
       );
       if (transact.transactType != TransactionType.expense) {
-        transact.toAccId = state.toAccountId;
-        transact.toAccName = state.toAccountName;
+        transact.to = state.toAccountId;
+        // transact.toAccName = state.toAccountName;
       }
       if (transact.transactType != TransactionType.income) {
-        transact.srcAccId = state.fromAccountId;
-        transact.srcAccName = state.fromAccountName;
+        transact.from = state.fromAccountId;
+        // transact.srcAccName = state.fromAccountName;
       }
       if (selectedTransact.transact == null) {
+        log("adding $transact");
         await ref.read(transactionNotifierProvider.notifier).addTransaction(transact);
       } else {
+        log("updating $transact");
         await ref.read(transactionNotifierProvider.notifier).updateTransaction(transact);
       }
       ref.read(selectedTransactionProvider.notifier).reset();

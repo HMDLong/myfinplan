@@ -1,32 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/shared_widgets/pickers/accounts_picker/account_bottom_sheet.dart';
 import 'package:myfinplan/utils/styles.dart';
 
-class AccountPicker extends StatefulWidget {
+class AccountPicker extends ConsumerStatefulWidget {
   final String? label;
   final void Function(Account value) onAccountChanged;
-  final String? initAccountName;
+  final String? initialAccount;
   final bool payableOnly;
   const AccountPicker({
     super.key,
     this.label,
     required this.onAccountChanged,
-    this.initAccountName,
+    this.initialAccount,
     this.payableOnly = false,
   });
 
   @override
-  State<AccountPicker> createState() => _AccountPickerState();
+  ConsumerState<AccountPicker> createState() => _AccountPickerState();
 }
 
-class _AccountPickerState extends State<AccountPicker> {
-  late final TextEditingController _controller;
+class _AccountPickerState extends ConsumerState<AccountPicker> {
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
-    _controller = TextEditingController(text: widget.initAccountName);
+    if (widget.initialAccount != null) {
+      ref.read(accountsProvider).getAccountById(widget.initialAccount!).then((value) {
+        _controller.text = value?.title ?? "";
+      });
+    }
     super.initState();
   }
 
@@ -41,7 +47,7 @@ class _AccountPickerState extends State<AccountPicker> {
     return TextFormField(
       controller: _controller,
       readOnly: true,
-      decoration: formFieldDecor(
+      decoration: StyleRes.formFieldDecor(
         icon: const Icon(Boxicons.bx_wallet),
         label: Text(widget.label ?? "Tài khoản nguồn"),
       ),

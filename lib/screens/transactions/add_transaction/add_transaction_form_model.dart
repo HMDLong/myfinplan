@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 
 enum SubmitState { idle, working, success, error }
@@ -38,33 +38,43 @@ class AddTransactionFormModel with EquatableMixin {
     this.message = "",
   });
 
-  factory AddTransactionFormModel.fromPlanTransact(Transaction planTransact) {
+  factory AddTransactionFormModel.fromPlanTransact(
+    Transaction planTransact, {
+    String? categoryName,
+    String? fromAccName,
+    String? toAccName,
+  }) {
     assert(planTransact.planDetail != null);
     return AddTransactionFormModel(
       recordId: planTransact.id,
       amount: planTransact.planDetail!.planAmount.abs(),
       categoryId: planTransact.categoryId,
-      categoryName: planTransact.categoryName,
+      categoryName: categoryName,
       timestamp: planTransact.planDetail!.planTime,
-      fromAccountId: planTransact.srcAccId,
-      fromAccountName: planTransact.srcAccName,
-      toAccountId: planTransact.toAccId,
-      toAccountName: planTransact.toAccName,
+      fromAccountId: planTransact.from,
+      fromAccountName: fromAccName,
+      toAccountId: planTransact.to,
+      toAccountName: toAccName,
       description: planTransact.description,
     );
   }
 
-  factory AddTransactionFormModel.fromTransact(Transaction planTransact) {
+  factory AddTransactionFormModel.fromTransact(
+    Transaction planTransact, {
+    String? categoryName,
+    String? fromAccName,
+    String? toAccName,
+  }) {
     return AddTransactionFormModel(
       recordId: planTransact.id,
       amount: planTransact.amount.abs(),
       categoryId: planTransact.categoryId,
-      categoryName: planTransact.categoryName,
+      categoryName: categoryName,
       timestamp: planTransact.timestamp,
-      fromAccountId: planTransact.srcAccId,
-      fromAccountName: planTransact.srcAccName,
-      toAccountId: planTransact.toAccId,
-      toAccountName: planTransact.toAccName,
+      fromAccountId: planTransact.from,
+      fromAccountName: fromAccName,
+      toAccountId: planTransact.to,
+      toAccountName: toAccName,
       description: planTransact.description,
     );
   }

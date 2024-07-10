@@ -7,7 +7,7 @@ import 'package:myfinplan/screens/plan/savings/saving_tab.dart';
 import 'package:myfinplan/screens/plan/schedule/schedule_list_tab.dart';
 import 'package:myfinplan/screens/plan/summary/components/plan_timerange_picker.dart';
 import 'package:myfinplan/screens/plan/summary/plan_summary_tab.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
@@ -20,11 +20,11 @@ class PlanScreen extends StatefulWidget {
 }
 
 final planTabBarItems = [
-  const Tab(child: Text(planSummaryTabLabel)),
-  const Tab(child: Text(planScheduleTabLabel)),
-  const Tab(child: Text(planTransactionTabLabel)),
-  const Tab(child: Text(planSavingTabLabel)),
-  const Tab(child: Text(planDebtTabLabel)),
+  const Tab(child: Text(StringRes.planSummaryTabLabel)),
+  const Tab(child: Text(StringRes.planScheduleTabLabel)),
+  const Tab(child: Text(StringRes.planTransactionTabLabel)),
+  const Tab(child: Text(StringRes.planSavingTabLabel)),
+  const Tab(child: Text(StringRes.planDebtTabLabel)),
 ];
 
 final planTimeRangeProvider = StateProvider((ref) => TimeRange.rangeByType(TimeType.month));
@@ -41,8 +41,8 @@ class _PlanScreenState extends State<PlanScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultStyledAppBar(
-          title: planScreenTitle,
+      appBar: StyleRes.defaultStyledAppBar(
+          title: StringRes.planScreenTitle,
           bottom: TabBar(
             controller: tabController,
             tabs: planTabBarItems,

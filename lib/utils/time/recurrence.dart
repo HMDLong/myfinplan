@@ -30,7 +30,7 @@ sealed class Recurrence {
     }
   }
 
-  List<DateTime> planOccurences();
+  List<DateTime> planOccurences({TimeRange? range});
 }
 
 String _pad(int i) {
@@ -50,7 +50,7 @@ class OnetimeRecurrence extends Recurrence {
   String get toInfoString => "o${date.toIso8601String()}";
 
   @override
-  List<DateTime> planOccurences() {
+  List<DateTime> planOccurences({TimeRange? range}) {
     return [date];
   }
 
@@ -158,8 +158,8 @@ class IntervalRecurrence extends Recurrence {
   }
 
   @override
-  List<DateTime> planOccurences() {
-    final range = TimeRange.nextNofTimeType(TimeType.month, 3);
+  List<DateTime> planOccurences({TimeRange? range}) {
+    final trange = range ?? TimeRange.nextNofTimeType(TimeType.month, 3);
     final duration = switch (intervalType) {
       TimeType.day => Duration(days: interval),
       TimeType.week => Duration(days: interval * 7),
@@ -169,7 +169,7 @@ class IntervalRecurrence extends Recurrence {
     };
     final res = <DateTime>[];
     var date = startDate;
-    while (!date.isAfter(range.end)) {
+    while (!date.isAfter(trange.end)) {
       res.add(date);
       date = date.add(duration);
     }

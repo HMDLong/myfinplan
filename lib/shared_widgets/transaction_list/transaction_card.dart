@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
@@ -44,8 +44,8 @@ final transactionDetailProvider = FutureProvider.family<TransactDetail, Transact
   final categoryProvider = ref.watch(categoryNotifierProvider);
   return TransactDetail(
     transact: transact,
-    transactAccount: transact.srcAccId == null ? null : await accountProvider.getAccountById(transact.srcAccId!),
-    targetAccount: transact.toAccId == null ? null : await accountProvider.getAccountById(transact.toAccId!),
+    transactAccount: transact.from == null ? null : await accountProvider.getAccountById(transact.from!),
+    targetAccount: transact.to == null ? null : await accountProvider.getAccountById(transact.to!),
     category: await categoryProvider.getCategoryById(transact.categoryId),
   );
 });
@@ -104,7 +104,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                         style: const TextStyle(fontSize: 10),
                       ),
                       const SizedBox(height: 5),
-                      if (data.transact.srcAccId != null)
+                      if (data.transact.from != null)
                         Text.rich(
                           TextSpan(
                             children: [
@@ -113,7 +113,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                                 style: TextStyle(fontSize: 10, color: Colors.grey),
                               ),
                               TextSpan(
-                                text: data.transact.srcAccName,
+                                text: data.transactAccount?.title ?? "?",
                                 style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
@@ -122,7 +122,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                             ],
                           ),
                         ),
-                      if (data.transact.toAccId != null)
+                      if (data.transact.to != null)
                         Text.rich(
                           TextSpan(
                             children: [
@@ -131,7 +131,7 @@ class _TransactionCardState extends ConsumerState<TransactionCard> {
                                 style: TextStyle(fontSize: 10, color: Colors.grey),
                               ),
                               TextSpan(
-                                text: data.transact.toAccName,
+                                text: data.targetAccount?.title ?? "?",
                                 style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                               )
                             ],

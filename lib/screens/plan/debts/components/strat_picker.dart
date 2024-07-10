@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/services/plan/debt_strat.dart';
+import 'package:myfinplan/services/plan/debt_strategy/debt_strat.dart';
 import 'package:myfinplan/screens/plan/debts/widgets/strat_picker_bottom_sheet.dart';
 
 class StrategyPickerBox extends ConsumerWidget {

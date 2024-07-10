@@ -35,7 +35,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     return TextFormField(
       controller: _datePickerController,
       readOnly: true,
-      decoration: formFieldDecor(
+      decoration: StyleRes.formFieldDecor(
         icon: const Icon(CupertinoIcons.calendar),
         label: Text(widget.label ?? "Thời gian"),
       ),

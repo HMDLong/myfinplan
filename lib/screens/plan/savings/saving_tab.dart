@@ -5,7 +5,7 @@ import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/screens/accounts/components/add_account_screen/add_account_screen.dart';
 import 'package:myfinplan/screens/plan/savings/saving_tab_state.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
@@ -31,6 +31,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
       return prev + e;
     });
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: savingData.savings.isEmpty
@@ -38,7 +39,7 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(noItemsMessage),
+                    Text(StringRes.noItemsMessage),
                   ],
                 ),
               )
@@ -85,21 +86,96 @@ class _SavingTabState extends ConsumerState<SavingTab> {
                       itemBuilder: (BuildContext context, int index) {
                         final saving = savingData.savings[index];
                         final saved = savingData.savedThisRange[index];
-                        return ListTile(
+                        return Card(
+                          elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          tileColor: Colors.blue.shade50,
-                          key: Key(saving.id),
-                          dense: true,
-                          minLeadingWidth: 12,
-                          title: Text(saving.title),
-                          subtitle: Text(Formatter.amountToDecimal(saving.amount)),
-                          leading: Text("${index + 1}"),
-                          trailing: Text("+ ${Formatter.amountToDecimal(saved, currency: null)}"),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: Text("${index + 1}"),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        saving.title,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        Formatter.amountToDecimal(saving.amount),
+                                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      minWidth: 60,
+                                    ),
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.green.shade100,
+                                    ),
+                                    child: Text(
+                                      "+ ${Formatter.amountToDecimal(saved, currency: null)}",
+                                      style: TextStyle(
+                                        color: Colors.green.shade600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
+
+                        // ListTile(
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(12),
+                        //   ),
+                        //   tileColor: Colors.blue.shade50,
+                        //   key: Key(saving.id),
+                        //   dense: true,
+                        //   minLeadingWidth: 12,
+                        //   title: Text(saving.title),
+                        //   subtitle: Text(Formatter.amountToDecimal(saving.amount)),
+                        //   leading: Text("${index + 1}"),
+                        //   trailing: Container(
+                        //     constraints: const BoxConstraints(
+                        //       minWidth: 60,
+                        //     ),
+                        //     alignment: Alignment.center,
+                        //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        //     decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       color: Colors.green.shade100,
+                        //     ),
+                        //     child: Text(
+                        //       "+ ${Formatter.amountToDecimal(saved, currency: null)}",
+                        //       style: TextStyle(
+                        //         color: Colors.green.shade600,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // );
                       },
-                      separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 6),
+                      separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 2),
                     ),
                   ],
                 ),

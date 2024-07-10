@@ -33,7 +33,7 @@ class _InstallmentFormState extends State<InstallmentForm> {
                 children: [
                   TextFormField(
                     initialValue: "0.0",
-                    decoration: formFieldDecor(
+                    decoration: StyleRes.formFieldDecor(
                       icon: const Icon(CupertinoIcons.percent),
                       label: const Text("Lãi suất"),
                     ),
@@ -63,10 +63,10 @@ class _InstallmentFormState extends State<InstallmentForm> {
                 children: [
                   TextFormField(
                     initialValue: "0",
-                    decoration: formFieldDecor(
+                    decoration: StyleRes.formFieldDecor(
                       suffix: Text(
                         "tháng",
-                        style: inputTextSuffixStyle(),
+                        style: StyleRes.inputTextSuffixStyle(),
                       ),
                       label: const Text("Kỳ hạn"),
                     ),

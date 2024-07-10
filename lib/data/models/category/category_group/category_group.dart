@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:myfinplan/data/models/category/base_category.dart';
+import 'package:myfinplan/data/models/category/base/base_category.dart';
 import 'package:myfinplan/utils/random.dart';
 
 class ParentCategory extends BaseCategory with EquatableMixin {

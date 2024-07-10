@@ -13,7 +13,7 @@ class RecurPickerDialog extends StatefulWidget {
   State<RecurPickerDialog> createState() => _RecurPickerDialogState();
 }
 
-final detailDecor = formFieldDecor(
+final detailDecor = StyleRes.formFieldDecor(
   label: const Text(""),
   icon: const Icon(Icons.calendar_month_sharp),
 );
@@ -111,7 +111,7 @@ class _RecurPickerDialogState extends State<RecurPickerDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonFormField(
-            decoration: formFieldDecor(
+            decoration: StyleRes.formFieldDecor(
               label: const Text("Loại lịch"),
               icon: const Icon(Icons.timelapse_rounded),
             ),

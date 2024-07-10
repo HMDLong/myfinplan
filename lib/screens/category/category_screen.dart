@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/category_group.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/category_group/category_group.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
+import 'package:myfinplan/screens/category/category_detail_bottom_sheet.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
 import 'package:myfinplan/screens/category/add_category_screen.dart';
-import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
@@ -67,6 +68,20 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                     if (widget.onPicked != null) {
                       widget.onPicked!(category);
                       Navigator.pop(context);
+                    } else {
+                      showModalBottomSheet(
+                        clipBehavior: Clip.antiAlias,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                          ),
+                        ),
+                        context: context,
+                        builder: (ctx) {
+                          return CategoryDetailBottomSheet(category: category);
+                        },
+                      );
                     }
                   },
                 );
@@ -84,7 +99,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: defaultStyledAppBar(
+        appBar: StyleRes.defaultStyledAppBar(
             title: "Danh mục",
             onBackPressed: () => Navigator.pop(context),
             bottom: const TabBar.secondary(

@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/plan/plan_distribution.dart';
+import 'package:myfinplan/services/plan/distributor/plan_distribution.dart';
 import 'package:myfinplan/data/repositories/plan/plan_dist/plan_distribution_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

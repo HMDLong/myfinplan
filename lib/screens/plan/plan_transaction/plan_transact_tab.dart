@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/plan/plan_transact_detail.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
@@ -8,7 +10,7 @@ import 'package:myfinplan/screens/plan/plan_screen.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/components/data_table.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
 import 'package:myfinplan/shared_widgets/menu/menu.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 
 class PlanTransactionTab extends ConsumerStatefulWidget {
   const PlanTransactionTab({super.key});
@@ -17,13 +19,14 @@ class PlanTransactionTab extends ConsumerStatefulWidget {
   ConsumerState<PlanTransactionTab> createState() => _PlanTransactionTabState();
 }
 
-final getPlanTransactDetail = FutureProvider<List<PlanTransactDetail>>(
+final expenseIncomeDetailProvider = FutureProvider<List<PlanTransactDetail>>(
   (ref) async {
     final selectedTransactType = ref.watch(selectedTransactTypeProvider);
     final timeRange = ref.watch(planTimeRangeProvider);
     final categories = (await ref.watch(categoryNotifierProvider).getCategories()).where((e) => e.type == selectedTransactType);
     final transactions = (await ref.watch(transactionNotifierProvider).getTransactionByType(selectedTransactType)).where((e) => timeRange.contain(e.timestamp));
-
+    final planTramsacts = await ref.watch(transactionNotifierProvider).getScheduledTransacts(range: timeRange);
+    log(planTramsacts.toString());
     final res = <PlanTransactDetail>[];
     for (var category in categories) {
       final cateTransacts = transactions.where((e) => e.categoryId == category.id).toList();
@@ -32,7 +35,8 @@ final getPlanTransactDetail = FutureProvider<List<PlanTransactDetail>>(
       if (category.budget != null) {
         planAmount = category.budget!.amount;
       } else {
-        planAmount = cateTransacts.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount).abs();
+        // planAmount = cateTransacts.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount).abs();
+        planAmount = planTramsacts.where((e) => e.categoryId == category.id).fold(0, (prev, e) => prev + e.planDetail!.planAmount.abs());
       }
       final data = PlanTransactDetail(plan: planAmount, actual: actualAmount, category: category);
       // check if there are data of category, if not put it at the end so that
@@ -70,7 +74,7 @@ class _PlanTransactionTabState extends ConsumerState<PlanTransactionTab> {
           const SizedBox(height: 10),
           Consumer(
             builder: (context, ref, child) {
-              return ref.watch(getPlanTransactDetail).when(
+              return ref.watch(expenseIncomeDetailProvider).when(
                     data: (data) {
                       final type = ref.watch(selectedTransactTypeProvider);
                       int planTotal = 0;
@@ -96,7 +100,7 @@ class _PlanTransactionTabState extends ConsumerState<PlanTransactionTab> {
                       );
                     },
                     error: (error, _) => const SizedBox(
-                      child: Text(widgetErrorMessage),
+                      child: Text(StringRes.widgetErrorMessage),
                     ),
                     loading: () => const SizedBox(
                       height: 300,

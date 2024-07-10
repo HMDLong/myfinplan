@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/plan/debt_strategy.dart';
-import 'package:myfinplan/services/plan/debt_strat.dart';
+import 'package:myfinplan/services/plan/debt_strategy/debt_strategy.dart';
+import 'package:myfinplan/services/plan/debt_strategy/debt_strat.dart';
 
 class StrategyPickerBottomSheet extends StatefulWidget {
   const StrategyPickerBottomSheet({super.key});

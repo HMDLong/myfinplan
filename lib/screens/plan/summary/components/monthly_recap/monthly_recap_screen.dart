@@ -112,7 +112,7 @@ class _PlanUpdateScreenState extends State<PlanUpdateScreen> with AutomaticKeepA
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: defaultStyledAppBar(
+      appBar: StyleRes.defaultStyledAppBar(
         title: "Tổng kết tháng 4, 2024",
         onBackPressed: () => Navigator.of(context).pop(),
         trailings: [],

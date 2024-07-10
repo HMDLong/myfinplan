@@ -89,7 +89,7 @@ class _TimestampPickerState extends State<TimestampPicker> {
               controller: _dateController,
               readOnly: true,
               enabled: widget.enabled,
-              decoration: formFieldDecor(
+              decoration: StyleRes.formFieldDecor(
                 icon: const Icon(Icons.calendar_month),
                 label: const Text("Ngày"),
               ),
@@ -105,7 +105,7 @@ class _TimestampPickerState extends State<TimestampPicker> {
               child: TextFormField(
                 enabled: widget.enabled,
                 controller: _timeController,
-                decoration: formFieldDecor(
+                decoration: StyleRes.formFieldDecor(
                   icon: const Icon(Icons.timer_sharp),
                   label: const Text("Giờ"),
                 ),

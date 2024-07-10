@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:myfinplan/data/models/schedule_notification.dart';
+import 'package:myfinplan/data/models/notification/schedule_notification.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/time/date_time_ext.dart';
 import 'dart:developer' as dev;
@@ -93,6 +93,7 @@ class NotificationService {
         // if there is previously scheduled noti, update then override with new noti
         final scheduleNum = int.parse(matchNoti.content!.payload!["schedule_num"]!);
         notiEngine.createNotification(
+          schedule: NotificationCalendar.fromDate(date: noti.referenceDate.to9AM(), allowWhileIdle: true),
           content: NotificationContent(
             id: matchNoti.content!.id!,
             channelKey: channels[0].channelKey!,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
-import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
@@ -13,27 +13,19 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 const DEFAULT_SAVING_CHART_MONTH_SPAN = 6;
 
 class SavingProgressModel {
-  final Map<DateTime, List<Transaction>> _data;
+  final List<Transaction> data;
 
   Map<DateTime, int> get chartData {
-    return _data.map((key, value) {
-      return MapEntry(
-        key,
-        value.fold(0, (prev, e) => prev + e.amount.abs()),
-      );
-    });
+    final res = <DateTime, int>{};
+    var range = TimeRange.rangeByType(TimeType.month);
+    for (var i = 1; i <= DEFAULT_SAVING_CHART_MONTH_SPAN; i++) {
+      res[range.start] = data.where((e) => range.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount.abs());
+      range = range.previous();
+    }
+    return res;
   }
 
-  SavingProgressModel(List<Transaction> data)
-      : _data = data.fold(
-          <DateTime, List<Transaction>>{},
-          (prev, e) {
-            final key = DateTime(e.timestamp.year, e.timestamp.month);
-            prev.putIfAbsent(key, () => []);
-            prev[key]!.add(e);
-            return prev;
-          },
-        );
+  SavingProgressModel(this.data);
 }
 
 final savingProgressDataProvider = FutureProvider((ref) async {
@@ -53,15 +45,18 @@ class SavingProgressChart extends ConsumerWidget {
       child: ref.watch(savingProgressDataProvider).when(
             data: (data) {
               return SfCartesianChart(
-                primaryXAxis: CategoryAxis(),
+                primaryXAxis: CategoryAxis(
+                  labelRotation: 45,
+                  labelStyle: const TextStyle(fontSize: 12),
+                ),
                 primaryYAxis: NumericAxis(
                   numberFormat: NumberFormat.compact(),
                 ),
                 series: [
                   ColumnSeries<MapEntry, String>(
-                    emptyPointSettings: EmptyPointSettings(),
-                    dataSource: data.chartData.entries.toList(),
-                    xValueMapper: (data, i) => Formatter.toVnMonthYear(data.key),
+                    emptyPointSettings: EmptyPointSettings(mode: EmptyPointMode.zero),
+                    dataSource: data.chartData.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
+                    xValueMapper: (data, i) => Formatter.toMonthYear(data.key),
                     yValueMapper: (data, i) => data.value,
                   ),
                 ],

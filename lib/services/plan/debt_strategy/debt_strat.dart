@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/plan/debt_strategy.dart';
+import 'package:myfinplan/services/plan/debt_strategy/debt_strategy.dart';
 import 'package:myfinplan/data/repositories/plan/debt_strat/debt_strat_repo.dart';
 import 'package:myfinplan/data/repositories/plan/debt_strat/debt_strat_repo_impl.dart';
 

@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:myfinplan/data/models/category/base_category.dart';
+import 'package:myfinplan/data/models/category/base/base_category.dart';
 import 'package:myfinplan/utils/time/times.dart';
-import 'transaction_type.dart';
+import '../transact_type/transaction_type.dart';
 
 part 'category.g.dart';
 

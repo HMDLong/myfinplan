@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/base_category.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/category_group.dart';
+import 'package:myfinplan/data/models/category/base/base_category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/category_group/category_group.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/time/times.dart';

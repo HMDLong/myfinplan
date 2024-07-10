@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/shared_widgets/menu/menu.dart';
 import 'package:myfinplan/screens/statistics/widgets/category_pie_chart/cate_piechart_state.dart';
-import 'package:myfinplan/utils/constants/predefined_categories.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/time/times.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -79,7 +79,7 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(widgetErrorMessage),
+                            Text(StringRes.widgetErrorMessage),
                           ],
                         ),
                       ),
@@ -158,7 +158,7 @@ class _CategoryPieChartState extends ConsumerState<CategoryPieChart> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(noItemsMessage),
+            Text(StringRes.noItemsMessage),
           ],
         ),
       );

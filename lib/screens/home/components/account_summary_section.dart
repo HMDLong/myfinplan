@@ -84,7 +84,7 @@ class _AccountSummarySectionState extends ConsumerState<AccountSummarySection> {
         return ShaderMask(
           blendMode: BlendMode.srcATop,
           shaderCallback: (bounds) {
-            return shimmerGradient.createShader(bounds);
+            return StyleRes.shimmerGradient().createShader(bounds);
           },
           child: const SizedBox(
             height: 200,

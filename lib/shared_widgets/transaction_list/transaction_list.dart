@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
-import 'package:myfinplan/data/models/category/category_group.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category_group/category_group.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_card.dart';
@@ -43,7 +43,7 @@ class _TransactionListState extends ConsumerState<TransactionList> {
         .where((transact) {
           // final inTimeRange = widget.timeRange?.contain(transact.timestamp) ?? true;
           final accountId = widget.account?.id;
-          final isAccount = accountId == null ? true : (accountId == transact.toAccId || accountId == transact.srcAccId);
+          final isAccount = accountId == null ? true : (accountId == transact.to || accountId == transact.from);
           final category = widget.categoryId;
           final isOfCategory = category == null ? true : (transact.categoryId == category || ParentCategory.parentHasChild(category, transact.categoryId));
           final isOfType = widget.transactType == null ? true : widget.transactType == transact.transactType;

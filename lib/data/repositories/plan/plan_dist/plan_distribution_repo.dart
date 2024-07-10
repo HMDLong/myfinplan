@@ -1,4 +1,4 @@
-import 'package:myfinplan/data/models/plan/plan_distribution.dart';
+import 'package:myfinplan/services/plan/distributor/plan_distribution.dart';
 
 abstract class PlanDistRepository {
   Future<PlanDistribution> getCurrentDist();

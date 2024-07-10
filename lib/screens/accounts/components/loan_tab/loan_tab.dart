@@ -9,7 +9,7 @@ import 'package:myfinplan/screens/accounts/components/loan_tab/loan_card.dart';
 import 'package:myfinplan/shared_widgets/graphs/balance_chart.dart';
 import 'package:myfinplan/shared_widgets/menu/menu.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_list.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 class LoanTab extends ConsumerStatefulWidget {
@@ -176,10 +176,10 @@ class _LoanTabState extends ConsumerState<LoanTab> {
                   ElevatedButton.icon(
                     onPressed: () {},
                     icon: const Icon(Icons.refresh),
-                    label: const Text(widgetRefreshLabel),
+                    label: const Text(StringRes.widgetRefreshLabel),
                   ),
                   const SizedBox(height: 10),
-                  const Text(widgetErrorMessage),
+                  const Text(StringRes.widgetErrorMessage),
                 ],
               ),
             );

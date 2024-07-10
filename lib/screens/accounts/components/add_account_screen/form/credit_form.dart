@@ -69,7 +69,7 @@ class _NewCreditFormState extends ConsumerState<NewCreditForm> {
             const SizedBox(height: 10),
             TextFormField(
               initialValue: title,
-              decoration: formFieldDecor(
+              decoration: StyleRes.formFieldDecor(
                 icon: const Icon(Icons.title),
                 label: const Text("Tiêu đề"),
               ),
@@ -118,7 +118,7 @@ class _NewCreditFormState extends ConsumerState<NewCreditForm> {
                     children: [
                       TextFormField(
                         initialValue: interest.toString(),
-                        decoration: formFieldDecor(
+                        decoration: StyleRes.formFieldDecor(
                           icon: const Icon(CupertinoIcons.percent),
                           label: const Text("Lãi suất"),
                         ),

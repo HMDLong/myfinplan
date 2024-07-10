@@ -2,7 +2,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/statistics/stat_timerange_provider.dart';
 import 'package:myfinplan/shared_widgets/menu/menu.dart';

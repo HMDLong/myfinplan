@@ -43,7 +43,7 @@ class _AmountFormFieldState extends State<AmountFormField> {
       inputFormatters: [
         FieldInputFormatter(),
       ],
-      decoration: formFieldDecor(
+      decoration: StyleRes.formFieldDecor(
         icon: const Icon(CupertinoIcons.money_dollar),
         label: Text(widget.label),
       ),

@@ -5,12 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boxicons/flutter_boxicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:myfinplan/data/models/category/category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
 import 'package:myfinplan/data/models/plan/plan_transact_detail.dart';
-import 'package:myfinplan/utils/time/recurrence.dart';
-import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
-// import 'package:myfinplan/screens/plan/budgets/new_budget_screen.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/add_plan_transact_screen.dart';
 import 'package:myfinplan/screens/plan/plan_transaction/providers/plan_transact_detail_provider.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
@@ -47,21 +44,21 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultStyledAppBar(
+      appBar: StyleRes.defaultStyledAppBar(
         title: widget.detail.category.name,
         onBackPressed: () => Navigator.of(context).pop(),
       ),
       body: ref.watch(planTransactsForDetailProvider).when(
         data: (data) {
           final category = ref.watch(selectedCategoryForDetailProvider);
-          final planned = data.fold(<String, Transaction>{}, (prev, e) {
-            if (e.planDetail != null && !prev.containsKey(e.planDetail!.planId)) {
-              prev[e.planDetail!.planId] = e;
-            }
-            return prev;
-          });
-          final planAmount = data.fold(0, (prev, e) => prev + (e.planDetail?.planAmount.abs() ?? 0));
-          final realAmount = data.fold(0, (prev, e) => prev + e.amount.abs());
+          // final planned = data.fold(<String, Transaction>{}, (prev, e) {
+          //   if (e.planDetail != null && !prev.containsKey(e.planDetail!.planId)) {
+          //     prev[e.planDetail!.planId] = e;
+          //   }
+          //   return prev;
+          // });
+          // final planAmount = data.fold(0, (prev, e) => prev + (e.planDetail?.planAmount.abs() ?? 0));
+          // final realAmount = data.fold(0, (prev, e) => prev + e.amount.abs());
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +81,7 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                     ),
                   ],
                 ),
-                planAmount <= 0 && category?.budget == null
+                data.planAmount <= 0 && category?.budget == null
                     ? const SizedBox(
                         height: 100,
                         child: Center(child: Text("Chưa đặt ngân quỹ")),
@@ -92,8 +89,8 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                     : Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: LinearProgressGauge(
-                          value: realAmount,
-                          max: category?.budget == null ? planAmount : category!.budget!.amount,
+                          value: data.actualAmount,
+                          max: category?.budget == null ? data.planAmount : category!.budget!.amount,
                           showOverflow: true,
                           mode: GaugeMode.limit,
                           leadingLabel: "Thực tế",
@@ -117,20 +114,21 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                   ],
                 ),
                 const SizedBox(height: 10),
-                planned.isEmpty
+                data.schedules.isEmpty
                     ? const SizedBox(
                         height: 300,
                         child: Center(child: Text("Chưa có khoản lên lịch")),
                       )
                     : Column(
-                        children: planned.values.map((e) {
+                        children: data.schedules.map((e) {
                           return Slidable(
                             endActionPane: ActionPane(
                               motion: const DrawerMotion(),
                               children: [
                                 SlidableAction(
                                   onPressed: (context) {
-                                    pushNewScreen(context, screen: NewPlanTransactScreen(prefill: e));
+                                    // pushNewScreen(context, screen: NewPlanTransactScreen(prefill: e));
+                                    pushNewScreen(context, screen: NewPlanTransactScreen());
                                   },
                                   icon: Icons.edit_document,
                                   backgroundColor: CupertinoColors.activeBlue,
@@ -161,9 +159,9 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(e.categoryName),
+                                          Text(data.category.name),
                                           const SizedBox(height: 6),
-                                          Text(Recurrence.parse(e.planDetail!.planId).toString()),
+                                          Text(e.recur.toString()),
                                         ],
                                       ),
                                     ),
@@ -171,7 +169,7 @@ class _PlanTransactDetailScreenState extends ConsumerState<PlanTransactDetailScr
                                       flex: 2,
                                       child: Align(
                                         alignment: Alignment.centerRight,
-                                        child: Text(Formatter.amountToDecimal(e.planDetail!.planAmount, currency: null)),
+                                        child: Text(Formatter.amountToDecimal(e.planAmount, currency: null)),
                                       ),
                                     ),
                                   ],

@@ -39,7 +39,7 @@ class _RecurPickerState extends State<RecurPicker> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      decoration: formFieldDecor(
+      decoration: StyleRes.formFieldDecor(
         label: const Text("Lặp lại"),
         icon: const Icon(Icons.timelapse_rounded),
       ),

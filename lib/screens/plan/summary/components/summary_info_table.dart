@@ -37,7 +37,7 @@ class SummaryInfoTable extends StatelessWidget {
                     ),
                     DataRow(
                       cells: [
-                        const DataCell(Text("Chi phí")),
+                        const DataCell(Text("Chi bắt buộc")),
                         DataCell(Text(Formatter.amountToDecimal(data[2], currency: null))),
                         DataCell(Text(Formatter.amountToDecimal(data[3], currency: null))),
                         DataCell(Text(Formatter.amountToDecimal(data[3] - data[2], currency: null))),
@@ -45,7 +45,7 @@ class SummaryInfoTable extends StatelessWidget {
                     ),
                     DataRow(
                       cells: [
-                        const DataCell(Text("Tiết kiệm")),
+                        const DataCell(Text("Chi cá nhân")),
                         DataCell(Text(Formatter.amountToDecimal(data[4], currency: null))),
                         DataCell(Text(Formatter.amountToDecimal(data[5], currency: null))),
                         DataCell(Text(Formatter.amountToDecimal(data[5] - data[4], currency: null))),
@@ -53,7 +53,7 @@ class SummaryInfoTable extends StatelessWidget {
                     ),
                     DataRow(
                       cells: [
-                        const DataCell(Text("Trả nợ")),
+                        const DataCell(Text("Tiết kiệm")),
                         DataCell(Text(Formatter.amountToDecimal(data[6], currency: null))),
                         DataCell(Text(Formatter.amountToDecimal(data[7], currency: null))),
                         DataCell(Text(Formatter.amountToDecimal(data[7] - data[6], currency: null))),

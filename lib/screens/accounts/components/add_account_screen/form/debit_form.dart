@@ -56,7 +56,7 @@ class _NewDebitFormState extends ConsumerState<NewDebitForm> {
             const SizedBox(height: 16),
             TextFormField(
               initialValue: widget.prefill != null ? widget.prefill!.title : null,
-              decoration: formFieldDecor(icon: const Icon(Icons.title), label: const Text("Tiêu đề")),
+              decoration: StyleRes.formFieldDecor(icon: const Icon(Icons.title), label: const Text("Tiêu đề")),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
                 if (value == null || value.isEmpty) {

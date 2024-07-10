@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
 import 'package:myfinplan/data/repositories/category/category_repo.dart';
 import 'package:myfinplan/data/repositories/category/category_repo_impl.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 
 final categoryNotifierProvider = ChangeNotifierProvider((ref) {
   return CategoryNotifier(ref.watch(categoryRepoProvider));
@@ -26,6 +26,11 @@ class CategoryNotifier extends ChangeNotifier {
     return (await repo.getAll()).where((category) => category.id == id).firstOrNull;
   }
 
+  Future<void> updateCategory(Category newValue) async {
+    await repo.update(newValue);
+    notifyListeners();
+  }
+
   void deleteCategory(String id) async {
     await repo.delete(id);
     notifyListeners();
@@ -33,7 +38,7 @@ class CategoryNotifier extends ChangeNotifier {
 
   Future<void> addBudget(String categoryId, Budget newBudget) async {
     final category = await getCategoryById(categoryId);
-    if (category == null) throw Exception(categoryNotFoundMessage);
+    if (category == null) throw Exception(StringRes.categoryNotFoundMessage);
     category.budget = newBudget;
     await category.save();
     notifyListeners();
@@ -41,7 +46,7 @@ class CategoryNotifier extends ChangeNotifier {
 
   Future<void> deleteBudget(String categoryId) async {
     final category = await getCategoryById(categoryId);
-    if (category == null) throw Exception(categoryNotFoundMessage);
+    if (category == null) throw Exception(StringRes.categoryNotFoundMessage);
     category.budget = null;
     await category.save();
     notifyListeners();

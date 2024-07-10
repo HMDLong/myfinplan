@@ -1,27 +1,32 @@
+import 'dart:developer';
+
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 
 import 'package:myfinplan/screens/plan/schedule/widget/status_box.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/add_transaction_screen.dart';
 import 'package:myfinplan/screens/transactions/add_transaction/selected_transact_provider.dart';
+import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
+import 'package:myfinplan/services/categories/category_notifier.dart';
 import 'package:myfinplan/shared_widgets/button/round_icon_button.dart';
 import 'package:myfinplan/utils/format.dart';
+import 'package:myfinplan/utils/future_builder.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 const detailStyle = TextStyle(
   fontSize: 12,
 );
 
-class ScheduleCard extends StatelessWidget {
+class ScheduleCard extends ConsumerWidget {
   final Transaction schedule;
   const ScheduleCard({super.key, required this.schedule});
 
   @override
-  Widget build(BuildContext context) {
-    // final important = Random().nextBool();
+  Widget build(BuildContext context, WidgetRef ref) {
     return ExpandableNotifier(
       child: ScrollOnExpand(
         child: Expandable(
@@ -66,24 +71,67 @@ class ScheduleCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(schedule.categoryName),
+                    Consumer(builder: (context, ref, child) {
+                      return FutureBuilder(
+                        future: ref.watch(categoryNotifierProvider).getCategoryById(schedule.categoryId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Text("");
+                          }
+                          if (snapshot.hasError) {
+                            return const Text("x");
+                          }
+                          return Text(snapshot.data?.name ?? "?");
+                        },
+                      );
+                    }),
                     Text(Formatter.amountToDecimal(schedule.planDetail!.planAmount)),
-                    if (schedule.srcAccId != null || schedule.toAccId != null)
+                    if (schedule.from != null || schedule.to != null)
                       Row(
                         children: [
-                          Text(
-                            schedule.srcAccName ?? "",
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                          ),
+                          schedule.from == null
+                              ? const Text("")
+                              : Consumer(builder: (context, ref, child) {
+                                  return FutureBuilder(
+                                    future: ref.watch(accountsProvider).getAccountById(schedule.from!),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const Text("");
+                                      }
+                                      if (snapshot.hasError) {
+                                        return const Text("x");
+                                      }
+                                      return Text(
+                                        snapshot.data?.title ?? "",
+                                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                                      );
+                                    },
+                                  );
+                                }),
                           const Icon(
                             Icons.keyboard_double_arrow_right_rounded,
                             size: 16,
                             color: Colors.grey,
                           ),
-                          Text(
-                            schedule.toAccName ?? "",
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                          ),
+                          schedule.to == null
+                              ? const Text("")
+                              : Consumer(builder: (context, ref, child) {
+                                  return FutureBuilder(
+                                    future: ref.watch(accountsProvider).getAccountById(schedule.to!),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const Text("");
+                                      }
+                                      if (snapshot.hasError) {
+                                        return const Text("x");
+                                      }
+                                      return Text(
+                                        snapshot.data?.title ?? "",
+                                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                                      );
+                                    },
+                                  );
+                                }),
                         ],
                       ),
                   ],
@@ -108,19 +156,36 @@ class ScheduleCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (important)
-              Container(
-                padding: const EdgeInsets.all(2),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(bottomRight: Radius.circular(10)),
-                  color: CupertinoColors.activeBlue,
-                ),
-                child: const Icon(
-                  Icons.star,
-                  color: Colors.white,
-                  size: 16,
-                ),
-              ),
+            Consumer(
+              builder: (ctx, ref, child) {
+                return OnFutureBuilder(
+                  future: ref.watch(categoryNotifierProvider).getCategoryById(schedule.categoryId),
+                  data: (data) {
+                    if (data!.level == Level.must) {
+                      return Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(bottomRight: Radius.circular(10)),
+                          color: CupertinoColors.activeBlue,
+                        ),
+                        child: const Icon(
+                          Icons.star,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      );
+                    }
+                    return Container();
+                  },
+                  error: () {
+                    return Container();
+                  },
+                  loading: () {
+                    return Container();
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -130,7 +195,7 @@ class ScheduleCard extends StatelessWidget {
   Widget _expandedCard(BuildContext context, {bool important = false}) {
     return SizedBox(
       width: double.infinity,
-      height: 200,
+      height: 170,
       child: Stack(
         children: [
           Positioned(
@@ -150,56 +215,7 @@ class ScheduleCard extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        RoundedIconButton(
-                          gradient: LinearGradient(
-                            colors: important
-                                ? [
-                                    Colors.yellow,
-                                    Colors.amber,
-                                    Colors.deepOrange,
-                                  ]
-                                : [
-                                    Colors.white,
-                                    Colors.grey,
-                                    Colors.grey.shade600,
-                                  ],
-                            stops: const [.4, .8, 1],
-                          ),
-                          backgroundColor: CupertinoColors.activeBlue,
-                          icon: const Icon(Icons.star, size: 16),
-                          onPressed: () {},
-                        ),
-                        const SizedBox(width: 8),
-                        Consumer(
-                          builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                            return RoundedIconButton(
-                              icon: const Icon(Icons.edit_calendar_outlined, size: 16),
-                              backgroundColor: CupertinoColors.activeBlue,
-                              onPressed: () {
-                                if (schedule.paid) {
-                                  ref.read(selectedTransactionProvider.notifier).setTransact(schedule);
-                                } else {
-                                  ref.read(selectedTransactionProvider.notifier).setPlanTransact(schedule);
-                                }
-                                pushNewScreen(context, screen: AddOrEditTransactScreen(prefill: schedule));
-                              },
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        RoundedIconButton(
-                          icon: const Icon(Icons.playlist_remove_sharp, size: 16),
-                          backgroundColor: CupertinoColors.activeBlue,
-                          onPressed: () {},
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 60),
                     _row("", "Dự kiến", "Thực tế"),
                     _row(
                       "Số tiền",
@@ -220,6 +236,28 @@ class ScheduleCard extends StatelessWidget {
             child: _mainCard(
               isOpened: true,
               important: important,
+            ),
+          ),
+          Positioned(
+            top: 60,
+            right: 30,
+            child: Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                return RoundedIconButton(
+                  icon: const Icon(Icons.edit_calendar_outlined, size: 16),
+                  backgroundColor: CupertinoColors.activeBlue,
+                  onPressed: () {
+                    if (schedule.paid) {
+                      log("set");
+                      ref.read(selectedTransactionProvider.notifier).setTransact(schedule);
+                    } else {
+                      log("set1");
+                      ref.read(selectedTransactionProvider.notifier).setPlanTransact(schedule);
+                    }
+                    pushNewScreen(context, screen: AddOrEditTransactScreen(prefill: schedule));
+                  },
+                );
+              },
             ),
           ),
         ],

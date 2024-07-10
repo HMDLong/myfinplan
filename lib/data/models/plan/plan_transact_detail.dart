@@ -1,4 +1,4 @@
-import 'package:myfinplan/data/models/category/category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
 
 enum PlanTransactStatus {
   upcoming,

@@ -20,7 +20,7 @@ class _PersonalizeScreenState extends State<PersonalizeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultStyledAppBar(title: "Cá nhân"),
+      appBar: StyleRes.defaultStyledAppBar(title: "Cá nhân"),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

@@ -1,5 +1,5 @@
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 
 abstract class CategoryRepository {
   Future<List<Category>> getAll();

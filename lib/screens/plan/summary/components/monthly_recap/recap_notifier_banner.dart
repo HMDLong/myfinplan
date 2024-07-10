@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/monthly_recap_screen.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class PlanValuateNotifierBanner extends StatelessWidget {
@@ -38,7 +38,7 @@ class PlanValuateNotifierBanner extends StatelessWidget {
             Expanded(
               flex: 4,
               child: Text(
-                planEvaluateBannerContent,
+                StringRes.planEvaluateBannerContent,
                 style: TextStyle(color: Colors.white),
               ),
             ),

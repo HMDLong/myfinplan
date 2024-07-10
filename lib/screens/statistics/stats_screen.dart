@@ -38,7 +38,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> with Single
     final currentTimeRange = ref.watch(statTimeRangeProvider);
     return Scaffold(
       backgroundColor: Colors.red.shade50,
-      appBar: defaultStyledAppBar(
+      appBar: StyleRes.defaultStyledAppBar(
         title: "Thống kê",
         bottom: TabBar.secondary(
           controller: tabController,

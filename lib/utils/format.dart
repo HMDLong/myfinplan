@@ -9,6 +9,10 @@ class Formatter {
     return "${time.day}/${time.month}";
   }
 
+  static String toMonthYear(DateTime time) {
+    return "${time.month}/${time.year}";
+  }
+
   static String toStandartDate(DateTime time) {
     return "${time.day}/${time.month}/${time.year - 2000}";
   }

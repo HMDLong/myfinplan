@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
 import 'package:myfinplan/services/categories/get_categories_with_budget.dart';
 // import 'package:myfinplan/screens/plan/budgets/budget_detail/budget_detail_screen.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
@@ -77,7 +77,7 @@ final class _BudgetCardState extends State<BudgetCard> {
                             );
                           },
                           error: (error, _) => const SizedBox(
-                            child: Text(widgetErrorMessage),
+                            child: Text(StringRes.widgetErrorMessage),
                           ),
                           loading: () => const CircularProgressIndicator(),
                         );

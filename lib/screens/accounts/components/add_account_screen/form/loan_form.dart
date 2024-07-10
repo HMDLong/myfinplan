@@ -92,7 +92,7 @@ class _NewLoanFormState extends ConsumerState<NewLoanForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextFormField(
-              decoration: formFieldDecor(
+              decoration: StyleRes.formFieldDecor(
                 icon: const Icon(Icons.title),
                 label: const Text("Tiêu đề"),
               ),

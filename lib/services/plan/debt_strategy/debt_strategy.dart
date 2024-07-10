@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:developer' as dev;
 import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
+import 'package:myfinplan/utils/time/date_time_ext.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
@@ -26,6 +27,7 @@ sealed class DebtStrategy {
 
   Map<DateTime, Map<String, AmortizingEntry>> scheduleLoans(List<Loan> loans, double initialSnowball) {
     var time = TimeRange.rangeByType(TimeType.month);
+
     final res = <DateTime, Map<String, AmortizingEntry>>{};
     final minPayments = loans.fold(
       <String, double>{},
@@ -37,13 +39,14 @@ sealed class DebtStrategy {
     double snowball = initialSnowball;
     while (loans.any((e) => e.balance > 0)) {
       double availableSnowball = snowball;
+      final timeEnd = time.end.toDateOnly();
       final tmp = <String, AmortizingEntry>{};
       loans.sort(setPriority);
       for (var i = 0; i < loans.length; i++) {
         final loan = loans[i];
         if (loan.balance <= 0) {
           tmp[loan.id] = AmortizingEntry(
-            time: time.end,
+            time: timeEnd,
             payment: 0,
             snowball: 0,
             interest: 0,
@@ -55,7 +58,7 @@ sealed class DebtStrategy {
         final balanceBeforePay = loan.balance + loan.interest;
         if (balanceBeforePay < payAmount) {
           tmp[loan.id] = AmortizingEntry(
-            time: time.end,
+            time: timeEnd,
             payment: balanceBeforePay,
             snowball: max(balanceBeforePay - minPayments[loan.id]!, 0),
             interest: loan.interest,
@@ -66,7 +69,7 @@ sealed class DebtStrategy {
           availableSnowball = payAmount - balanceBeforePay;
         } else {
           tmp[loan.id] = AmortizingEntry(
-            time: time.end,
+            time: timeEnd,
             payment: minPayments[loan.id]!,
             snowball: availableSnowball,
             interest: loan.interest,
@@ -76,7 +79,7 @@ sealed class DebtStrategy {
           loans[i].amount = (balanceBeforePay - payAmount).toInt();
         }
       }
-      res[time.end] = tmp;
+      res[timeEnd] = tmp;
       time = time.next();
     }
     return res;

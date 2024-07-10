@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/services/accounts/accounts/account_usecases.dart';
 import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
@@ -38,7 +38,7 @@ class BalanceChart<T extends Account> extends ConsumerStatefulWidget {
 
 final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<DateTime, int>>, BalanceChartInfo>((ref, info) async {
   var transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) {
-    final matchAccount = info.accountId == null ? true : (info.accountId == e.srcAccId || info.accountId == e.toAccId);
+    final matchAccount = info.accountId == null ? true : (info.accountId == e.from || info.accountId == e.to);
     return matchAccount && e.paid;
   }).toList();
   int balance = 0;
@@ -62,7 +62,7 @@ final getTransactionDataProvider = FutureProvider.family<List<BalanceChartData<D
         transact.amount *
             (transact.transactType != TransactionType.transact
                 ? 1
-                : transact.toAccId == info.accountId
+                : transact.to == info.accountId
                     ? 1
                     : -1);
     return previousValue;

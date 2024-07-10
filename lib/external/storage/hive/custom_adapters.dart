@@ -1,7 +1,7 @@
 import 'package:hive_flutter/adapters.dart';
-import 'package:myfinplan/data/models/category/base_category.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/base/base_category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/data/models/transaction/plan_transaction.dart';
 import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';

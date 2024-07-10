@@ -11,7 +11,7 @@ import 'package:myfinplan/screens/accounts/components/saving_tab/saving_card.dar
 import 'package:myfinplan/shared_widgets/graphs/balance_chart.dart';
 import 'package:myfinplan/shared_widgets/graphs/progress_gauge.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_list.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/format.dart';
 import 'package:myfinplan/utils/time/times.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -214,10 +214,10 @@ class _SavingTabState extends State<SavingTab> {
                       ElevatedButton.icon(
                         onPressed: () {},
                         icon: const Icon(Icons.refresh),
-                        label: const Text(widgetRefreshLabel),
+                        label: const Text(StringRes.widgetRefreshLabel),
                       ),
                       const SizedBox(height: 10),
-                      const Text(widgetErrorMessage),
+                      const Text(StringRes.widgetErrorMessage),
                     ],
                   ),
                 );

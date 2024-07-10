@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/screens/plan/debts/components/provider/providers.dart';
 import 'package:myfinplan/screens/plan/debts/components/strat_picker.dart';
+import 'package:myfinplan/screens/plan/debts/widgets/detail_loan.dart';
+import 'package:myfinplan/screens/plan/debts/widgets/schedule_table.dart';
 import 'package:myfinplan/screens/plan/summary/components/monthly_recap/recap_screen_components/goals_section.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/format.dart';
 
 class DebtManageTab extends ConsumerStatefulWidget {
@@ -32,7 +34,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(noItemsMessage),
+          Text(StringRes.noItemsMessage),
         ],
       ),
     );
@@ -118,83 +120,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                             ),
                           ),
                           const SizedBox(height: 15),
-                          SizedBox(
-                            height: heightPerCell * (info.loans.length + 1) + 8 * 2,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  children: [_cell("", height: headerHeight, width: loanHeaderWidth)] +
-                                      info.loans
-                                          .map(
-                                            (e) => _cell(
-                                              e.title,
-                                              color: Colors.blue.shade200,
-                                              width: loanHeaderWidth,
-                                              isSelected: selectedContent.content == ContentType.loan && selectedContent.loanId == e.id,
-                                              onTap: () {
-                                                if (selectedContent.loanId == e.id) {
-                                                  ref.read(loanSelectedContentProvider.notifier).state = SelectedContentState.init();
-                                                } else {
-                                                  ref.read(loanSelectedContentProvider.notifier).state = selectedContent.copyWith(
-                                                    content: ContentType.loan,
-                                                    loanId: e.id,
-                                                    month: null,
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          )
-                                          .toList(),
-                                ),
-                                Expanded(
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (BuildContext context, int index) {
-                                      final month = months[index];
-                                      return Container(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: widgetPerCell,
-                                        ),
-                                        child: ListView.builder(
-                                          physics: const NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, i) {
-                                            if (i == 0) {
-                                              return _cell(
-                                                "${month.month}/${month.year}",
-                                                color: Colors.blue.shade200,
-                                                height: headerHeight,
-                                                isSelected: selectedContent.content == ContentType.month && selectedContent.month!.isAtSameMomentAs(month),
-                                                onTap: () {
-                                                  if (selectedContent.month == month) {
-                                                    ref.read(loanSelectedContentProvider.notifier).state = SelectedContentState.init();
-                                                  } else {
-                                                    ref.read(loanSelectedContentProvider.notifier).state = selectedContent.copyWith(
-                                                      content: ContentType.month,
-                                                      month: month,
-                                                      loanId: null,
-                                                    );
-                                                  }
-                                                },
-                                              );
-                                            }
-                                            final entry = info.schedule[month]?[info.loans[i - 1].id];
-                                            return _cell(
-                                              Formatter.amountToDecimal(entry!.totalPayment.round(), currency: null),
-                                              color: i.remainder(2) == 0 ? Colors.grey.shade300 : Colors.white,
-                                            );
-                                          },
-                                          itemCount: info.loans.length + 1,
-                                        ),
-                                      );
-                                    },
-                                    itemCount: months.length,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          LoanScheduleTable(info: info, selectedContent: selectedContent),
                           const SizedBox(height: 10),
                           const Text(
                             "Chi tiết lịch trình",
@@ -205,7 +131,7 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
                           const SizedBox(height: 10),
                           switch (selectedContent.content) {
                             ContentType.month => _buildMonthDetail(info, selectedContent),
-                            ContentType.loan => _buildLoanDetail(info, selectedContent),
+                            ContentType.loan => DetailLoanSection(info: info, state: selectedContent),
                           },
                         ],
                       ),
@@ -230,16 +156,6 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
               ),
             ),
           ),
-      // floatingActionButton: FloatingActionButton(
-      //   heroTag: "add_loan_fab",
-      //   onPressed: () {
-      //     pushNewScreen(
-      //       context,
-      //       screen: const AddOrEditAccountScreen(initType: AccountType.loan),
-      //     );
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
 
@@ -333,60 +249,6 @@ class _DebtManageTabState extends ConsumerState<DebtManageTab> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  _buildLoanDetail(LoanInfo info, SelectedContentState state) {
-    final data = info.schedule.map((key, value) {
-      return MapEntry(key, value[state.loanId]);
-    });
-    final months = data.keys.toList()..sort((a, b) => a.compareTo(b));
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        headingRowHeight: 30,
-        horizontalMargin: 6,
-        dataRowMaxHeight: 30,
-        dataRowMinHeight: 20,
-        columnSpacing: 32,
-        dataTextStyle: dataTextStyle,
-        columns: const [
-          DataColumn(label: Text("")),
-          DataColumn(label: Text("Tổng trả"), numeric: true),
-          DataColumn(label: Text("Gốc"), numeric: true),
-          DataColumn(label: Text("Lãi"), numeric: true),
-          DataColumn(label: Text("Cầu tuyết"), numeric: true),
-          DataColumn(label: Text("Dư nợ"), numeric: true),
-        ],
-        rows: months.map((e) {
-          final monthData = data[e];
-          return DataRow(
-            cells: [
-              DataCell(Text("${e.month}/${e.year}")),
-              DataCell(
-                Text(
-                  Formatter.amountToDecimal(
-                    monthData!.totalPayment.round(),
-                    currency: null,
-                  ),
-                ),
-              ),
-              DataCell(
-                Text(Formatter.amountToDecimal(monthData.principal.round(), currency: null)),
-              ),
-              DataCell(
-                Text(Formatter.amountToDecimal(monthData.interest.round(), currency: null)),
-              ),
-              DataCell(
-                Text(Formatter.amountToDecimal(monthData.snowball.round(), currency: null)),
-              ),
-              DataCell(
-                Text(Formatter.amountToDecimal(monthData.remainingBalance.round(), currency: null)),
-              ),
-            ],
-          );
-        }).toList(),
       ),
     );
   }

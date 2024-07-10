@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/amortizing_info.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/plan/plan_distribution.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
-import 'package:myfinplan/services/plan/debt_strat.dart';
-import 'package:myfinplan/services/plan/distributor.dart';
+import 'package:myfinplan/services/plan/debt_strategy/debt_strat.dart';
+import 'package:myfinplan/services/plan/distributor/distributor.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
@@ -20,12 +20,12 @@ final loansInfoProvider = FutureProvider<LoanInfo>((ref) async {
   final currentStrategy = ref.watch(currentDebtStratProvider);
   final transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction());
   final planIncome = transacts.where((e) => e.transactType == TransactionType.income && e.planDetail != null && timeRange.contain(e.planDetail!.planTime)).fold(0, (prev, e) => prev + e.amount);
-  final actualIncome = transacts.where((e) => e.transactType == TransactionType.income && e.paid && timeRange.contain(e.timestamp!)).fold(0, (prev, e) => prev + e.amount);
+  final actualIncome = transacts.where((e) => e.transactType == TransactionType.income && e.paid && timeRange.contain(e.timestamp)).fold(0, (prev, e) => prev + e.amount);
 
-  final initialSnowball = max(planIncome, actualIncome) * dist.dist[ExpenseLevel.saving]!;
+  final initialSnowball = max(planIncome, actualIncome) * dist.dist[Level.saving]!;
   final loanPayThisMonth = loans.map((loan) {
     return transacts.where((transact) {
-      return transact.paid && transact.toAccId == loan.id && timeRange.contain(transact.timestamp!);
+      return transact.paid && transact.to == loan.id && timeRange.contain(transact.timestamp);
     }).fold<double>(0, (prev, e) => prev + e.amount);
   }).toList();
   final amortizingResult = currentStrategy.scheduleLoans(loans.map((e) => e.clone()).toList(), initialSnowball);

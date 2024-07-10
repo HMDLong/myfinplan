@@ -1,18 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/category.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/transaction/plan_transaction.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/shared_widgets/form/amount_form_field.dart';
 import 'package:myfinplan/shared_widgets/pickers/category_picker/category_picker.dart';
 import 'package:myfinplan/shared_widgets/pickers/recurrence_picker/recurrent_picker.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/styles.dart';
 import 'package:myfinplan/utils/time/recurrence.dart';
 
 class NewPlanTransactScreen extends ConsumerStatefulWidget {
-  final Transaction? prefill;
+  final PlanTransaction? prefill;
   const NewPlanTransactScreen({super.key, this.prefill});
 
   @override
@@ -35,9 +36,9 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
     notified = true;
     final prefill = widget.prefill;
     if (prefill != null) {
-      amount = prefill.amount.abs();
+      amount = prefill.planAmount.abs();
       categoryId = prefill.categoryId;
-      categoryName = prefill.categoryName;
+      // categoryName = prefill.categoryName;
     }
     super.initState();
   }
@@ -45,7 +46,7 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultStyledAppBar(
+      appBar: StyleRes.defaultStyledAppBar(
         title: "Thông tin bản ghi",
         onBackPressed: () => Navigator.of(context).pop(),
       ),
@@ -67,7 +68,7 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
                 ),
                 const SizedBox(height: 14),
                 CategoryPicker(
-                  initialCategoryName: categoryName,
+                  initialCategory: categoryName,
                   icon: const Icon(Icons.category_rounded),
                   onCategoryChanged: (value) {
                     categoryId = value.id;
@@ -107,7 +108,7 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
                       _onSubmit().then((value) {
                         ScaffoldMessenger.of(context)
                           ..hideCurrentSnackBar()
-                          ..showSnackBar(CustomSnackbar.success(addSuccessMessage));
+                          ..showSnackBar(CustomSnackbar.success(StringRes.addSuccessMessage));
                         Navigator.of(context).pop();
                       }).onError((error, stackTrace) {
                         ScaffoldMessenger.of(context)
@@ -138,15 +139,14 @@ class _NewPlanTransactScreenState extends ConsumerState<NewPlanTransactScreen> {
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      final newPlanTransact = Transaction.planTransact(
-        planId: recur!.toInfoString,
-        planTimestamp: DateTime.now(),
+      final newPlanTransact = PlanTransaction(
+        planId: widget.prefill?.planId ?? recur!.toInfoString,
+        recurInfo: recur!.toInfoString,
         categoryId: categoryId!,
-        categoryName: categoryName!,
         planAmount: amount!,
       );
       if (widget.prefill == null) {
-        await ref.read(transactionNotifierProvider.notifier).schedule(newPlanTransact, recur!);
+        await ref.read(transactionNotifierProvider.notifier).schedule(newPlanTransact);
       } else {
         await ref.read(transactionNotifierProvider.notifier).updateSchedule(newPlanTransact);
       }

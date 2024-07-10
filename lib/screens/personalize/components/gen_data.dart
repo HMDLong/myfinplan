@@ -8,9 +8,9 @@ import 'package:myfinplan/data/models/account/debit.dart';
 import 'package:myfinplan/data/models/account/debt.dart';
 import 'package:myfinplan/data/models/account/payment.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/transaction/transact_plan_detail.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
+import 'package:myfinplan/data/models/transaction/plan_transaction.dart';
 import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
@@ -20,6 +20,8 @@ import 'package:myfinplan/utils/time/date_time_ext.dart';
 import 'package:myfinplan/utils/time/recurrence.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
 import 'package:myfinplan/utils/time/times.dart';
+
+// -------------------------- Accounts ----------------------------------
 
 const startBalance = 100000000;
 
@@ -121,6 +123,57 @@ final List<Account> accounts = [
   ...loans,
 ];
 
+// ----------------------- Scheduled Transactions ----------------------
+final rentTmplt = PlanTransaction(
+  categoryId: "e1.1",
+  planAmount: 5000000,
+  recurInfo: PeriodicRecurrence(
+    periodicType: TimeType.month,
+    example: DateTime(2024, 5, 28),
+  ).toInfoString,
+);
+final powerTmplt = PlanTransaction(
+  categoryId: "e4.1",
+  planAmount: 800000,
+  recurInfo: PeriodicRecurrence(
+    periodicType: TimeType.month,
+    example: DateTime(2024, 5, 28),
+  ).toInfoString,
+);
+final waterTmplt = PlanTransaction(
+  categoryId: "e4.2",
+  planAmount: 500000,
+  recurInfo: PeriodicRecurrence(
+    periodicType: TimeType.month,
+    example: DateTime(2024, 5, 27),
+  ).toInfoString,
+);
+final netTmplt = PlanTransaction(
+  categoryId: "e4.7",
+  planAmount: 800000,
+  recurInfo: PeriodicRecurrence(
+    periodicType: TimeType.month,
+    example: DateTime(2024, 5, 28),
+  ).toInfoString,
+);
+final tuitionTmplt = PlanTransaction(
+  categoryId: "e5.1",
+  planAmount: 4300000,
+  recurInfo: PeriodicRecurrence(
+    periodicType: TimeType.month,
+    example: DateTime(2024, 5, 5),
+  ).toInfoString,
+);
+final salaryTmplt = PlanTransaction(
+  categoryId: "i1.1",
+  planAmount: 20000000,
+  recurInfo: PeriodicRecurrence(
+    periodicType: TimeType.month,
+    example: DateTime(2024, 5, 29),
+  ).toInfoString,
+);
+
+// -------------------- Scheduling -------------------------
 final now = DateTime.now().toDateOnly();
 
 bool shouldPay(DateTime date, {bool ensureTrue = false}) {
@@ -130,6 +183,24 @@ bool shouldPay(DateTime date, {bool ensureTrue = false}) {
           ? true
           : Random().nextBool();
 }
+
+Transaction getScheduledTransact(
+  PlanTransaction template,
+  DateTime planday,
+  DateTime payday,
+  int payAmount,
+  String? fromId,
+  String? toId,
+) {
+  final transact = template.getTransaction(planday);
+  var paid = shouldPay(payday);
+  transact.amount = paid ? payAmount : 0;
+  transact.from = paid ? fromId : null;
+  transact.to = paid ? toId : null;
+  transact.timestamp = payday;
+  return transact;
+}
+// --------------------------------- gen function -----------------------------------------
 
 Future<void> genData(WidgetRef ref) async {
   // 1. Generate accounts
@@ -149,6 +220,11 @@ Future<void> genData(WidgetRef ref) async {
     range = range.previous();
   }
 
+  // save schedule templates
+  for (var tmpl in [rentTmplt, powerTmplt, waterTmplt, netTmplt, tuitionTmplt, salaryTmplt]) {
+    ref.read(transactionNotifierProvider.notifier).addSchedule(tmpl);
+  }
+
   // Insert data each month, for total 12 months previously
   for (var monthRange in monthRanges) {
     dev.log("- Generating data for ${monthRange.start.month}/${monthRange.start.year}");
@@ -163,172 +239,57 @@ Future<void> genData(WidgetRef ref) async {
       await categoryNotifier.addBudget(budget.key, budget.value);
     }
     // 3. Generate some plan transactions
-    final planTransacts = <Transaction>[];
-    Account sourceAcc = randomDebit();
-
-    var payday = monthRange.dayOfMonthRange(Random().nextInt(4) + 3);
-    var paid = shouldPay(payday);
-    planTransacts.add(
-      Transaction(
-        id: getRandomKey(),
-        timestamp: payday,
-        amount: paid ? 5000000 : 0,
-        categoryId: "e1.1",
-        categoryName: "Tiền thuê",
-        srcAccId: paid ? sourceAcc.id : null,
-        srcAccName: paid ? sourceAcc.title : null,
-        planDetail: TransactPlanDetail(
-          id: PeriodicRecurrence(
-            periodicType: TimeType.month,
-            example: DateTime(2024, 5, 4),
-          ).toInfoString,
-          planAmount: 5000000,
-          planTime: monthRange.dayOfMonthRange(4),
-        ),
+    final planTransacts = <Transaction>[
+      getScheduledTransact(
+        rentTmplt,
+        monthRange.dayOfMonthRange(4),
+        monthRange.dayOfMonthRange(Random().nextInt(4) + 3),
+        5000000,
+        randomDebit().id,
+        null,
       ),
-    );
-
-    payday = monthRange.dayOfMonthRange(Random().nextInt(3) + 27);
-    sourceAcc = randomPayable();
-    paid = shouldPay(payday);
-    planTransacts.add(
-      Transaction(
-        id: getRandomKey(),
-        timestamp: payday,
-        amount: paid ? 800000 : 0,
-        categoryId: "e4.1",
-        categoryName: "Điện",
-        srcAccId: paid ? sourceAcc.id : null,
-        srcAccName: paid ? sourceAcc.title : null,
-        planDetail: TransactPlanDetail(
-          id: PeriodicRecurrence(
-            periodicType: TimeType.month,
-            example: DateTime(2024, 5, 28),
-          ).toInfoString,
-          planAmount: 800000,
-          planTime: monthRange.dayOfMonthRange(28),
-        ),
+      getScheduledTransact(
+        powerTmplt,
+        monthRange.dayOfMonthRange(28),
+        monthRange.dayOfMonthRange(Random().nextInt(3) + 27),
+        800000,
+        randomPayable().id,
+        null,
       ),
-    );
-
-    payday = monthRange.dayOfMonthRange(Random().nextInt(4) + 25);
-    sourceAcc = randomPayable();
-    paid = shouldPay(payday);
-    planTransacts.add(
-      Transaction(
-        id: getRandomKey(),
-        timestamp: payday,
-        amount: paid ? 800000 : 0,
-        categoryId: "e4.2",
-        categoryName: "Nước",
-        srcAccId: paid ? sourceAcc.id : null,
-        srcAccName: paid ? sourceAcc.title : null,
-        planDetail: TransactPlanDetail(
-          id: PeriodicRecurrence(
-            periodicType: TimeType.month,
-            example: DateTime(2024, 5, 27),
-          ).toInfoString,
-          planAmount: 800000,
-          planTime: monthRange.dayOfMonthRange(27),
-        ),
+      getScheduledTransact(
+        waterTmplt,
+        monthRange.dayOfMonthRange(27),
+        monthRange.dayOfMonthRange(Random().nextInt(4) + 25),
+        500000,
+        randomPayable().id,
+        null,
       ),
-    );
-
-    payday = monthRange.dayOfMonthRange(Random().nextInt(3) + 25);
-    sourceAcc = randomPayable();
-    paid = shouldPay(payday);
-    planTransacts.add(
-      Transaction(
-        id: getRandomKey(),
-        timestamp: payday,
-        amount: paid ? 120000 : 0,
-        categoryId: "e4.7",
-        categoryName: "Internet",
-        srcAccId: paid ? sourceAcc.id : null,
-        srcAccName: paid ? sourceAcc.title : null,
-        planDetail: TransactPlanDetail(
-          id: PeriodicRecurrence(
-            periodicType: TimeType.month,
-            example: DateTime(2024, 5, 26),
-          ).toInfoString,
-          planAmount: 120000,
-          planTime: monthRange.dayOfMonthRange(26),
-        ),
+      getScheduledTransact(
+        netTmplt,
+        monthRange.dayOfMonthRange(26),
+        monthRange.dayOfMonthRange(Random().nextInt(3) + 25),
+        120000,
+        randomPayable().id,
+        null,
       ),
-    );
-
-    payday = monthRange.dayOfMonthRange(Random().nextInt(4) + 1);
-    sourceAcc = randomPayable();
-    paid = shouldPay(payday);
-    planTransacts.add(
-      Transaction(
-        id: getRandomKey(),
-        timestamp: payday,
-        amount: paid ? 4300000 : 0,
-        categoryId: "e5.1",
-        categoryName: "Tiền học chính",
-        srcAccId: paid ? sourceAcc.id : null,
-        srcAccName: paid ? sourceAcc.title : null,
-        planDetail: TransactPlanDetail(
-          id: PeriodicRecurrence(
-            periodicType: TimeType.month,
-            example: DateTime(2024, 5, 5),
-          ).toInfoString,
-          planAmount: 4300000,
-          planTime: monthRange.dayOfMonthRange(5),
-        ),
+      getScheduledTransact(
+        tuitionTmplt,
+        monthRange.dayOfMonthRange(5),
+        monthRange.dayOfMonthRange(Random().nextInt(4) + 1),
+        4300000,
+        randomPayable().id,
+        null,
       ),
-    );
-
-    payday = monthRange.dayOfMonthRange(29);
-    sourceAcc = randomDebit();
-    paid = shouldPay(payday, ensureTrue: true);
-    planTransacts.add(
-      Transaction(
-        id: getRandomKey(),
-        timestamp: payday,
-        amount: paid ? 20000000 : 0,
-        categoryId: "i1.1",
-        categoryName: "Lương",
-        toAccId: paid ? sourceAcc.id : null,
-        toAccName: paid ? sourceAcc.title : null,
-        planDetail: TransactPlanDetail(
-          id: PeriodicRecurrence(
-            periodicType: TimeType.month,
-            example: DateTime(2024, 5, 29),
-          ).toInfoString,
-          planAmount: 20000000,
-          planTime: monthRange.dayOfMonthRange(29),
-        ),
+      getScheduledTransact(
+        salaryTmplt,
+        monthRange.dayOfMonthRange(29),
+        monthRange.dayOfMonthRange(29),
+        20000000,
+        null,
+        randomDebit().id,
       ),
-    );
-
-    payday = monthRange.dayOfMonthRange(Random().nextInt(1) + 6);
-    sourceAcc = randomDebit();
-    var toAcc = randomSaving();
-    paid = shouldPay(payday);
-    planTransacts.add(
-      Transaction(
-        id: getRandomKey(),
-        timestamp: payday,
-        amount: paid ? 500000 : 0,
-        categoryId: "t1.3",
-        categoryName: "Tiết kiệm",
-        toAccId: paid ? toAcc.id : null,
-        toAccName: paid ? toAcc.title : null,
-        srcAccId: paid ? sourceAcc.id : null,
-        srcAccName: paid ? sourceAcc.title : null,
-        planDetail: TransactPlanDetail(
-          id: PeriodicRecurrence(
-            periodicType: TimeType.month,
-            example: DateTime(2024, 5, 28),
-          ).toInfoString,
-          planAmount: 500000,
-          planTime: monthRange.dayOfMonthRange(6),
-        ),
-      ),
-    );
-    dev.log("--- Adding plantransacts");
+    ];
+    dev.log("> Adding plantransacts");
     final planTransactsCategory = planTransacts.map((e) => e.categoryId).toList();
     for (var transact in planTransacts) {
       await transactController.addTransaction(transact);
@@ -348,18 +309,15 @@ Future<void> genData(WidgetRef ref) async {
           timestamp: date,
           amount: amount,
           categoryId: cate.id,
-          categoryName: cate.name,
-          srcAccId: acc.id,
-          srcAccName: acc.title,
-          toAccId: toAcc?.id,
-          toAccName: toAcc?.title,
+          to: toAcc?.id,
+          from: acc.id,
         );
         try {
           await transactController.addTransaction(ts);
         } catch (e) {
           var newSrcAcc = randomPayable();
-          ts.srcAccId = newSrcAcc.id;
-          ts.srcAccName = newSrcAcc.title;
+          ts.from = newSrcAcc.id;
+          // ts.srcAccName = newSrcAcc.title;
           await transactController.addTransaction(ts);
         }
       }

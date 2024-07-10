@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/category_group.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
+import 'package:myfinplan/data/models/category/category_group/category_group.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
-import 'package:myfinplan/utils/constants/predefined_categories.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 final chartFilterStateProvider = StateProvider((ref) => CategoryChartFilterState());

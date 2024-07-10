@@ -8,7 +8,7 @@ import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
 import 'package:myfinplan/screens/accounts/components/credit_tab/credit_card.dart';
 import 'package:myfinplan/shared_widgets/graphs/balance_chart.dart';
 import 'package:myfinplan/shared_widgets/transaction_list/transaction_list.dart';
-import 'package:myfinplan/utils/constants/strings.dart';
+import 'package:myfinplan/utils/strings.dart';
 import 'package:myfinplan/utils/time/times.dart';
 
 class CreditTab extends StatefulWidget {
@@ -165,10 +165,10 @@ class _CreditTabState extends State<CreditTab> {
                       ElevatedButton.icon(
                         onPressed: () {},
                         icon: const Icon(Icons.refresh),
-                        label: const Text(widgetRefreshLabel),
+                        label: const Text(StringRes.widgetRefreshLabel),
                       ),
                       const SizedBox(height: 10),
-                      const Text(widgetErrorMessage),
+                      const Text(StringRes.widgetErrorMessage),
                     ],
                   ),
                 );

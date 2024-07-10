@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfinplan/screens/home/components/noti_screen.dart';
 import 'package:myfinplan/services/accounts/accounts/account_usecases.dart';
 import 'package:myfinplan/screens/home/components/account_summary_section.dart';
 import 'package:myfinplan/screens/home/components/budget_carousel.dart';
@@ -22,39 +23,58 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tổng số dư',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                return Text(
+                  Formatter.amountToDecimal(
+                    ref.watch(totalBalanceProvider).when(
+                          data: (data) => data,
+                          error: (error, _) => -1,
+                          loading: () => 0,
+                        ),
+                  ),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                );
+              },
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              pushNewScreen(context, screen: const NotificationScreen());
+            },
+            icon: const Icon(
+              Icons.notifications,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Tổng số dư',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return Text(
-                    Formatter.amountToDecimal(
-                      ref.watch(totalBalanceProvider).when(
-                            data: (data) => data,
-                            error: (error, _) => -1,
-                            loading: () => 0,
-                          ),
-                    ),
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
               const SectionTitle(title: "Tài khoản của bạn"),
               const AccountSummarySection(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               const SectionTitle(title: "Ngân quỹ tháng này"),
               const BudgetsCarousel(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               const SectionTitle(title: "Báo cáo chi tiêu"),
               Card(
                 margin: EdgeInsets.zero,
@@ -66,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: SpendingChart(),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               SectionTitle(
                 title: 'Các khoản thu chi',
                 onLinkTap: () {

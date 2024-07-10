@@ -85,7 +85,7 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
             const SizedBox(height: 14),
             TextFormField(
               initialValue: title,
-              decoration: formFieldDecor(
+              decoration: StyleRes.formFieldDecor(
                 icon: const Icon(Icons.title),
                 label: const Text("Tiêu đề"),
               ),
@@ -117,7 +117,7 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                     children: [
                       TextFormField(
                         initialValue: "${interest ?? 0.0}",
-                        decoration: formFieldDecor(
+                        decoration: StyleRes.formFieldDecor(
                           icon: const Icon(CupertinoIcons.money_dollar),
                           label: const Text("Lãi suất"),
                         ),
@@ -156,7 +156,7 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
                     children: [
                       TextFormField(
                         initialValue: "${period ?? 0}",
-                        decoration: formFieldDecor(
+                        decoration: StyleRes.formFieldDecor(
                           icon: const Icon(CupertinoIcons.money_dollar),
                           label: const Text("Kỳ hạn"),
                           suffix: const Text("tháng"),
@@ -218,7 +218,7 @@ class _NewSavingFormState extends ConsumerState<NewSavingForm> {
             TextFormField(
               enabled: _hasGoal,
               initialValue: goalTitle,
-              decoration: formFieldDecor(
+              decoration: StyleRes.formFieldDecor(
                 icon: const Icon(Icons.label_outline),
                 label: const Text("Tiêu đề"),
               ),

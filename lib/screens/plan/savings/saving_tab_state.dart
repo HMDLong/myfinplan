@@ -3,12 +3,14 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinplan/data/models/account/account.dart';
 import 'package:myfinplan/data/models/account/saving.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/plan/plan_distribution.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
+import 'package:myfinplan/services/plan/distributor/plan_distribution.dart';
 import 'package:myfinplan/services/accounts/accounts/accounts_notifier.dart';
-import 'package:myfinplan/services/plan/distributor.dart';
+import 'package:myfinplan/services/plan/distributor/distributor.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/plan_screen.dart';
+import 'package:myfinplan/constants/predefined_categories.dart';
 
 class SavingTabStateModel {
   List<Saving> savings;
@@ -43,7 +45,7 @@ final needToSaveAmountProvider = Provider<int>((ref) {
   final dist = ref.watch(planDistProvider);
   final needToSaveAmount = ref.watch(incomeProvider).when(
         data: (data) {
-          return (max(data[0], data[1]).toDouble() * dist.dist[ExpenseLevel.saving]!).toInt();
+          return (max(data[0], data[1]).toDouble() * dist.dist[Level.saving]!).toInt();
         },
         error: (error, _) => throw error,
         loading: () => 0,
@@ -56,13 +58,13 @@ final savingTabStateProvider = FutureProvider((ref) async {
   final needToSaveAmount = ref.watch(needToSaveAmountProvider);
   final savings = (await ref.watch(accountsProvider).getAccountByType(AccountType.saving)).cast<Saving>();
   final savingTransact = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.transact)).where((element) {
-    return element.paid && currentTimeRange.contain(element.timestamp);
+    return element.paid && element.categoryId == SpecialCategory.saving && currentTimeRange.contain(element.timestamp);
   });
   final res = SavingTabStateModel.empty();
   for (var saving in savings) {
     res.savings.add(saving);
     res.savedThisRange.add(
-      savingTransact.where((e) => e.toAccId == saving.id).fold(0, (prev, e) {
+      savingTransact.where((e) => e.to == saving.id).fold(0, (prev, e) {
         return prev + e.amount.abs();
       }),
     );

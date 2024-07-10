@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfinplan/data/models/category/category.dart';
-import 'package:myfinplan/data/models/category/transaction_type.dart';
-import 'package:myfinplan/data/models/plan/plan_distribution.dart';
+import 'package:myfinplan/data/models/category/category/category.dart';
+import 'package:myfinplan/data/models/category/transact_type/transaction_type.dart';
+// import 'package:myfinplan/data/models/plan/plan_distribution.dart';
+import 'package:myfinplan/data/models/transaction/plan_transaction.dart';
+import 'package:myfinplan/data/models/transaction/transaction.dart';
 import 'package:myfinplan/services/categories/category_notifier.dart';
-import 'package:myfinplan/services/plan/distributor.dart';
+import 'package:myfinplan/services/plan/distributor/distributor.dart';
 import 'package:myfinplan/services/transactions/transaction_notifier.dart';
 import 'package:myfinplan/screens/plan/plan_screen.dart';
 import 'package:myfinplan/utils/time/time_type.dart';
@@ -13,7 +15,32 @@ import 'package:myfinplan/utils/time/times.dart';
 
 final selectedCategoryForDetailProvider = StateProvider<Category?>((ref) => null);
 
-final planTransactsForDetailProvider = FutureProvider((ref) async {
+class CategoryDetail {
+  Category category;
+  TimeRange timeRange;
+  List<Transaction> transacts;
+  List<PlanTransaction> schedules;
+
+  CategoryDetail({
+    required this.category,
+    required this.timeRange,
+    required this.transacts,
+    required this.schedules,
+  });
+
+  int get planAmount {
+    return schedules.fold(0, (prev, schedule) {
+      final planAmount = schedule.planAmount * schedule.recur.planOccurences(range: timeRange).length;
+      return prev + planAmount;
+    });
+  }
+
+  int get actualAmount {
+    return transacts.fold(0, (prev, e) => prev + e.amount.abs());
+  }
+}
+
+final planTransactsForDetailProvider = FutureProvider<CategoryDetail>((ref) async {
   final planTimeRange = ref.watch(planTimeRangeProvider);
   final cate = ref.watch(selectedCategoryForDetailProvider);
   final transacts = (await ref.watch(transactionNotifierProvider).getAllTransaction()).where((e) {
@@ -21,7 +48,14 @@ final planTransactsForDetailProvider = FutureProvider((ref) async {
     final matchPaidTime = e.paid ? planTimeRange.contain(e.timestamp) : false;
     return e.categoryId == cate!.id && (matchPlanTime || matchPaidTime);
   });
-  return transacts;
+  final schedules = await ref.watch(transactionNotifierProvider).getSchedules();
+  final cateSchedules = schedules.where((e) => e.categoryId == cate!.id).toList();
+  return CategoryDetail(
+    category: cate!,
+    timeRange: planTimeRange,
+    transacts: transacts.toList(),
+    schedules: cateSchedules,
+  );
 });
 
 final currentAvailableBudget = FutureProvider((ref) async {
@@ -30,7 +64,7 @@ final currentAvailableBudget = FutureProvider((ref) async {
   final incomeTransacts = (await ref.watch(transactionNotifierProvider).getTransactionByType(TransactionType.income)).where((e) => currentMonth.contain(e.timestamp));
   final currentIncome = incomeTransacts.where((e) => e.paid).fold(0, (prev, e) => prev + e.amount);
   final expectedIncome = incomeTransacts.where((e) => e.planDetail != null).fold(0, (prev, e) => prev + e.planDetail!.planAmount);
-  final maxBudget = max(currentIncome, expectedIncome) * (currentDist.dist[ExpenseLevel.may] ?? 1);
+  final maxBudget = max(currentIncome, expectedIncome) * (currentDist.dist[Level.may] ?? 1);
   final currentTotalBudget = (await ref.watch(categoryNotifierProvider).getCategories()).where((e) => e.budget != null).fold(0, (prev, e) => prev + e.budget!.amount);
   final availableBudget = maxBudget - currentTotalBudget;
   return availableBudget;
